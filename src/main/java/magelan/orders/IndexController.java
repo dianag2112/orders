@@ -5,10 +5,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class HomeController {
+public class IndexController {
     @GetMapping("/")
-    public String home(Model model) {
-        model.addAttribute("msg", "Deployed Spring Boot + Thymeleaf");
-        return "home";
+    public String getIndexPage() {
+        return "index";
     }
 }
