@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home — Magelan</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
+    <link rel="stylesheet" th:href="@{/home.css}" href="/home.css">
+</head>
+
+<body class="home-page">
+<header class="top-logo">
+    <img src="/magelan-index.jpg" alt="Magelan Logo" class="top-logo__img">
+    <div class="top-logo__title">Magelan</div>
+    <div class="top-logo__subtitle">Pirate Orders Console</div>
+</header>
+
+<div class="bg" aria-hidden="true"></div>
+
+<main class="wrap">
+
+    <!-- ✅ Welcome moved here -->
+    <section class="hero">
+        <h1 class="title">Welcome aboard, Captain.</h1>
+    </section>
+
+    <section class="panel">
+        <nav class="tiles" aria-label="Main actions">
+
+            <a class="tile" th:href="@{/menu}" href="/menu">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M4 13a8 8 0 0 0 16 0H4zM9 4c0 1 1 1 1 2s-1 1-1 2m5-4c0 1 1 1 1 2s-1 1-1 2"/>
+          </svg>
+        </span>
+                <span class="tile__label">Menu</span>
+            </a>
+
+            <a class="tile tile--primary" th:href="@{/orders/pending}" href="/orders/pending">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M4 4h16v16H4zM4 9h16M9 9V4m6 5V4" />
+          </svg>
+        </span>
+                <span class="tile__label">Pending Orders</span>
+            </a>
+
+            <a class="tile" th:href="@{/orders/completed}" href="/orders/completed">
+        <span class="tile__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M5 13l4 4L19 7"/>
+          </svg>
+        </span>
+                <span class="tile__label">Completed Orders</span>
+            </a>
+
+            <a class="tile" th:href="@{/profile}" href="/profile">
+        <span class="tile__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+          </svg>
+        </span>
+                <span class="tile__label">Profile</span>
+            </a>
+
+        </nav>
+    </section>
+
+</main>
+</body>
+</html>

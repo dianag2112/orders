@@ -1,5 +1,6 @@
-package magelan.orders;
+package magelan.orders.order.repository;
 
+import magelan.orders.order.model.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;

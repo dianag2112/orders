@@ -1,0 +1,327 @@
+:root{
+    --bg:#000;
+    --panel:rgba(18,18,18,.88);
+    --tile:rgba(15,15,15,.95);
+    --stroke:rgba(255,255,255,.10);
+    --stroke-2:rgba(255,255,255,.16);
+
+    --text:rgba(255,255,255,.92);
+    --muted:rgba(255,255,255,.62);
+
+    --red:#ff1a1a;
+    --red-2:#ff4d4d;
+
+    --radius:16px;
+    --shadow:0 18px 55px rgba(0,0,0,.55);
+
+    --pirate:"Pirata One", ui-serif, Georgia, serif;
+    --ui:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--ui);
+    -webkit-text-size-adjust:100%;
+}
+
+/* Background */
+.bg{
+    position:fixed;
+    inset:0;
+    background:#000;
+    pointer-events:none;
+    z-index:-1;
+}
+
+/* Page wrapper */
+.wrap{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:16px;
+    padding:20px;
+    max-width:920px;
+    margin:0 auto;
+    position:relative;
+    z-index:1;
+}
+
+.hero{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+}
+
+/* =========================
+   Top Logo Header (CENTERED)
+   ========================= */
+.top-logo{
+    padding-top:18px;
+    padding-bottom:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    position:relative;
+    z-index:5;
+    width: 100%;
+}
+
+.top-logo__img{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.top-logo__title{
+    font-family:var(--pirate);
+    font-size:2rem;
+    font-weight:400;
+    letter-spacing:1px;
+    color:var(--red);
+    line-height:1;
+}
+
+.top-logo__subtitle{
+    font-size:.95rem;
+    color:var(--muted);
+    margin-top:2px;
+}
+
+/* Optional subtle divider under the header */
+.top-logo::after{
+    content:"";
+    margin-top:10px;
+    width:120px;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--stroke-2), transparent);
+}
+
+/* =========================
+   Mast / Welcome
+   ========================= */
+.mast{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    text-align:center;
+}
+
+/* If you keep .brand in HTML, it’ll still look fine.
+   If you remove it later, no problem. */
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+.brand__logo{
+    width:68px;
+    height:68px;
+    border-radius:18px;
+    object-fit:cover;
+    border:1px solid var(--stroke);
+    box-shadow:var(--shadow);
+}
+.brand__name{
+    font-family:var(--pirate);
+    font-size:2rem;
+    letter-spacing:1px;
+    color:var(--red);
+}
+.brand__tag{
+    font-size:.95rem;
+    color:var(--muted);
+}
+
+.title{
+    margin:0;
+    font-family:var(--pirate);
+    font-size:2.3rem;
+    font-weight:400;
+    letter-spacing:1px;
+}
+.subtitle{
+    margin:0;
+    color:var(--muted);
+}
+
+/* =========================
+   Panel
+   ========================= */
+.panel{
+    background:var(--panel);
+    border:1px solid var(--stroke);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;
+}
+
+/* =========================
+   Tiles
+   ========================= */
+.tiles{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:14px;
+}
+
+.tile{
+    position:relative;
+    text-decoration:none;
+    color:var(--text);
+    background:var(--tile);
+    border:1px solid var(--stroke);
+    border-radius:var(--radius);
+    padding:14px;
+    min-height:100px;
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    overflow:hidden;
+    transition:transform .12s ease, border-color .12s ease, background .12s ease, box-shadow .12s ease;
+}
+
+/* subtle shine sweep */
+.tile::before{
+    content:"";
+    position:absolute;
+    inset:-40% -60%;
+    pointer-events:none;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.10), transparent);
+    transform:rotate(20deg) translateX(-60%);
+    transition:transform .65s ease;
+}
+.tile:hover::before{ transform:rotate(20deg) translateX(60%); }
+
+.tile:hover{
+    transform:translateY(-2px);
+    border-color:var(--stroke-2);
+    background:rgba(18,18,18,.95);
+    box-shadow:0 18px 45px rgba(0,0,0,.55);
+}
+.tile:active{ transform:translateY(0); }
+
+.tile__icon{
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.tile__icon svg{
+    width:30px;
+    height:30px;
+    color:var(--text);
+}
+
+.tile__label{
+    font-family:var(--pirate);
+    font-size:1.3rem;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+}
+.tile__hint{
+    margin-top:auto;
+    font-size:.95rem;
+    color:var(--muted);
+}
+
+/* hover accent */
+.tile:hover .tile__label,
+.tile:hover .tile__icon svg{
+    color:var(--red-2);
+}
+
+/* accents */
+.tile--primary{ border-color:rgba(255,26,26,.25); }
+.tile--danger{ border-color:rgba(255,26,26,.35); }
+
+/* =========================
+   Footer
+   ========================= */
+.footer{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+    padding-bottom:6px;
+}
+.footer__chip{
+    font-size:.9rem;
+    color:rgba(255,255,255,.75);
+    border:1px solid var(--stroke);
+    background:rgba(255,255,255,.04);
+    padding:8px 12px;
+    border-radius:999px;
+}
+
+/* =========================
+   HOME PAGE OVERRIDES
+   (protect from styles.css)
+   ========================= */
+.home-page{
+    display:block !important;
+}
+
+.home-page .top-logo{
+    width:100%;
+    margin:0 auto;
+    text-align:center;
+}
+
+.home-page .wrap{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    padding-top: 24px !important;
+}
+
+.home-page .hero{
+    width:100%;
+    text-align:center !important;
+    margin: 10px 0 6px;
+}
+
+.home-page .panel{
+    width:100%;
+    max-width: 920px;
+}
+
+.home-page .tiles{
+    width:100%;
+}
+
+/* =========================
+   Mobile
+   ========================= */
+@media (max-width: 520px){
+    .wrap{ padding:16px; }
+    .tiles{ grid-template-columns:1fr; }
+    .tile{ min-height:112px; }
+
+    .top-logo__img{ width:54px; height:54px; border-radius:14px; }
+    .top-logo__title{ font-size:1.7rem; }
+    .top-logo__subtitle{ font-size:.85rem; }
+
+    .brand__logo{ width:56px; height:56px; }
+    .title{ font-size:2rem; }
+
+    /* slightly bigger tap targets */
+    .tile{ padding:16px; }
+}

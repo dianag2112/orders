@@ -1,9 +1,13 @@
-package magelan.orders;
+package magelan.orders.web;
 
+import magelan.orders.order.model.Order;
+import magelan.orders.order.model.OrderStatus;
+import magelan.orders.order.repository.OrderRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,8 +29,10 @@ public class OrderController {
     public String createTestOrder() {
         orderRepository.save(Order.builder()
                 .tableName("1")
-                .note("Test order from Render")
+                .orderStatus(OrderStatus.PENDING)
+                .amount(BigDecimal.TEN)
                 .createdOn(LocalDateTime.now())
+                .items(List.of())
                 .build()
         );
         return "redirect:/orders";
