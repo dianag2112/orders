@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — Magelan</title>
+
+    <link rel="stylesheet"
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap">
+    <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
+    <link rel="stylesheet" th:href="@{/profile.css}" href="/profile.css">
+</head>
+
+<body>
+<div class="container home-center">
+
+    <div class="logo-container">
+        <a th:href="@{/home}">
+            <img src="/magelan-index.jpg" alt="Magelan Logo" class="logo-image">
+        </a>
+    </div>
+
+    <section class="panel profile-panel">
+        <h1 class="title">My Profile</h1>
+
+        <div th:if="${profileUpdated}" class="profile-alert">
+            <p th:text="${profileUpdated}">Profile updated successfully.</p>
+        </div>
+
+        <div th:if="${passwordUpdated}" class="profile-alert">
+            <p th:text="${passwordUpdated}"></p>
+        </div>
+
+        <div class="profile-content">
+
+            <div class="profile-main">
+                <div class="profile-info">
+
+                    <div class="profile-row">
+                        <span class="label">Username</span>
+                        <span class="value" th:text="${user.username}">username</span>
+                    </div>
+
+                    <div class="profile-row">
+                        <span class="label">Password</span>
+                        <span class="value value--secret">••••••••</span>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a th:href="@{/profile/password}" href="/profile/password" class="btn primary-btn">
+                    Change password
+                </a>
+
+                <form th:action="@{/logout}" method="post" style="display:inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button type="submit" class="btn secondary-btn">Log out</button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+</div>
+</body>
+</html>

@@ -7,7 +7,7 @@ import magelan.orders.security.UserData;
 import magelan.orders.user.model.User;
 import magelan.orders.user.model.UserRole;
 import magelan.orders.user.repository.UserRepository;
-import magelan.orders.web.dto.EditProfileRequest;
+import magelan.orders.web.dto.ChangePasswordRequest;
 import magelan.orders.web.dto.RegisterRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -69,16 +69,19 @@ public class UserService implements UserDetailsService {
                 });
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    public void updateProfile(UUID id, EditProfileRequest editProfileRequest) {
-        log.info("Updating profile for user {}", id);
+    @Transactional
+    public void changePassword(UUID userId, String currentPassword, String newPassword) {
 
-        User user = getById(id);
+        User user = getById(userId);
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Current password is not correct.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
         user.setUpdatedOn(LocalDateTime.now());
 
         userRepository.save(user);
-
-        log.info("Profile updated successfully for user {}", id);
     }
 
     @Override

@@ -77,21 +77,12 @@ body{
 }
 
 .top-logo__img{
-    width:80px;
-    height:80px;
+    width:170px;
+    height:170px;
     object-fit:contain;
     background: transparent;
     border: none;
     box-shadow: none;
-}
-
-.top-logo__title{
-    font-family:var(--pirate);
-    font-size:2rem;
-    font-weight:400;
-    letter-spacing:1px;
-    color:var(--red);
-    line-height:1;
 }
 
 .top-logo__subtitle{
