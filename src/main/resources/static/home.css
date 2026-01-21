@@ -344,7 +344,7 @@ body{
     .tiles{ grid-template-columns:1fr; }
     .tile{ min-height:112px; }
 
-    .top-logo__img{ width:100px; height:100px; border-radius:14px; }
+    .top-logo__img{ width:140px; height:140px; border-radius:14px; }
     .top-logo__title{ font-size:1.7rem; }
     .top-logo__subtitle{ font-size:.85rem; }
 
