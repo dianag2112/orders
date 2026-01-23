@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu — Magelan</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
+    <link rel="stylesheet" th:href="@{/menu.css}" href="/menu.css">
+</head>
+
+<body class="app-page">
+<div class="bg" aria-hidden="true"></div>
+
+<header class="top-logo">
+    <a th:href="@{/home}" class="top-logo__link" href="/home" aria-label="Back to Home">
+        <img src="/magelan-index.jpg" alt="Magelan Logo" class="top-logo__img">
+    </a>
+    <div class="top-logo__subtitle">Menu</div>
+</header>
+
+<main class="wrap">
+    <section class="panel">
+        <div class="menu-head">
+            <h1 class="title">Captain’s Menu</h1>
+
+            <div class="menu-tools">
+                <div class="search">
+                    <input id="menuSearch" class="search__input" type="search" placeholder="Search treasure… (e.g. rum, steak)">
+                    <span class="search__icon" aria-hidden="true">⌕</span>
+                </div>
+
+                <a class="btn btn--ghost" th:href="@{/home}" href="/home">Back</a>
+            </div>
+        </div>
+
+        <!-- Optional quick category chips (static labels, dynamic later if you want) -->
+        <div class="chips" aria-label="Categories">
+            <a class="chip" href="#STARTER">Starters</a>
+            <a class="chip" href="#MAIN">Mains</a>
+            <a class="chip" href="#DESSERT">Desserts</a>
+            <a class="chip" href="#DRINK">Drinks</a>
+        </div>
+
+        <!-- ===== CATEGORY: STARTER ===== -->
+        <section class="category" id="STARTER">
+            <div class="category__bar">
+                <h2 class="category__title">Starters</h2>
+                <span class="category__hint">Small bites to raise the sails</span>
+            </div>
+
+            <div class="grid">
+                <article class="card" th:each="p : ${starters}">
+                    <div class="card__top">
+                        <div class="card__name" th:text="${p.name}">Bruschetta</div>
+                        <div class="card__price" th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'NONE')} + ' лв.'">9.90 лв.</div>
+                    </div>
+
+                    <!-- Optional description later -->
+                    <div class="card__meta">
+                        <span class="badge">Starter</span>
+                    </div>
+
+                    <div class="card__actions">
+                        <!-- Later you can make this POST to add to current order -->
+                        <button class="btn btn--primary" type="button"
+                                th:attr="data-product-id=${p.id}">
+                            Add
+                        </button>
+
+                        <a class="btn btn--ghost" th:href="@{/menu/products/{id}(id=${p.id})}" href="#">
+                            Details
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Empty state -->
+                <div class="empty" th:if="${#lists.isEmpty(starters)}">
+                    <div class="empty__title">No starters yet</div>
+                    <div class="empty__text">Add items and they’ll appear here.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CATEGORY: MAIN ===== -->
+        <section class="category" id="MAIN">
+            <div class="category__bar">
+                <h2 class="category__title">Mains</h2>
+                <span class="category__hint">The main treasure</span>
+            </div>
+
+            <div class="grid">
+                <article class="card" th:each="p : ${mains}">
+                    <div class="card__top">
+                        <div class="card__name" th:text="${p.name}">Grilled Chicken</div>
+                        <div class="card__price" th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'NONE')} + ' лв.'">15.90 лв.</div>
+                    </div>
+
+                    <div class="card__meta">
+                        <span class="badge">Main</span>
+                    </div>
+
+                    <div class="card__actions">
+                        <button class="btn btn--primary" type="button"
+                                th:attr="data-product-id=${p.id}">
+                            Add
+                        </button>
+                        <a class="btn btn--ghost" th:href="@{/menu/products/{id}(id=${p.id})}" href="#">Details</a>
+                    </div>
+                </article>
+
+                <div class="empty" th:if="${#lists.isEmpty(mains)}">
+                    <div class="empty__title">No mains yet</div>
+                    <div class="empty__text">Add items and they’ll appear here.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CATEGORY: DESSERT ===== -->
+        <section class="category" id="DESSERT">
+            <div class="category__bar">
+                <h2 class="category__title">Desserts</h2>
+                <span class="category__hint">Sweet loot</span>
+            </div>
+
+            <div class="grid">
+                <article class="card" th:each="p : ${desserts}">
+                    <div class="card__top">
+                        <div class="card__name" th:text="${p.name}">Chocolate Cake</div>
+                        <div class="card__price" th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'NONE')} + ' лв.'">7.90 лв.</div>
+                    </div>
+
+                    <div class="card__meta">
+                        <span class="badge">Dessert</span>
+                    </div>
+
+                    <div class="card__actions">
+                        <button class="btn btn--primary" type="button"
+                                th:attr="data-product-id=${p.id}">
+                            Add
+                        </button>
+                        <a class="btn btn--ghost" th:href="@{/menu/products/{id}(id=${p.id})}" href="#">Details</a>
+                    </div>
+                </article>
+
+                <div class="empty" th:if="${#lists.isEmpty(desserts)}">
+                    <div class="empty__title">No desserts yet</div>
+                    <div class="empty__text">Add items and they’ll appear here.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CATEGORY: DRINK ===== -->
+        <section class="category" id="DRINK">
+            <div class="category__bar">
+                <h2 class="category__title">Drinks</h2>
+                <span class="category__hint">Rum, grog & more</span>
+            </div>
+
+            <div class="grid">
+                <article class="card" th:each="p : ${drinks}">
+                    <div class="card__top">
+                        <div class="card__name" th:text="${p.name}">Spiced Rum</div>
+                        <div class="card__price" th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'NONE')} + ' лв.'">6.50 лв.</div>
+                    </div>
+
+                    <div class="card__meta">
+                        <span class="badge">Drink</span>
+                    </div>
+
+                    <div class="card__actions">
+                        <button class="btn btn--primary" type="button"
+                                th:attr="data-product-id=${p.id}">
+                            Add
+                        </button>
+                        <a class="btn btn--ghost" th:href="@{/menu/products/{id}(id=${p.id})}" href="#">Details</a>
+                    </div>
+                </article>
+
+                <div class="empty" th:if="${#lists.isEmpty(drinks)}">
+                    <div class="empty__title">No drinks yet</div>
+                    <div class="empty__text">Add items and they’ll appear here.</div>
+                </div>
+            </div>
+        </section>
+    </section>
+</main>
+
+<!-- Optional footer (your rope one can be included here) -->
+<footer class="footer-rope">
+    <div class="rope"></div>
+    <p class="footer-text">⚓ Magelan • Captain’s Menu</p>
+</footer>
+
+<script>
+    // Simple client-side filter (optional)
+    const input = document.getElementById('menuSearch');
+    input?.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        document.querySelectorAll('.card').forEach(card => {
+            const name = card.querySelector('.card__name')?.textContent?.toLowerCase() || '';
+            card.style.display = name.includes(q) ? '' : 'none';
+        });
+    });
+</script>
+
+</body>
+</html>
