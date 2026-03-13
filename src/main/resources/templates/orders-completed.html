@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Completed Orders — Magelan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+</head>
+<body style="background:#000;color:#fff;font-family:Arial,sans-serif;padding:30px;">
+<div style="max-width:900px;margin:0 auto;">
+    <h1 style="font-family:'Pirata One',cursive;color:#ff1a1a;">Completed Orders</h1>
+
+    <div th:if="${#lists.isEmpty(completedOrders)}">
+        <p>No completed orders yet.</p>
+    </div>
+
+    <div th:each="order : ${completedOrders}" style="border:1px solid #333;padding:16px;border-radius:12px;margin-bottom:18px;">
+        <p><strong>Order ID:</strong> <span th:text="${order.id}"></span></p>
+        <p><strong>Table:</strong> <span th:text="${order.tableName}"></span></p>
+        <p><strong>Created:</strong> <span th:text="${order.createdOn}"></span></p>
+        <p><strong>Total:</strong> <span th:text="${#numbers.formatDecimal(order.amount,1,'POINT',2,'POINT')} + ' €'"></span></p>
+
+        <ul>
+            <li th:each="item : ${order.items}">
+                <span th:text="${item.product.name}"></span>
+                × <span th:text="${item.quantity}"></span>
+                —
+                <span th:text="${#numbers.formatDecimal(item.totalPrice,1,'POINT',2,'POINT')} + ' €'"></span>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

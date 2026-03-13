@@ -14,76 +14,64 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class ProductService {
+
     private final ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    public List<Product> getByCategory(ProductCategory category) {
-        return productRepository.findAllByCategoryOrderByNameAsc(category);
+    public List<Product> getAll() {
+        return productRepository.findAllByOrderBySectionOrderAscSubcategoryOrderAscItemOrderAsc();
     }
 
-    public List<Product> getAll() {
-        return productRepository.findAll();
+    public List<Product> getByCategory(ProductCategory category) {
+        return productRepository.findAllByCategoryOrderBySectionOrderAscSubcategoryOrderAscItemOrderAsc(category);
     }
 
     public Product getById(UUID id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Product with ID {} not found.", id);
-                    return new RuntimeException("Product with ID [%s] not found.".formatted(id));
-                });
+                .orElseThrow(() -> new RuntimeException("Product with ID [%s] not found.".formatted(id)));
     }
 
     public Product create(ProductForm form) {
         LocalDateTime now = LocalDateTime.now();
 
-        log.info("Creating new product '{}', price {}, category {}",
-                form.getName(), form.getPrice(), form.getCategory());
-
         Product product = Product.builder()
                 .name(form.getName())
+                .description(form.getDescription())
                 .price(form.getPrice())
                 .category(form.getCategory())
+                .sectionOrder(form.getSectionOrder())
+                .sectionTitle(form.getSectionTitle())
+                .subcategoryOrder(form.getSubcategoryOrder())
+                .subcategoryTitle(form.getSubcategoryTitle())
+                .itemOrder(form.getItemOrder())
                 .createdOn(now)
                 .updatedOn(now)
                 .build();
 
-        Product saved = productRepository.save(product);
-
-        log.info("Product {} created successfully.", saved.getId());
-        return saved;
+        return productRepository.save(product);
     }
 
     public Product update(UUID id, ProductForm form) {
-        log.info("Updating product {}", id);
-
         Product product = getById(id);
 
         product.setName(form.getName());
+        product.setDescription(form.getDescription());
         product.setPrice(form.getPrice());
         product.setCategory(form.getCategory());
+        product.setSectionOrder(form.getSectionOrder());
+        product.setSectionTitle(form.getSectionTitle());
+        product.setSubcategoryOrder(form.getSubcategoryOrder());
+        product.setSubcategoryTitle(form.getSubcategoryTitle());
+        product.setItemOrder(form.getItemOrder());
         product.setUpdatedOn(LocalDateTime.now());
 
-        Product saved = productRepository.save(product);
-
-        log.info("Product {} updated successfully.", id);
-        return saved;
+        return productRepository.save(product);
     }
 
     public void delete(UUID id) {
-        log.info("Hard deleting product {}", id);
         productRepository.deleteById(id);
     }
-
-    public ProductForm toForm(Product product) {
-        return ProductForm.builder()
-                .id(product.getId().toString())
-                .name(product.getName())
-                .price(product.getPrice())
-                .category(product.getCategory())
-                .build();
-    }
 }
-

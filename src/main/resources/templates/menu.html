@@ -1,288 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Menu — Magelan</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Magelan — pirate-themed restaurant menu." />
+    <meta name="theme-color" content="#000000" />
 
+    <title>Magelan — Menu</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/styles.css}" href="/styles.css">
-    <link rel="stylesheet" th:href="@{/menu.css}" href="/menu.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/menu.css}" href="/menu.css" />
 </head>
 
-<body class="app-page menu-page">
-<div class="bg" aria-hidden="true"></div>
+<body>
+<a class="skip-link" href="#menu">Skip to menu</a>
 
-<header class="top-logo">
-    <a th:href="@{/home}" class="top-logo__link" href="/home" aria-label="Back to Home">
-        <img src="/magelan-index.jpg" alt="Magelan Logo" class="top-logo__img">
-    </a>
-    <div class="top-logo__subtitle">Menu</div>
+<div class="lang-switcher" aria-label="Language switcher">
+    <button type="button" data-lang-switch="bg">БГ</button>
+    <button type="button" data-lang-switch="en">EN</button>
+</div>
+
+<header class="hero">
+    <div class="hero__inner">
+        <div class="brand">
+            <a th:href="@{/home}">
+                <img class="brand__logo" src="/magelan-index.jpg" alt="Magelan logo">
+            </a>
+            <p class="brand__sub">Restaurant Menu</p>
+        </div>
+    </div>
 </header>
 
-<main class="wrap">
-    <section class="panel">
+<main id="menu" class="container">
 
-        <div class="menu-head">
-            <h1 class="title">Captain’s Menu</h1>
+    <section class="section" th:each="section : ${menuSections}">
+        <details class="accordion">
+            <summary class="accordion__summary">
+                <h2 class="section__title" th:utext="${section.title}">Section title</h2>
+            </summary>
 
-            <div class="menu-tools">
-                <div class="search">
-                    <input id="menuSearch" class="search__input" type="search"
-                           placeholder="Search treasure… (e.g. rum, steak)">
-                    <span class="search__icon" aria-hidden="true">⌕</span>
+            <div class="accordion__content">
+                <div class="menu-list">
+
+                    <!-- Products without subcategory -->
+                    <div th:each="product : ${section.directProducts}">
+                        <form th:action="@{/orders/add-item}" method="post" class="menu-item-form">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+
+                            <button type="submit" class="menu-item-btn" th:attr="aria-label='Add ' + ${product.name}">
+                                <div class="menu-row">
+                                    <span class="item-name" th:utext="${product.name}">Item name</span>
+                                    <span class="item-dots"></span>
+                                    <span class="item-price"
+                                          th:text="${#numbers.formatDecimal(product.price,1,'POINT',2,'POINT')} + ' €'">
+                                        0.00 €
+                                    </span>
+                                </div>
+
+                                <p class="item-desc"
+                                   th:if="${product.description != null and !#strings.isEmpty(product.description)}"
+                                   th:utext="${product.description}">
+                                    Description
+                                </p>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Products inside subcategories -->
+                    <div th:each="sub : ${section.subcategories}">
+                        <h3 class="subcat"
+                            th:if="${sub.title != null and !#strings.isEmpty(sub.title)}"
+                            th:utext="${sub.title}">
+                            Subcategory
+                        </h3>
+
+                        <div th:each="product : ${sub.products}">
+                            <form th:action="@{/orders/add-item}" method="post" class="menu-item-form">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                <input type="hidden" name="productId" th:value="${product.id}">
+
+                                <button type="submit" class="menu-item-btn" th:attr="aria-label='Add ' + ${product.name}">
+                                    <div class="menu-row">
+                                        <span class="item-name" th:utext="${product.name}">Item name</span>
+                                        <span class="item-dots"></span>
+                                        <span class="item-price"
+                                              th:text="${#numbers.formatDecimal(product.price,1,'POINT',2,'POINT')} + ' €'">
+                                            0.00 €
+                                        </span>
+                                    </div>
+
+                                    <p class="item-desc"
+                                       th:if="${product.description != null and !#strings.isEmpty(product.description)}"
+                                       th:utext="${product.description}">
+                                        Description
+                                    </p>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-        </div>
-
-        <div th:if="${menuMessage}" class="menu-alert" th:text="${menuMessage}">
-            Item updated.
-        </div>
-
-        <!-- ADD NEW (compact single row) -->
-        <form class="add-row"
-              th:action="@{/menu/products}"
-              th:object="${productForm}"
-              method="post">
-
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-            <input class="add-input add-name"
-                   th:field="*{name}"
-                   type="text"
-                   placeholder="New item name…"
-                   required>
-
-            <input class="add-input add-price"
-                   th:field="*{price}"
-                   type="number"
-                   step="0.01"
-                   min="0"
-                   placeholder="0.00"
-                   required>
-
-            <select class="add-input add-cat" th:field="*{category}" required>
-                <option value="" disabled selected>Category</option>
-                <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"></option>
-            </select>
-
-            <button class="icon-btn icon-btn--ok" type="submit" title="Add">＋</button>
-        </form>
-
-        <!-- category chips -->
-        <div class="chips" aria-label="Categories">
-            <a class="chip" href="#STARTER">Starters / Предястия</a>
-            <a class="chip" href="#MAIN">Mains / Основни ястия</a>
-            <a class="chip" href="#DESSERT">Desserts / Десерти</a>
-            <a class="chip" href="#DRINK">Drinks / Напитки</a>
-        </div>
-
-        <!-- ================= STARTER ================= -->
-        <section class="category" id="STARTER">
-            <div class="category__bar">
-                <h2 class="category__title">Starters</h2>
-                <span class="category__hint">Предястия</span>
-            </div>
-
-            <div class="rows">
-                <div class="row" th:each="p : ${starters}">
-                    <form class="row-form"
-                          th:action="@{/menu/products/{id}/edit(id=${p.id})}"
-                          method="post">
-
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" name="category" value="STARTER">
-
-                        <div class="c-name">
-                            <span class="text" th:text="${p.name}">Bruschetta</span>
-                            <input class="edit-input" name="name" th:value="${p.name}" required>
-                        </div>
-
-                        <div class="c-price">
-              <span class="text"
-                    th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'POINT')} + ' €'">9.90 €</span>
-                            <input class="edit-input edit-price" name="price" type="number" step="0.01" min="0"
-                                   th:value="${p.price}" required>
-                        </div>
-
-                        <div class="c-actions">
-                            <button class="icon-btn" type="button" data-edit title="Edit">✎</button>
-                            <button class="icon-btn icon-btn--ok" type="submit" data-save title="Save">✓</button>
-                        </div>
-                    </form>
-
-                    <form class="inline"
-                          th:action="@{/menu/products/{id}/delete(id=${p.id})}"
-                          method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button class="icon-btn icon-btn--danger" type="submit" title="Delete">🗑</button>
-                    </form>
-                </div>
-
-                <div class="empty" th:if="${#lists.isEmpty(starters)}">
-                    No starters yet.
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= MAIN ================= -->
-        <section class="category" id="MAIN">
-            <div class="category__bar">
-                <h2 class="category__title">Mains</h2>
-                <span class="category__hint">Основни ястия</span>
-            </div>
-
-            <div class="rows">
-                <div class="row" th:each="p : ${mains}">
-                    <form class="row-form"
-                          th:action="@{/menu/products/{id}/edit(id=${p.id})}"
-                          method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" name="category" value="MAIN">
-
-                        <div class="c-name">
-                            <span class="text" th:text="${p.name}">Steak</span>
-                            <input class="edit-input" name="name" th:value="${p.name}" required>
-                        </div>
-
-                        <div class="c-price">
-              <span class="text"
-                    th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'POINT')} + ' €'">15.90 €</span>
-                            <input class="edit-input edit-price" name="price" type="number" step="0.01" min="0"
-                                   th:value="${p.price}" required>
-                        </div>
-
-                        <div class="c-actions">
-                            <button class="icon-btn" type="button" data-edit title="Edit">✎</button>
-                            <button class="icon-btn icon-btn--ok" type="submit" data-save title="Save">✓</button>
-                        </div>
-                    </form>
-
-                    <form class="inline" th:action="@{/menu/products/{id}/delete(id=${p.id})}" method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button class="icon-btn icon-btn--danger" type="submit" title="Delete">🗑</button>
-                    </form>
-                </div>
-
-                <div class="empty" th:if="${#lists.isEmpty(mains)}">No mains yet.</div>
-            </div>
-        </section>
-
-        <!-- ================= DESSERT ================= -->
-        <section class="category" id="DESSERT">
-            <div class="category__bar">
-                <h2 class="category__title">Desserts</h2>
-                <span class="category__hint">Десерти</span>
-            </div>
-
-            <div class="rows">
-                <div class="row" th:each="p : ${desserts}">
-                    <form class="row-form"
-                          th:action="@{/menu/products/{id}/edit(id=${p.id})}"
-                          method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" name="category" value="DESSERT">
-
-                        <div class="c-name">
-                            <span class="text" th:text="${p.name}">Cake</span>
-                            <input class="edit-input" name="name" th:value="${p.name}" required>
-                        </div>
-
-                        <div class="c-price">
-              <span class="text"
-                    th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'POINT')} + ' €'">7.90 €</span>
-                            <input class="edit-input edit-price" name="price" type="number" step="0.01" min="0"
-                                   th:value="${p.price}" required>
-                        </div>
-
-                        <div class="c-actions">
-                            <button class="icon-btn" type="button" data-edit title="Edit">✎</button>
-                            <button class="icon-btn icon-btn--ok" type="submit" data-save title="Save">✓</button>
-                        </div>
-                    </form>
-
-                    <form class="inline" th:action="@{/menu/products/{id}/delete(id=${p.id})}" method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button class="icon-btn icon-btn--danger" type="submit" title="Delete">🗑</button>
-                    </form>
-                </div>
-
-                <div class="empty" th:if="${#lists.isEmpty(desserts)}">No desserts yet.</div>
-            </div>
-        </section>
-
-        <!-- ================= DRINK ================= -->
-        <section class="category" id="DRINK">
-            <div class="category__bar">
-                <h2 class="category__title">Drinks</h2>
-                <span class="category__hint">Напитки</span>
-            </div>
-
-            <div class="rows">
-                <div class="row" th:each="p : ${drinks}">
-                    <form class="row-form"
-                          th:action="@{/menu/products/{id}/edit(id=${p.id})}"
-                          method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <input type="hidden" name="category" value="DRINK">
-
-                        <div class="c-name">
-                            <span class="text" th:text="${p.name}">Rum</span>
-                            <input class="edit-input" name="name" th:value="${p.name}" required>
-                        </div>
-
-                        <div class="c-price">
-              <span class="text"
-                    th:text="${#numbers.formatDecimal(p.price, 1, 'POINT', 2, 'POINT')} + ' €'">6.50 €</span>
-                            <input class="edit-input edit-price" name="price" type="number" step="0.01" min="0"
-                                   th:value="${p.price}" required>
-                        </div>
-
-                        <div class="c-actions">
-                            <button class="icon-btn" type="button" data-edit title="Edit">✎</button>
-                            <button class="icon-btn icon-btn--ok" type="submit" data-save title="Save">✓</button>
-                        </div>
-                    </form>
-
-                    <form class="inline" th:action="@{/menu/products/{id}/delete(id=${p.id})}" method="post">
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                        <button class="icon-btn icon-btn--danger" type="submit" title="Delete">🗑</button>
-                    </form>
-                </div>
-
-                <div class="empty" th:if="${#lists.isEmpty(drinks)}">No drinks yet.</div>
-            </div>
-        </section>
-
+        </details>
     </section>
+
+    <footer class="footer">
+        <div class="footer__box">
+            <p class="footer__text">
+                <span class="footer-msg">
+                    За информация за алергени и други въпроси, моля обърнете се към нашия екип. / For allergens &amp; special requests, please ask our crew.
+                </span>
+                <span class="footer__muted">•</span>
+                <span class="footer__copy">© <span id="year"></span> Magelan</span>
+            </p>
+        </div>
+    </footer>
+
 </main>
 
-<footer class="footer-rope">
-    <div class="rope"></div>
-    <p class="footer-text">⚓ Magelan • Captain’s Menu</p>
-</footer>
-
 <script>
-    // toggle edit mode per row
-    document.addEventListener('click', (e) => {
-        const editBtn = e.target.closest('[data-edit]');
-        if (!editBtn) return;
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-        const row = editBtn.closest('.row');
-        if (!row) return;
+    const DEFAULT_LANG = 'bg';
+    const TRANS_SELECTORS = '.section__title, .item-name, .subcat, .item-desc, .footer-msg, .brand__sub';
 
-        row.classList.toggle('is-editing');
-    });
+    function prepareTranslations() {
+        document.querySelectorAll(TRANS_SELECTORS).forEach(el => {
+            if (el.dataset.bg && el.dataset.en) return;
 
-    // search filter
-    const input = document.getElementById('menuSearch');
-    input?.addEventListener('input', (e) => {
-        const q = e.target.value.toLowerCase().trim();
-        document.querySelectorAll('.row').forEach(row => {
-            const name = row.querySelector('.c-name .text')?.textContent?.toLowerCase() || '';
-            row.style.display = name.includes(q) ? '' : 'none';
+            const html = el.innerHTML;
+            if (!html.includes(' / ')) return;
+
+            const parts = html.split(' / ');
+            if (parts.length < 2) return;
+
+            const bgPart = parts[0].trim();
+            const enPart = parts.slice(1).join(' / ').trim();
+
+            el.dataset.bg = bgPart;
+            el.dataset.en = enPart;
         });
-    });
+    }
+
+    function setLanguage(lang) {
+        document.documentElement.setAttribute('lang', lang);
+        localStorage.setItem('lang', lang);
+
+        document.querySelectorAll(TRANS_SELECTORS).forEach(el => {
+            const bg = el.dataset.bg;
+            const en = el.dataset.en;
+            if (!bg || !en) return;
+            el.innerHTML = (lang === 'bg' ? bg : en);
+        });
+
+        document.querySelectorAll('[data-lang-switch]').forEach(btn => {
+            btn.classList.toggle('is-active', btn.dataset.langSwitch === lang);
+        });
+    }
+
+    function initLangSwitcher() {
+        prepareTranslations();
+
+        document.querySelectorAll('[data-lang-switch]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.dataset.langSwitch;
+                setLanguage(lang);
+            });
+        });
+
+        const savedLang = localStorage.getItem('lang') || DEFAULT_LANG;
+        setLanguage(savedLang);
+    }
+
+    document.addEventListener('DOMContentLoaded', initLangSwitcher);
 </script>
 
 </body>

@@ -1,40 +1,49 @@
 package magelan.orders.web;
 
+import lombok.RequiredArgsConstructor;
 import magelan.orders.order.model.Order;
-import magelan.orders.order.model.OrderStatus;
-import magelan.orders.order.repository.OrderRepository;
+import magelan.orders.order.service.OrderService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.UUID;
 
 @Controller
+@RequestMapping("/orders")
+@RequiredArgsConstructor
 public class OrderController {
-    private final OrderRepository orderRepository;
-    public OrderController(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+
+    private final OrderService orderService;
+
+    @PostMapping("/add-item")
+    public String addItem(@RequestParam UUID productId) {
+        orderService.addProductToPendingOrder(productId);
+        return "redirect:/orders/pending";
     }
 
-    @GetMapping("/orders")
-    public String orders(Model model) {
-        List<Order> orders = orderRepository.findAll();
-        model.addAttribute("orders", orders);
-        return "orders";
+    @GetMapping("/pending")
+    public String pendingOrders(Model model) {
+        Order pendingOrder = orderService.getPendingOrder();
+        model.addAttribute("pendingOrder", pendingOrder);
+        return "orders-pending";
     }
 
-    @GetMapping("/orders/new")
-    public String createTestOrder() {
-        orderRepository.save(Order.builder()
-                .tableName("1")
-                .orderStatus(OrderStatus.PENDING)
-                .amount(BigDecimal.TEN)
-                .createdOn(LocalDateTime.now())
-                .items(List.of())
-                .build()
-        );
-        return "redirect:/orders";
+    @PostMapping("/items/{id}/remove")
+    public String removeItem(@PathVariable UUID id) {
+        orderService.removeItem(id);
+        return "redirect:/orders/pending";
+    }
+
+    @PostMapping("/complete")
+    public String completeOrder() {
+        orderService.completePendingOrder();
+        return "redirect:/orders/completed";
+    }
+
+    @GetMapping("/completed")
+    public String completedOrders(Model model) {
+        model.addAttribute("completedOrders", orderService.getCompletedOrders());
+        return "orders-completed";
     }
 }

@@ -13,10 +13,16 @@ import java.math.BigDecimal;
 public class ProductForm {
 
     private String id;
-
     private String name;
-
+    private String description;
     private BigDecimal price;
-
     private ProductCategory category;
+
+    private Integer sectionOrder;
+    private String sectionTitle;
+
+    private Integer subcategoryOrder;
+    private String subcategoryTitle;
+
+    private Integer itemOrder;
 }

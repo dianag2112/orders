@@ -1,93 +1,80 @@
 package magelan.orders.web;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import magelan.orders.product.model.Product;
-import magelan.orders.product.model.ProductCategory;
 import magelan.orders.product.service.ProductService;
-import magelan.orders.web.dto.ProductForm;
+import magelan.orders.web.dto.MenuSectionView;
+import magelan.orders.web.dto.MenuSubcategoryView;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
-@RequestMapping("/menu")
 @RequiredArgsConstructor
 public class MenuController {
 
     private final ProductService productService;
 
-    @GetMapping
+    @GetMapping("/menu")
     public String getMenu(Model model) {
-        if (!model.containsAttribute("productForm")) {
-            model.addAttribute("productForm", new ProductForm());
-        }
+        List<Product> allProducts = productService.getAll().stream()
+                .sorted(
+                        Comparator.comparing(Product::getSectionOrder)
+                                .thenComparing(p -> p.getSubcategoryOrder() == null ? -1 : p.getSubcategoryOrder())
+                                .thenComparing(Product::getItemOrder)
+                )
+                .toList();
 
-        model.addAttribute("categories", ProductCategory.values());
-        loadCategories(model);
-
+        model.addAttribute("menuSections", buildSections(allProducts));
         return "menu";
     }
 
-    @PostMapping("/products")
-    public String addProduct(@Valid @ModelAttribute("productForm") ProductForm productForm,
-                             BindingResult bindingResult,
-                             RedirectAttributes redirectAttributes,
-                             Model model) {
+    private List<MenuSectionView> buildSections(List<Product> products) {
+        LinkedHashMap<String, List<Product>> groupedBySection = new LinkedHashMap<>();
 
-        if (bindingResult.hasErrors()) {
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.productForm", bindingResult);
-            redirectAttributes.addFlashAttribute("productForm", productForm);
-            return "redirect:/menu";
+        for (Product product : products) {
+            groupedBySection
+                    .computeIfAbsent(product.getSectionTitle(), key -> new ArrayList<>())
+                    .add(product);
         }
 
-        productService.create(productForm);
-        redirectAttributes.addFlashAttribute("menuMessage", "Item added.");
-        return "redirect:/menu#" + productForm.getCategory().name();
-    }
+        List<MenuSectionView> result = new ArrayList<>();
 
-    @PostMapping("/products/{id}/edit")
-    public String editProduct(@PathVariable UUID id,
-                              @RequestParam String name,
-                              @RequestParam BigDecimal price,
-                              @RequestParam ProductCategory category,
-                              RedirectAttributes redirectAttributes) {
+        for (Map.Entry<String, List<Product>> sectionEntry : groupedBySection.entrySet()) {
+            List<Product> sectionProducts = sectionEntry.getValue();
 
-        Product product = productService.getById(id);
+            List<Product> directProducts = sectionProducts.stream()
+                    .filter(p -> p.getSubcategoryTitle() == null || p.getSubcategoryTitle().isBlank())
+                    .sorted(Comparator.comparing(Product::getItemOrder))
+                    .toList();
 
-        ProductForm form = productService.toForm(product);
-        form.setName(name);
-        form.setPrice(price);
-        form.setCategory(category);
+            LinkedHashMap<String, List<Product>> groupedBySubcategory = new LinkedHashMap<>();
 
-        productService.update(id, form);
+            sectionProducts.stream()
+                    .filter(p -> p.getSubcategoryTitle() != null && !p.getSubcategoryTitle().isBlank())
+                    .sorted(
+                            Comparator.comparing((Product p) -> p.getSubcategoryOrder() == null ? Integer.MAX_VALUE : p.getSubcategoryOrder())
+                                    .thenComparing(Product::getItemOrder)
+                    )
+                    .forEach(product ->
+                            groupedBySubcategory
+                                    .computeIfAbsent(product.getSubcategoryTitle(), key -> new ArrayList<>())
+                                    .add(product)
+                    );
 
-        redirectAttributes.addFlashAttribute("menuMessage", "Item updated.");
-        return "redirect:/menu#" + category.name();
-    }
+            List<MenuSubcategoryView> subcategories = groupedBySubcategory.entrySet().stream()
+                    .map(entry -> new MenuSubcategoryView(entry.getKey(), entry.getValue()))
+                    .toList();
 
-    @PostMapping("/products/{id}/delete")
-    public String deleteProduct(@PathVariable UUID id,
-                                RedirectAttributes redirectAttributes) {
+            result.add(new MenuSectionView(sectionEntry.getKey(), directProducts, subcategories));
+        }
 
-        Product p = productService.getById(id);
-        ProductCategory category = p.getCategory();
-
-        productService.delete(id);
-
-        redirectAttributes.addFlashAttribute("menuMessage", "Item deleted.");
-        return "redirect:/menu#" + category.name();
-    }
-
-    private void loadCategories(Model model) {
-        model.addAttribute("starters", productService.getByCategory(ProductCategory.STARTER));
-        model.addAttribute("mains", productService.getByCategory(ProductCategory.MAIN));
-        model.addAttribute("desserts", productService.getByCategory(ProductCategory.DESSERT));
-        model.addAttribute("drinks", productService.getByCategory(ProductCategory.DRINK));
+        return result;
     }
 }
