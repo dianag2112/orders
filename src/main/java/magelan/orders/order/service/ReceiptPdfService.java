@@ -32,10 +32,10 @@ public class ReceiptPdfService {
     // Standard thermal receipt width: 80 mm
     private static final float PAGE_WIDTH = 80f * MM_TO_POINTS;
 
-    private static final float LEFT_MARGIN = 8f;
-    private static final float RIGHT_MARGIN = 8f;
-    private static final float TOP_MARGIN = 8f;
-    private static final float BOTTOM_MARGIN = 8f;
+    private static final float LEFT_MARGIN = 6f;
+    private static final float RIGHT_MARGIN = 6f;
+    private static final float TOP_MARGIN = 6f;
+    private static final float BOTTOM_MARGIN = 6f;
 
     private static final float CONTENT_WIDTH =
             PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN;
@@ -118,7 +118,7 @@ public class ReceiptPdfService {
         addText(
                 commands,
                 "MAGELAN",
-                17f,
+                20f,
                 Alignment.CENTER
         );
 
@@ -129,7 +129,7 @@ public class ReceiptPdfService {
                 commands,
                 translate(language, "Поръчка: ", "Order: ")
                         + plainText(order.getOrderName()),
-                10.5f,
+                12f,
                 Alignment.LEFT,
                 font
         );
@@ -138,13 +138,12 @@ public class ReceiptPdfService {
                 commands,
                 translate(language, "Създадена: ", "Created: ")
                         + DATE_FORMATTER.format(order.getCreatedOn()),
-                9.5f,
+                10.5f,
                 Alignment.LEFT,
                 font
         );
 
         addSeparator(commands);
-        addSpacer(commands, 1f);
 
         for (OrderItem item : order.getItems()) {
 
@@ -156,7 +155,7 @@ public class ReceiptPdfService {
             addWrappedText(
                     commands,
                     item.getQuantity() + " x " + productName,
-                    11f,
+                    13f,
                     Alignment.LEFT,
                     font
             );
@@ -167,29 +166,28 @@ public class ReceiptPdfService {
                             + " x "
                             + formatMoney(item.getUnitPrice()),
                     formatMoney(item.getTotalPrice()),
-                    10f
+                    11.5f
             );
 
-            addSpacer(commands, 2f);
+            addSpacer(commands, 1.5f);
         }
 
         addSeparator(commands);
-        addSpacer(commands, 1f);
 
         addRow(
                 commands,
                 translate(language, "ОБЩО", "TOTAL"),
                 formatMoney(order.getAmount()),
-                14f
+                17f
         );
 
         addSeparator(commands);
-        addSpacer(commands, 2f);
+        addSpacer(commands, 1f);
 
         addText(
                 commands,
                 translate(language, "Благодарим Ви!", "Thank you!"),
-                11f,
+                13.5f,
                 Alignment.CENTER
         );
 
@@ -417,7 +415,7 @@ public class ReceiptPdfService {
                         null,
                         null,
                         0f,
-                        6f,
+                        5f,
                         Alignment.LEFT
                 )
         );
