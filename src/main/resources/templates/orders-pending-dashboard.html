@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Магелан — Текущи поръчки</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          th:href="@{/styles.css}"
+          href="/styles.css">
+
+    <link rel="stylesheet"
+          th:href="@{/orders-dashboard.css}"
+          href="/orders-dashboard.css">
+
+    <meta name="_csrf"
+          th:content="${_csrf.token}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <!-- Styles needed only for the language switch and confirmation window -->
+    <style>
+        .orders-language-switcher {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 2000;
+
+            display: flex;
+            gap: 8px;
+        }
+
+        .orders-language-switcher button {
+            min-width: 48px;
+            padding: 7px 13px;
+
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            border-radius: 999px;
+
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+
+            transition:
+                    background 0.15s ease,
+                    color 0.15s ease,
+                    transform 0.15s ease;
+        }
+
+        .orders-language-switcher button:hover {
+            transform: translateY(-1px);
+        }
+
+        .orders-language-switcher button.is-active {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        body.cancel-modal-open {
+            overflow: hidden;
+        }
+
+        .cancel-modal-backdrop[hidden] {
+            display: none;
+        }
+
+        .cancel-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(6px);
+        }
+
+        .cancel-modal {
+            width: 100%;
+            max-width: 470px;
+
+            overflow: hidden;
+
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+
+            background: #111111;
+            color: rgba(255, 255, 255, 0.92);
+
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8);
+        }
+
+        .cancel-modal__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+
+            padding: 20px;
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cancel-modal__eyebrow {
+            margin: 0 0 6px;
+
+            color: #ff4d4d;
+
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .cancel-modal__header h2 {
+            margin: 0;
+
+            font-family: "Pirata One", serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .cancel-modal__close {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0 0 3px;
+
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.04);
+            color: #ffffff;
+
+            font-size: 1.55rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .cancel-modal__close:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ff8080;
+        }
+
+        .cancel-modal__body {
+            padding: 20px;
+        }
+
+        .cancel-modal__message {
+            margin: 0 0 14px;
+
+            color: rgba(255, 255, 255, 0.82);
+
+            font-size: 1rem;
+            line-height: 1.55;
+        }
+
+        .cancel-modal__order {
+            margin: 0;
+            padding: 12px 14px;
+
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .cancel-modal__order-label {
+            display: block;
+            margin-bottom: 5px;
+
+            color: rgba(255, 255, 255, 0.58);
+
+            font-size: 0.8rem;
+        }
+
+        .cancel-modal__order-name {
+            display: block;
+
+            overflow-wrap: anywhere;
+
+            color: #ffffff;
+
+            font-family: "Pirata One", serif;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        .cancel-modal__warning {
+            margin: 14px 0 0;
+
+            color: #ff9a9a;
+
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+
+        .cancel-modal__actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+
+            padding: 16px 20px;
+
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cancel-modal__button {
+            min-height: 44px;
+            padding: 0 17px;
+
+            border-radius: 12px;
+
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .cancel-modal__button--keep {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            background: rgba(255, 255, 255, 0.04);
+            color: #ffffff;
+        }
+
+        .cancel-modal__button--keep:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .cancel-modal__button--cancel {
+            border: 1px solid rgba(255, 77, 77, 0.5);
+
+            background: rgba(255, 77, 77, 0.14);
+            color: #ffb0b0;
+        }
+
+        .cancel-modal__button--cancel:hover {
+            background: rgba(255, 77, 77, 0.24);
+        }
+
+        .cancel-modal__button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        @media (max-width: 760px) {
+            .orders-language-switcher {
+                position: static;
+
+                justify-content: flex-end;
+
+                padding: 14px 14px 0;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .cancel-modal-backdrop {
+                align-items: flex-end;
+
+                padding: 10px 10px 0;
+            }
+
+            .cancel-modal {
+                border-radius: 18px 18px 0 0;
+            }
+
+            .cancel-modal__actions {
+                flex-direction: column-reverse;
+            }
+
+            .cancel-modal__button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body class="orders-page">
+
+<div class="bg" aria-hidden="true"></div>
+
+<!-- Language switch -->
+<div class="orders-language-switcher"
+     aria-label="Language switcher">
+
+    <button type="button"
+            data-lang-switch="bg">
+        БГ
+    </button>
+
+    <button type="button"
+            data-lang-switch="en">
+        EN
+    </button>
+</div>
+
+<main class="orders-wrap">
+
+    <header class="orders-header">
+
+        <div class="orders-header__branding">
+
+            <p class="eyebrow"
+               data-bilingual>
+                Конзола за поръчки / Pirate Orders Console
+            </p>
+
+            <h1 class="orders-title"
+                data-bilingual>
+                Текущи поръчки / Pending Orders
+            </h1>
+
+            <p class="orders-subtitle"
+               data-bilingual>
+                Управлявайте всички активни поръчки от едно място. Добавяйте, премахвайте и променяйте количествата директно от таблото. / Manage all active orders from one place. Add, remove, and adjust item quantities directly from the dashboard.
+            </p>
+        </div>
+
+        <div class="orders-header__actions">
+
+            <a class="btn btn--ghost"
+               th:href="@{/home}"
+               data-bilingual>
+                Начало / Home
+            </a>
+
+            <a class="btn btn--ghost"
+               th:href="@{/menu}"
+               data-bilingual>
+                Меню / Menu
+            </a>
+
+            <a class="btn btn--ghost"
+               th:href="@{/orders/completed}"
+               data-bilingual>
+                Завършени поръчки / Completed Orders
+            </a>
+        </div>
+    </header>
+
+    <!-- Create new order -->
+    <section class="create-panel">
+
+        <div class="create-panel__text">
+
+            <h2 data-bilingual>
+                Създаване на нова поръчка / Create New Order
+            </h2>
+
+            <p data-bilingual>
+                Създайте нова поръчка и продължете да добавяте артикули от менюто. / Start a new order and continue adding items from the menu.
+            </p>
+        </div>
+
+        <form class="create-order-form"
+              th:action="@{/orders/new}"
+              method="post">
+
+            <input type="text"
+                   name="orderName"
+                   placeholder="Име на поръчката или номер на маса"
+                   data-placeholder-bg="Име на поръчката или номер на маса"
+                   data-placeholder-en="Enter order name or table number"
+                   required>
+
+            <button type="submit"
+                    class="btn btn--primary"
+                    data-bilingual>
+                Създай поръчка / Create Order
+            </button>
+        </form>
+    </section>
+
+    <!-- Pending orders -->
+    <section class="orders-section">
+
+        <div class="section-heading">
+
+            <div>
+                <h2 data-bilingual>
+                    Активни поръчки / Active Orders
+                </h2>
+
+                <p id="openOrdersCount"
+                   th:attr="data-count=${pendingOrders == null
+                       ? 0
+                       : #lists.size(pendingOrders)}">
+                    0 отворени поръчки
+                </p>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state"
+             th:if="${#lists.isEmpty(pendingOrders)}">
+
+            <div class="empty-state__icon">
+                ⚓
+            </div>
+
+            <h3 data-bilingual>
+                Няма текущи поръчки / No pending orders
+            </h3>
+
+            <p data-bilingual>
+                Създайте първата поръчка, за да започнете. / Create your first order to begin.
+            </p>
+        </div>
+
+        <!-- Order cards -->
+        <div class="orders-grid"
+             th:if="${!#lists.isEmpty(pendingOrders)}">
+
+            <article class="order-card"
+                     th:each="order : ${pendingOrders}"
+                     th:attr="data-order-id=${order.id}">
+
+                <div class="order-card__header">
+
+                    <div class="order-card__heading">
+
+                        <h3 th:text="${order.orderName}">
+                            Table 7
+                        </h3>
+
+                        <p class="order-card__meta">
+
+                            <span data-bilingual>
+                                Създадена: / Created:
+                            </span>
+
+                            <span th:text="${#temporals.format(
+                                order.createdOn,
+                                'dd.MM.yyyy HH:mm'
+                            )}">
+                                21.03.2026 00:10
+                            </span>
+                        </p>
+                    </div>
+
+                    <span class="status-pill status-pill--pending"
+                          data-bilingual>
+                        Текуща / Pending
+                    </span>
+                </div>
+
+                <div class="order-card__summary">
+
+                    <div class="summary-box">
+
+                        <span class="summary-box__label"
+                              data-bilingual>
+                            Артикули / Items
+                        </span>
+
+                        <strong class="js-order-count"
+                                th:text="${#aggregates.sum(
+                                    order.items.![quantity]
+                                )} ?: 0">
+                            0
+                        </strong>
+                    </div>
+
+                    <div class="summary-box">
+
+                        <span class="summary-box__label"
+                              data-bilingual>
+                            Общо / Total
+                        </span>
+
+                        <strong class="js-order-total"
+                                th:text="${#numbers.formatDecimal(
+                                    order.amount,
+                                    1,
+                                    2
+                                ) + ' €'}">
+                            0.00 €
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="order-card__items">
+
+                    <div class="items-heading">
+
+                        <h4 data-bilingual>
+                            Артикули в поръчката / Order Items
+                        </h4>
+                    </div>
+
+                    <div class="js-items-container">
+
+                        <div class="items-empty"
+                             th:if="${#lists.isEmpty(order.items)}"
+                             data-bilingual>
+                            Все още няма добавени артикули. / No items added yet.
+                        </div>
+
+                        <ul class="items-list"
+                            th:if="${!#lists.isEmpty(order.items)}">
+
+                            <li th:each="item : ${order.items}"
+                                th:attr="data-item-id=${item.id}">
+
+                                <div class="item-row">
+
+                                    <div class="item-left">
+
+                                        <button type="button"
+                                                class="remove-x js-remove"
+                                                th:attr="
+                                                    data-item-id=${item.id},
+                                                    data-aria-bg='Премахни артикула',
+                                                    data-aria-en='Remove item'
+                                                "
+                                                aria-label="Премахни артикула"
+                                                title="Remove item">
+                                            ×
+                                        </button>
+
+                                        <div class="item-info">
+
+                                            <span class="item-name js-product-name"
+                                                  th:attr="data-product-name=${item.product.name}"
+                                                  th:utext="${item.product.name}">
+                                                Chicken soup
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="item-right">
+
+                                        <div class="qty-controls">
+
+                                            <button type="button"
+                                                    class="qty-btn js-decrease"
+                                                    th:attr="
+                                                        data-item-id=${item.id},
+                                                        data-aria-bg='Намали количеството',
+                                                        data-aria-en='Decrease quantity'
+                                                    "
+                                                    aria-label="Намали количеството"
+                                                    title="Decrease quantity">
+                                                −
+                                            </button>
+
+                                            <span class="qty-value"
+                                                  th:text="${item.quantity}">
+                                                1
+                                            </span>
+
+                                            <button type="button"
+                                                    class="qty-btn js-increase"
+                                                    th:attr="
+                                                        data-item-id=${item.id},
+                                                        data-aria-bg='Увеличи количеството',
+                                                        data-aria-en='Increase quantity'
+                                                    "
+                                                    aria-label="Увеличи количеството"
+                                                    title="Increase quantity">
+                                                +
+                                            </button>
+                                        </div>
+
+                                        <span class="item-line-total"
+                                              th:text="${#numbers.formatDecimal(
+                                                  item.totalPrice,
+                                                  1,
+                                                  2
+                                              ) + ' €'}">
+                                            2.60 €
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="order-card__footer">
+
+                    <a class="btn btn--primary"
+                       th:href="@{/menu(orderId=${order.id})}"
+                       data-bilingual>
+                        Добави артикули / Add Items
+                    </a>
+
+                    <form th:action="@{/orders/{orderId}/complete(
+                              orderId=${order.id}
+                          )}"
+                          method="post">
+
+                        <button type="submit"
+                                class="btn btn--success"
+                                data-bilingual>
+                            Завърши / Complete
+                        </button>
+                    </form>
+
+                    <!--
+                        This form is intercepted by JavaScript.
+                        It is submitted only after confirmation.
+                    -->
+                    <form class="js-cancel-order-form"
+                          th:action="@{/orders/{orderId}/cancel(
+                              orderId=${order.id}
+                          )}"
+                          th:attr="data-order-name=${order.orderName}"
+                          method="post">
+
+                        <button type="submit"
+                                class="btn btn--danger"
+                                data-bilingual>
+                            Отмени / Cancel
+                        </button>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+
+<!-- Cancel confirmation window -->
+<div id="cancelModalBackdrop"
+     class="cancel-modal-backdrop"
+     hidden>
+
+    <section class="cancel-modal"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="cancelModalTitle"
+             aria-describedby="cancelModalMessage">
+
+        <header class="cancel-modal__header">
+
+            <div>
+                <p class="cancel-modal__eyebrow"
+                   data-bilingual>
+                    Потвърждение / Confirmation
+                </p>
+
+                <h2 id="cancelModalTitle"
+                    data-bilingual>
+                    Отмяна на поръчката / Cancel Order
+                </h2>
+            </div>
+
+            <button type="button"
+                    class="cancel-modal__close"
+                    data-close-cancel-modal
+                    data-aria-bg="Затвори прозореца"
+                    data-aria-en="Close window"
+                    aria-label="Затвори прозореца">
+                ×
+            </button>
+        </header>
+
+        <div class="cancel-modal__body">
+
+            <p id="cancelModalMessage"
+               class="cancel-modal__message">
+                Сигурни ли сте, че искате да отмените тази поръчка?
+            </p>
+
+            <div class="cancel-modal__order">
+
+                <span class="cancel-modal__order-label"
+                      data-bilingual>
+                    Поръчка / Order
+                </span>
+
+                <strong id="cancelModalOrderName"
+                        class="cancel-modal__order-name">
+                    Order
+                </strong>
+            </div>
+
+            <p class="cancel-modal__warning"
+               data-bilingual>
+                Отменената поръчка ще бъде премахната от списъка с текущи поръчки. / The cancelled order will be removed from the pending orders list.
+            </p>
+        </div>
+
+        <footer class="cancel-modal__actions">
+
+            <button type="button"
+                    class="cancel-modal__button cancel-modal__button--keep"
+                    data-close-cancel-modal
+                    data-bilingual>
+                Запази поръчката / Keep Order
+            </button>
+
+            <button type="button"
+                    id="confirmCancelOrderButton"
+                    class="cancel-modal__button cancel-modal__button--cancel"
+                    data-bilingual>
+                Да, отмени / Yes, Cancel
+            </button>
+        </footer>
+    </section>
+</div>
+
+<script>
+    const DEFAULT_LANGUAGE = "bg";
+
+    let currentLanguage = DEFAULT_LANGUAGE;
+    let cancelFormToSubmit = null;
+
+    const csrfToken =
+        document.querySelector(
+            'meta[name="_csrf"]'
+        )?.content;
+
+    const csrfHeader =
+        document.querySelector(
+            'meta[name="_csrf_header"]'
+        )?.content;
+
+    const cancelModalBackdrop =
+        document.getElementById(
+            "cancelModalBackdrop"
+        );
+
+    const confirmCancelOrderButton =
+        document.getElementById(
+            "confirmCancelOrderButton"
+        );
+
+
+    /*
+     * Language helpers
+     */
+
+    function splitBilingualHtml(value) {
+        const html = String(value ?? "").trim();
+
+        /*
+         * Only a slash with spaces around it is considered
+         * the separator between Bulgarian and English.
+         *
+         * This protects names such as:
+         * Суджук/луканка / Sudzhuk...
+         */
+        const parts = html.split(/\s+\/\s+/);
+
+        if (parts.length < 2) {
+            return null;
+        }
+
+        return {
+            bg: parts[0].trim(),
+            en: parts.slice(1).join(" / ").trim()
+        };
+    }
+
+
+    function htmlToPlainText(value) {
+        const element =
+            document.createElement("div");
+
+        element.innerHTML = value ?? "";
+
+        return element.textContent ?? "";
+    }
+
+
+    function translated(bgText, enText) {
+        return currentLanguage === "bg"
+            ? bgText
+            : enText;
+    }
+
+
+    function bilingualHtml(
+        value,
+        language = currentLanguage
+    ) {
+        const parts =
+            splitBilingualHtml(value);
+
+        if (!parts) {
+            return String(value ?? "");
+        }
+
+        return language === "bg"
+            ? parts.bg
+            : parts.en;
+    }
+
+
+    function bilingualPlainText(
+        value,
+        language = currentLanguage
+    ) {
+        return htmlToPlainText(
+            bilingualHtml(value, language)
+        ).trim();
+    }
+
+
+    function prepareBilingualElement(element) {
+        if (
+            element.dataset.bg !== undefined &&
+            element.dataset.en !== undefined
+        ) {
+            return;
+        }
+
+        const parts =
+            splitBilingualHtml(
+                element.innerHTML
+            );
+
+        if (!parts) {
+            return;
+        }
+
+        element.dataset.bg = parts.bg;
+        element.dataset.en = parts.en;
+    }
+
+
+    function applyLanguageToElement(element) {
+        prepareBilingualElement(element);
+
+        if (
+            element.dataset.bg === undefined ||
+            element.dataset.en === undefined
+        ) {
+            return;
+        }
+
+        element.innerHTML =
+            currentLanguage === "bg"
+                ? element.dataset.bg
+                : element.dataset.en;
+    }
+
+
+    function updateInputPlaceholders() {
+        document
+            .querySelectorAll(
+                "[data-placeholder-bg][data-placeholder-en]"
+            )
+            .forEach(input => {
+
+                input.placeholder =
+                    currentLanguage === "bg"
+                        ? input.dataset.placeholderBg
+                        : input.dataset.placeholderEn;
+            });
+    }
+
+
+    function updateAriaLabels() {
+        document
+            .querySelectorAll(
+                "[data-aria-bg][data-aria-en]"
+            )
+            .forEach(element => {
+
+                const label =
+                    currentLanguage === "bg"
+                        ? element.dataset.ariaBg
+                        : element.dataset.ariaEn;
+
+                element.setAttribute(
+                    "aria-label",
+                    label
+                );
+
+                element.setAttribute(
+                    "title",
+                    label
+                );
+            });
+    }
+
+
+    function updateProductNames() {
+        document
+            .querySelectorAll(
+                ".js-product-name"
+            )
+            .forEach(element => {
+
+                element.textContent =
+                    bilingualPlainText(
+                        element.dataset.productName,
+                        currentLanguage
+                    );
+            });
+    }
+
+
+    function formatOpenOrderCount(count) {
+        const number = Number(count) || 0;
+
+        if (currentLanguage === "bg") {
+            if (number === 1) {
+                return "1 отворена поръчка";
+            }
+
+            return `${number} отворени поръчки`;
+        }
+
+        if (number === 1) {
+            return "1 order currently open";
+        }
+
+        return `${number} orders currently open`;
+    }
+
+
+    function updateOpenOrderCount() {
+        const element =
+            document.getElementById(
+                "openOrdersCount"
+            );
+
+        if (!element) {
+            return;
+        }
+
+        element.textContent =
+            formatOpenOrderCount(
+                element.dataset.count
+            );
+    }
+
+
+    function updateCancelModalText() {
+        const message =
+            document.getElementById(
+                "cancelModalMessage"
+            );
+
+        if (!message) {
+            return;
+        }
+
+        message.textContent = translated(
+            "Сигурни ли сте, че искате да отмените тази поръчка?",
+            "Are you sure you want to cancel this order?"
+        );
+    }
+
+
+    function setLanguage(language) {
+        currentLanguage =
+            language === "en"
+                ? "en"
+                : "bg";
+
+        document.documentElement.setAttribute(
+            "lang",
+            currentLanguage
+        );
+
+        localStorage.setItem(
+            "lang",
+            currentLanguage
+        );
+
+        document
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                applyLanguageToElement
+            );
+
+        updateInputPlaceholders();
+        updateAriaLabels();
+        updateProductNames();
+        updateOpenOrderCount();
+        updateCancelModalText();
+
+        document.title = translated(
+            "Магелан — Текущи поръчки",
+            "Magelan — Pending Orders"
+        );
+
+        document
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
+            .forEach(button => {
+
+                button.classList.toggle(
+                    "is-active",
+                    button.dataset.langSwitch
+                    === currentLanguage
+                );
+            });
+
+        /*
+         * AJAX-generated order items also need to be
+         * redrawn after changing the language.
+         */
+        document
+            .querySelectorAll(".order-card")
+            .forEach(card => {
+
+                const cachedData =
+                    card._orderData;
+
+                if (cachedData) {
+                    updateOrderCard(
+                        cachedData
+                    );
+                }
+            });
+    }
+
+
+    function initLanguageSwitcher() {
+        document
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                prepareBilingualElement
+            );
+
+        document
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+                        setLanguage(
+                            button.dataset.langSwitch
+                        );
+                    }
+                );
+            });
+
+        setLanguage(
+            localStorage.getItem("lang")
+            || DEFAULT_LANGUAGE
+        );
+    }
+
+
+    /*
+     * AJAX order updates
+     */
+
+    async function postJson(url) {
+        const headers = {
+            "X-Requested-With": "XMLHttpRequest"
+        };
+
+        if (csrfToken && csrfHeader) {
+            headers[csrfHeader] = csrfToken;
+        }
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: headers,
+            credentials: "same-origin"
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                "Request failed with status "
+                + response.status
+            );
+        }
+
+        return await response.json();
+    }
+
+
+    function formatMoney(value) {
+        const number = Number(value);
+
+        if (Number.isNaN(number)) {
+            return `${value} €`;
+        }
+
+        return `${number.toFixed(2)} €`;
+    }
+
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(
+            /[&<>"']/g,
+            character => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                "\"": "&quot;",
+                "'": "&#039;"
+            })[character]
+        );
+    }
+
+
+    function renderItems(items) {
+        if (!items || items.length === 0) {
+            return `
+                <div class="items-empty">
+                    ${translated(
+                "Все още няма добавени артикули.",
+                "No items added yet."
+            )}
+                </div>
+            `;
+        }
+
+        return `
+            <ul class="items-list">
+
+                ${items.map(item => {
+
+            const productName =
+                bilingualPlainText(
+                    item.productName,
+                    currentLanguage
+                );
+
+            const fullProductName =
+                escapeHtml(
+                    item.productName
+                );
+
+            return `
+                        <li data-item-id="${item.itemId}">
+
+                            <div class="item-row">
+
+                                <div class="item-left">
+
+                                    <button type="button"
+                                            class="remove-x js-remove"
+                                            data-item-id="${item.itemId}"
+                                            aria-label="${translated(
+                "Премахни артикула",
+                "Remove item"
+            )}"
+                                            title="${translated(
+                "Премахни артикула",
+                "Remove item"
+            )}">
+                                        ×
+                                    </button>
+
+                                    <div class="item-info">
+
+                                        <span class="item-name js-product-name"
+                                              data-product-name="${fullProductName}">
+                                            ${escapeHtml(productName)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="item-right">
+
+                                    <div class="qty-controls">
+
+                                        <button type="button"
+                                                class="qty-btn js-decrease"
+                                                data-item-id="${item.itemId}"
+                                                aria-label="${translated(
+                "Намали количеството",
+                "Decrease quantity"
+            )}"
+                                                title="${translated(
+                "Намали количеството",
+                "Decrease quantity"
+            )}">
+                                            −
+                                        </button>
+
+                                        <span class="qty-value">
+                                            ${item.quantity}
+                                        </span>
+
+                                        <button type="button"
+                                                class="qty-btn js-increase"
+                                                data-item-id="${item.itemId}"
+                                                aria-label="${translated(
+                "Увеличи количеството",
+                "Increase quantity"
+            )}"
+                                                title="${translated(
+                "Увеличи количеството",
+                "Increase quantity"
+            )}">
+                                            +
+                                        </button>
+                                    </div>
+
+                                    <span class="item-line-total">
+                                        ${formatMoney(item.lineTotal)}
+                                    </span>
+                                </div>
+                            </div>
+                        </li>
+                    `;
+        }).join("")}
+            </ul>
+        `;
+    }
+
+
+    function updateOrderCard(orderData) {
+        const card = document.querySelector(
+            `[data-order-id="${orderData.orderId}"]`
+        );
+
+        if (!card) {
+            return;
+        }
+
+        /*
+         * Cache the latest full response so product names can
+         * be redrawn if the language changes later.
+         */
+        card._orderData = orderData;
+
+        const totalElement =
+            card.querySelector(
+                ".js-order-total"
+            );
+
+        const countElement =
+            card.querySelector(
+                ".js-order-count"
+            );
+
+        const itemsContainer =
+            card.querySelector(
+                ".js-items-container"
+            );
+
+        if (totalElement) {
+            totalElement.textContent =
+                formatMoney(orderData.amount);
+        }
+
+        if (countElement) {
+            countElement.textContent =
+                orderData.totalItems;
+        }
+
+        if (itemsContainer) {
+            itemsContainer.innerHTML =
+                renderItems(orderData.items);
+        }
+    }
+
+
+    async function handleItemAction(
+        button,
+        url
+    ) {
+        button.disabled = true;
+
+        button.classList.add(
+            "is-loading"
+        );
+
+        try {
+            const orderData =
+                await postJson(url);
+
+            updateOrderCard(orderData);
+
+        } catch (error) {
+            console.error(error);
+
+            alert(
+                translated(
+                    "Артикулът не може да бъде обновен. Моля, опитайте отново.",
+                    "The item could not be updated. Please try again."
+                )
+            );
+
+        } finally {
+            button.disabled = false;
+
+            button.classList.remove(
+                "is-loading"
+            );
+        }
+    }
+
+
+    /*
+     * Cancel confirmation window
+     */
+
+    function showCancelModal(form) {
+        cancelFormToSubmit = form;
+
+        const orderName =
+            form.dataset.orderName || "";
+
+        document
+            .getElementById(
+                "cancelModalOrderName"
+            )
+            .textContent = orderName;
+
+        updateCancelModalText();
+
+        cancelModalBackdrop.hidden = false;
+
+        document.body.classList.add(
+            "cancel-modal-open"
+        );
+
+        confirmCancelOrderButton.focus();
+    }
+
+
+    function hideCancelModal() {
+        cancelModalBackdrop.hidden = true;
+
+        document.body.classList.remove(
+            "cancel-modal-open"
+        );
+
+        cancelFormToSubmit = null;
+    }
+
+
+    document.addEventListener(
+        "submit",
+        event => {
+
+            const cancelForm =
+                event.target.closest(
+                    ".js-cancel-order-form"
+                );
+
+            if (!cancelForm) {
+                return;
+            }
+
+            /*
+             * Stop the first submission and ask for
+             * confirmation instead.
+             */
+            event.preventDefault();
+
+            showCancelModal(cancelForm);
+        }
+    );
+
+
+    confirmCancelOrderButton.addEventListener(
+        "click",
+        () => {
+            if (!cancelFormToSubmit) {
+                return;
+            }
+
+            const form =
+                cancelFormToSubmit;
+
+            confirmCancelOrderButton.disabled = true;
+
+            /*
+             * HTMLFormElement.submit() submits directly,
+             * so the submit listener does not open the
+             * confirmation window for a second time.
+             */
+            form.submit();
+        }
+    );
+
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const closeCancelButton =
+                event.target.closest(
+                    "[data-close-cancel-modal]"
+                );
+
+            if (closeCancelButton) {
+                hideCancelModal();
+                return;
+            }
+
+            const increaseButton =
+                event.target.closest(
+                    ".js-increase"
+                );
+
+            const decreaseButton =
+                event.target.closest(
+                    ".js-decrease"
+                );
+
+            const removeButton =
+                event.target.closest(
+                    ".js-remove"
+                );
+
+            if (
+                !increaseButton &&
+                !decreaseButton &&
+                !removeButton
+            ) {
+                return;
+            }
+
+            const button =
+                increaseButton
+                || decreaseButton
+                || removeButton;
+
+            const itemId =
+                button.dataset.itemId;
+
+            if (!itemId) {
+                return;
+            }
+
+            if (increaseButton) {
+                handleItemAction(
+                    button,
+                    `/orders/items/${itemId}/increase`
+                );
+
+                return;
+            }
+
+            if (decreaseButton) {
+                handleItemAction(
+                    button,
+                    `/orders/items/${itemId}/decrease`
+                );
+
+                return;
+            }
+
+            handleItemAction(
+                button,
+                `/orders/items/${itemId}/remove-ajax`
+            );
+        }
+    );
+
+
+    cancelModalBackdrop.addEventListener(
+        "click",
+        event => {
+            if (
+                event.target
+                === cancelModalBackdrop
+            ) {
+                hideCancelModal();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+            if (
+                event.key === "Escape" &&
+                !cancelModalBackdrop.hidden
+            ) {
+                hideCancelModal();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initLanguageSwitcher
+    );
+</script>
+
+</body>
+</html>
