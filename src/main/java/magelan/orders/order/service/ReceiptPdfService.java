@@ -32,10 +32,10 @@ public class ReceiptPdfService {
     // Standard thermal receipt width: 80 mm
     private static final float PAGE_WIDTH = 80f * MM_TO_POINTS;
 
-    private static final float LEFT_MARGIN = 12f;
-    private static final float RIGHT_MARGIN = 12f;
-    private static final float TOP_MARGIN = 14f;
-    private static final float BOTTOM_MARGIN = 14f;
+    private static final float LEFT_MARGIN = 8f;
+    private static final float RIGHT_MARGIN = 8f;
+    private static final float TOP_MARGIN = 8f;
+    private static final float BOTTOM_MARGIN = 8f;
 
     private static final float CONTENT_WIDTH =
             PAGE_WIDTH - LEFT_MARGIN - RIGHT_MARGIN;
@@ -118,18 +118,18 @@ public class ReceiptPdfService {
         addText(
                 commands,
                 "MAGELAN",
-                14f,
+                17f,
                 Alignment.CENTER
         );
 
-        addSpacer(commands, 3f);
+        addSpacer(commands, 1f);
         addSeparator(commands);
 
         addWrappedText(
                 commands,
                 translate(language, "Поръчка: ", "Order: ")
                         + plainText(order.getOrderName()),
-                8.5f,
+                10.5f,
                 Alignment.LEFT,
                 font
         );
@@ -138,13 +138,13 @@ public class ReceiptPdfService {
                 commands,
                 translate(language, "Създадена: ", "Created: ")
                         + DATE_FORMATTER.format(order.getCreatedOn()),
-                8f,
+                9.5f,
                 Alignment.LEFT,
                 font
         );
 
         addSeparator(commands);
-        addSpacer(commands, 2f);
+        addSpacer(commands, 1f);
 
         for (OrderItem item : order.getItems()) {
 
@@ -153,13 +153,10 @@ public class ReceiptPdfService {
                     language
             );
 
-            String itemHeading =
-                    item.getQuantity() + " x " + productName;
-
             addWrappedText(
                     commands,
-                    itemHeading,
-                    9f,
+                    item.getQuantity() + " x " + productName,
+                    11f,
                     Alignment.LEFT,
                     font
             );
@@ -170,29 +167,29 @@ public class ReceiptPdfService {
                             + " x "
                             + formatMoney(item.getUnitPrice()),
                     formatMoney(item.getTotalPrice()),
-                    8f
+                    10f
             );
 
-            addSpacer(commands, 5f);
+            addSpacer(commands, 2f);
         }
 
         addSeparator(commands);
-        addSpacer(commands, 2f);
+        addSpacer(commands, 1f);
 
         addRow(
                 commands,
                 translate(language, "ОБЩО", "TOTAL"),
                 formatMoney(order.getAmount()),
-                11f
+                14f
         );
 
         addSeparator(commands);
-        addSpacer(commands, 3f);
+        addSpacer(commands, 2f);
 
         addText(
                 commands,
                 translate(language, "Благодарим Ви!", "Thank you!"),
-                9f,
+                11f,
                 Alignment.CENTER
         );
 
@@ -387,7 +384,7 @@ public class ReceiptPdfService {
                         text,
                         null,
                         fontSize,
-                        fontSize + 3f,
+                        fontSize + 1.5f,
                         alignment
                 )
         );
@@ -405,7 +402,7 @@ public class ReceiptPdfService {
                         leftText,
                         rightText,
                         fontSize,
-                        fontSize + 3f,
+                        fontSize + 1.5f,
                         Alignment.LEFT
                 )
         );
@@ -420,7 +417,7 @@ public class ReceiptPdfService {
                         null,
                         null,
                         0f,
-                        9f,
+                        6f,
                         Alignment.LEFT
                 )
         );
