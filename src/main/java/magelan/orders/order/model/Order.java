@@ -35,6 +35,9 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime createdOn;
 
+    @Column(name = "completed_on")
+    private LocalDateTime completedOn;
+
     @Builder.Default
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdOn ASC")

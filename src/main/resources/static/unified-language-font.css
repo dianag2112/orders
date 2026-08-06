@@ -1,0 +1,71 @@
+/* =========================================================
+   BULGARIAN FONT
+   Matches the other bilingual pages
+   ========================================================= */
+
+/*
+ * Bulgarian decorative text
+ */
+html[lang="bg"] .login-btn,
+html[lang="bg"] .register-btn,
+html[lang="bg"] .auth-form-title,
+html[lang="bg"] .auth-button,
+html[lang="bg"] .shared-footer__text,
+html[lang="bg"] .shared-footer__text span {
+    font-family: "Cormorant Unicase", serif !important;
+    font-weight: 600 !important;
+
+    /*
+     * These two properties were making the Bulgarian
+     * buttons look completely different.
+     */
+    text-transform: none !important;
+    letter-spacing: 0 !important;
+}
+
+/*
+ * Index buttons
+ */
+html[lang="bg"] .login-btn,
+html[lang="bg"] .register-btn {
+    font-size: 1.55rem !important;
+    line-height: 1.1 !important;
+}
+
+/*
+ * Login and register page heading
+ */
+html[lang="bg"] .auth-form-title {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+}
+
+/*
+ * Login and register action buttons
+ */
+html[lang="bg"] .auth-button {
+    font-size: 1.25rem !important;
+    line-height: 1.1 !important;
+}
+
+/*
+ * Inputs remain readable, like the forms
+ * on the order-management pages.
+ */
+html[lang="bg"] .auth-form-input,
+html[lang="bg"] .auth-form-input::placeholder,
+html[lang="bg"] .error-message,
+html[lang="bg"] .success-message,
+html[lang="bg"] .success-message p {
+    font-family:
+            ui-sans-serif,
+            system-ui,
+            -apple-system,
+            "Segoe UI",
+            Roboto,
+            Arial,
+            sans-serif !important;
+
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}

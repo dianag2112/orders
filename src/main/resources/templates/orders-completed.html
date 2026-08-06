@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<html lang="bg"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
 
@@ -8,82 +10,39 @@
 
     <title>Магелан — Завършени поръчки</title>
 
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap"
           rel="stylesheet">
 
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
     <link rel="stylesheet"
-          th:href="@{/orders-completed.css}"
-          href="/orders-completed.css">
+          th:href="@{/orders-completed.css(v=3)}"
+          href="/orders-completed.css?v=3">
 
-    <style>
-        .completed-language-switcher {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 2000;
+    <link rel="stylesheet"
+          th:href="@{/unified-language-font.css}"
+          href="/unified-language-font.css">
 
-            display: flex;
-            gap: 8px;
-        }
-
-        .completed-language-switcher button {
-            min-width: 48px;
-            padding: 7px 13px;
-
-            border: 1px solid rgba(255, 255, 255, 0.55);
-            border-radius: 999px;
-
-            background: rgba(0, 0, 0, 0.75);
-            color: #ffffff;
-
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .completed-language-switcher button.is-active {
-            background: #ffffff;
-            color: #000000;
-        }
-
-        .completed-card__actions {
-            display: flex;
-            margin-top: auto;
-            padding-top: 2px;
-        }
-
-        .receipt-pdf-button {
-            width: 100%;
-            gap: 8px;
-
-            border-color: rgba(255, 26, 26, 0.35);
-            background: rgba(255, 26, 26, 0.08);
-        }
-
-        .receipt-pdf-button:hover {
-            border-color: rgba(255, 26, 26, 0.65);
-            background: rgba(255, 26, 26, 0.16);
-            color: #ff8a8a;
-        }
-
-        .receipt-pdf-button__icon {
-            font-size: 1.05rem;
-        }
-
-        @media (max-width: 640px) {
-            .completed-language-switcher {
-                position: static;
-                justify-content: flex-end;
-                padding: 14px 14px 0;
-            }
-        }
-    </style>
+    <link rel="stylesheet"
+          th:href="@{/shared-footer.css}"
+          href="/shared-footer.css">
 </head>
 
 <body>
 
+<!-- Language switch -->
 <div class="completed-language-switcher"
-     aria-label="Language switcher">
+     data-aria-bg="Избор на език"
+     data-aria-en="Language switcher"
+     aria-label="Избор на език">
 
     <button type="button"
             data-lang-switch="bg">
@@ -98,64 +57,56 @@
 
 <div class="completed-page">
 
-    <header class="completed-header">
+    <!-- Logo and page title -->
+    <header class="completed-hero">
 
-        <div>
-            <p class="eyebrow"
-               data-bilingual>
-                Поръчки Магелан / Magelan Orders
-            </p>
+        <a class="completed-hero__logo-link"
+           th:href="@{/home}"
+           href="/home"
+           data-aria-bg="Назад към началната страница"
+           data-aria-en="Back to the home page"
+           aria-label="Назад към началната страница">
 
-            <h1 data-bilingual>
-                Завършени поръчки / Completed Orders
-            </h1>
+            <img class="completed-hero__logo"
+                 src="/magelan-index.jpg"
+                 th:src="@{/magelan-index.jpg}"
+                 alt="Magelan logo">
+        </a>
 
-            <p class="completed-subtitle"
-               data-bilingual>
-                Завършени поръчки, готови за преглед и печат. / Finished orders, ready for review and printing.
-            </p>
-        </div>
-
-        <div class="completed-header__actions">
-
-            <a class="btn btn-ghost"
-               th:href="@{/home}"
-               data-bilingual>
-                Начало / Home
-            </a>
-
-            <a class="btn btn-ghost"
-               th:href="@{/orders/pending}"
-               data-bilingual>
-                Текущи поръчки / Pending Orders
-            </a>
-
-            <a class="btn btn-ghost"
-               th:href="@{/menu}"
-               data-bilingual>
-                Меню / Menu
-            </a>
-        </div>
+        <h1 class="completed-hero__title"
+            data-bilingual>
+            Завършени поръчки / Completed Orders
+        </h1>
     </header>
 
+    <!-- Completed orders history -->
     <section class="completed-section">
 
         <div class="section-heading">
 
             <div>
+
                 <h2 data-bilingual>
                     История на поръчките / Order History
                 </h2>
 
                 <p id="completedOrdersCount"
                    th:attr="data-count=${completedOrders == null
-                       ? 0
-                       : #lists.size(completedOrders)}">
+               ? 0
+               : #lists.size(completedOrders)}">
                     0 завършени поръчки
                 </p>
             </div>
+
+            <a class="btn pending-orders-link"
+               th:href="@{/orders/pending}"
+               href="/orders/pending"
+               data-bilingual>
+                Текущи поръчки / Pending Orders
+            </a>
         </div>
 
+        <!-- Empty state -->
         <div class="empty-state"
              th:if="${#lists.isEmpty(completedOrders)}">
 
@@ -172,6 +123,7 @@
             </p>
         </div>
 
+        <!-- Completed order cards -->
         <div class="completed-grid"
              th:if="${!#lists.isEmpty(completedOrders)}">
 
@@ -180,7 +132,8 @@
 
                 <div class="completed-card__header">
 
-                    <div>
+                    <div class="completed-card__heading">
+
                         <h3 th:text="${order.orderName}">
                             Table 5
                         </h3>
@@ -188,11 +141,13 @@
                         <p class="completed-card__meta">
 
                             <span data-bilingual>
-                                Създадена: / Created:
+                                Завършена: / Completed:
                             </span>
 
                             <span th:text="${#temporals.format(
-                                order.createdOn,
+                                order.completedOn != null
+                                    ? order.completedOn
+                                    : order.createdOn,
                                 'dd.MM.yyyy HH:mm'
                             )}">
                                 20.03.2026 22:00
@@ -230,6 +185,7 @@
                         </span>
 
                         <strong>
+
                             <span th:text="${#numbers.formatDecimal(
                                 order.amount,
                                 1,
@@ -237,6 +193,7 @@
                             )}">
                                 0.00
                             </span>
+
                             €
                         </strong>
                     </div>
@@ -285,6 +242,7 @@
                                 )}">
                                     2.60
                                 </span>
+
                                 €
                             </div>
                         </li>
@@ -293,6 +251,7 @@
 
                 <div class="completed-card__actions">
 
+                    <!-- PDF receipt -->
                     <a class="btn receipt-pdf-button js-receipt-link"
                        th:href="@{/orders/{orderId}/receipt(
                            orderId=${order.id},
@@ -313,20 +272,54 @@
                             PDF бележка / Receipt PDF
                         </span>
                     </a>
+
+                    <!-- Permanent deletion -->
+                    <form class="delete-completed-form"
+                          th:action="@{/orders/{orderId}/delete-completed(
+                              orderId=${order.id}
+                          )}"
+                          th:attr="data-order-name=${order.orderName}"
+                          method="post"
+                          onsubmit="return confirmCompletedOrderDeletion(this);">
+
+                        <button type="submit"
+                                class="btn delete-completed-button">
+
+                            <span class="delete-completed-button__icon"
+                                  aria-hidden="true">
+                                🗑️
+                            </span>
+
+                            <span data-bilingual>
+                                Изтрий / Delete
+                            </span>
+                        </button>
+                    </form>
                 </div>
             </article>
         </div>
     </section>
 </div>
 
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 <script>
     const DEFAULT_LANGUAGE = "bg";
 
-    let currentLanguage = DEFAULT_LANGUAGE;
+    let currentLanguage =
+        DEFAULT_LANGUAGE;
 
+
+    /*
+     * Divides bilingual values using only a slash
+     * with spaces around it.
+     */
     function splitBilingualHtml(value) {
-        const html = String(value ?? "").trim();
-        const parts = html.split(/\s+\/\s+/);
+        const html =
+            String(value ?? "").trim();
+
+        const parts =
+            html.split(/\s+\/\s+/);
 
         if (parts.length < 2) {
             return null;
@@ -334,23 +327,32 @@
 
         return {
             bg: parts[0].trim(),
-            en: parts.slice(1).join(" / ").trim()
+
+            en: parts
+                .slice(1)
+                .join(" / ")
+                .trim()
         };
     }
 
-    function htmlToPlainText(value) {
-        const element = document.createElement("div");
 
-        element.innerHTML = value ?? "";
+    function htmlToPlainText(value) {
+        const element =
+            document.createElement("div");
+
+        element.innerHTML =
+            value ?? "";
 
         return element.textContent ?? "";
     }
+
 
     function bilingualHtml(
         value,
         language = currentLanguage
     ) {
-        const parts = splitBilingualHtml(value);
+        const parts =
+            splitBilingualHtml(value);
 
         if (!parts) {
             return String(value ?? "");
@@ -361,14 +363,19 @@
             : parts.en;
     }
 
+
     function bilingualPlainText(
         value,
         language = currentLanguage
     ) {
         return htmlToPlainText(
-            bilingualHtml(value, language)
+            bilingualHtml(
+                value,
+                language
+            )
         ).trim();
     }
+
 
     function prepareBilingualElement(element) {
         if (
@@ -378,17 +385,22 @@
             return;
         }
 
-        const parts = splitBilingualHtml(
-            element.innerHTML
-        );
+        const parts =
+            splitBilingualHtml(
+                element.innerHTML
+            );
 
         if (!parts) {
             return;
         }
 
-        element.dataset.bg = parts.bg;
-        element.dataset.en = parts.en;
+        element.dataset.bg =
+            parts.bg;
+
+        element.dataset.en =
+            parts.en;
     }
+
 
     function applyLanguageToElement(element) {
         prepareBilingualElement(element);
@@ -406,9 +418,39 @@
                 : element.dataset.en;
     }
 
-    function updateProductNames() {
-        document.querySelectorAll(".js-product-name")
+
+    function updateAriaLabels() {
+        document
+            .querySelectorAll(
+                "[data-aria-bg][data-aria-en]"
+            )
             .forEach(element => {
+
+                const label =
+                    currentLanguage === "bg"
+                        ? element.dataset.ariaBg
+                        : element.dataset.ariaEn;
+
+                element.setAttribute(
+                    "aria-label",
+                    label
+                );
+
+                element.setAttribute(
+                    "title",
+                    label
+                );
+            });
+    }
+
+
+    function updateProductNames() {
+        document
+            .querySelectorAll(
+                ".js-product-name"
+            )
+            .forEach(element => {
+
                 element.textContent =
                     bilingualPlainText(
                         element.dataset.productName,
@@ -417,17 +459,21 @@
             });
     }
 
+
     function updateCompletedOrderCount() {
-        const element = document.getElementById(
-            "completedOrdersCount"
-        );
+        const element =
+            document.getElementById(
+                "completedOrdersCount"
+            );
 
         if (!element) {
             return;
         }
 
         const count =
-            Number(element.dataset.count) || 0;
+            Number(
+                element.dataset.count
+            ) || 0;
 
         if (currentLanguage === "bg") {
             element.textContent =
@@ -444,9 +490,14 @@
                 : `${count} completed orders`;
     }
 
+
     function updateReceiptLinks() {
-        document.querySelectorAll(".js-receipt-link")
+        document
+            .querySelectorAll(
+                ".js-receipt-link"
+            )
             .forEach(link => {
+
                 const baseUrl =
                     link.dataset.receiptBase;
 
@@ -461,9 +512,29 @@
 
                 link.href =
                     `${baseUrl}${separator}`
-                    + `lang=${encodeURIComponent(currentLanguage)}`;
+                    + `lang=${encodeURIComponent(
+                        currentLanguage
+                    )}`;
             });
     }
+
+
+    /*
+     * Confirmation before permanently deleting
+     * a completed order.
+     */
+    function confirmCompletedOrderDeletion(form) {
+        const orderName =
+            form.dataset.orderName || "";
+
+        const message =
+            currentLanguage === "bg"
+                ? `Сигурни ли сте, че искате да изтриете поръчка „${orderName}“?\n\nПоръчката и всички нейни артикули ще бъдат окончателно изтрити. Това действие не може да бъде отменено.`
+                : `Are you sure you want to delete the order "${orderName}"?\n\nThe order and all of its items will be permanently deleted. This action cannot be undone.`;
+
+        return window.confirm(message);
+    }
+
 
     function setLanguage(language) {
         currentLanguage =
@@ -481,9 +552,15 @@
             currentLanguage
         );
 
-        document.querySelectorAll("[data-bilingual]")
-            .forEach(applyLanguageToElement);
+        document
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                applyLanguageToElement
+            );
 
+        updateAriaLabels();
         updateProductNames();
         updateCompletedOrderCount();
         updateReceiptLinks();
@@ -493,8 +570,12 @@
                 ? "Магелан — Завършени поръчки"
                 : "Magelan — Completed Orders";
 
-        document.querySelectorAll("[data-lang-switch]")
+        document
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
             .forEach(button => {
+
                 button.classList.toggle(
                     "is-active",
                     button.dataset.langSwitch
@@ -503,12 +584,22 @@
             });
     }
 
-    function initLanguageSwitcher() {
-        document.querySelectorAll("[data-bilingual]")
-            .forEach(prepareBilingualElement);
 
-        document.querySelectorAll("[data-lang-switch]")
+    function initLanguageSwitcher() {
+        document
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                prepareBilingualElement
+            );
+
+        document
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
             .forEach(button => {
+
                 button.addEventListener(
                     "click",
                     () => {
@@ -523,8 +614,11 @@
             localStorage.getItem("lang")
             || DEFAULT_LANGUAGE;
 
-        setLanguage(savedLanguage);
+        setLanguage(
+            savedLanguage
+        );
     }
+
 
     document.addEventListener(
         "DOMContentLoaded",

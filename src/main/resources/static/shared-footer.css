@@ -1,0 +1,193 @@
+/* =========================================================
+   SHARED PAGE LAYOUT
+   Forces page content and footer into vertical rows.
+   Loaded after every page-specific stylesheet.
+   ========================================================= */
+
+html {
+    width: 100%;
+    min-height: 100%;
+}
+
+body.shared-footer-page {
+    width: 100%;
+    min-height: 100vh !important;
+    margin: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    background: #000000;
+}
+
+/*
+ * Main content fills all available space above the footer.
+ * It can also centre short pages such as login and register.
+ */
+body.shared-footer-page > .shared-page-content {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+
+    flex: 1 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/*
+ * Prevent old page CSS from reserving another full screen
+ * inside the shared page layout.
+ */
+body.shared-footer-page .home-center {
+    min-height: 0 !important;
+}
+
+/*
+ * Some old styles define margins differently.
+ */
+body.shared-footer-page > .shared-page-content.container {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* =========================================================
+   SHARED MAGELAN FOOTER
+   ========================================================= */
+
+.shared-footer {
+    width: 100%;
+    max-width: none;
+
+    flex: 0 0 auto;
+
+    margin: auto 0 0 !important;
+    padding: 30px 20px 24px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.13);
+
+    background: transparent;
+
+    text-align: center;
+}
+
+.shared-footer__line {
+    width: 170px;
+    max-width: 45vw;
+    height: 3px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 999px;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    transparent 0%,
+                    rgba(255, 26, 26, 0.25) 15%,
+                    #ff1a1a 50%,
+                    rgba(255, 26, 26, 0.25) 85%,
+                    transparent 100%
+            );
+
+    box-shadow:
+            0 0 8px rgba(255, 26, 26, 0.55),
+            0 0 18px rgba(255, 26, 26, 0.25);
+}
+
+.shared-footer__text {
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    color: rgba(255, 255, 255, 0.68);
+
+    font-family: "Cormorant Unicase", serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+.shared-footer__anchor {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.shared-footer__separator {
+    opacity: 0.62;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .shared-footer {
+        padding: 27px 18px 22px;
+    }
+
+    .shared-footer__line {
+        width: 145px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .shared-footer {
+        padding: 22px 14px 20px;
+    }
+
+    .shared-footer__line {
+        width: 120px;
+        max-width: 55vw;
+
+        margin-bottom: 15px;
+    }
+
+    .shared-footer__text {
+        gap: 5px;
+
+        font-size: 12px;
+        line-height: 1.6;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+    .shared-footer__text {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .shared-footer__separator {
+        display: none;
+    }
+}

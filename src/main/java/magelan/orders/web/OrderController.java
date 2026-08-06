@@ -105,4 +105,13 @@ public class OrderController {
         orderService.addProductToOrder(orderId, productId);
         return orderService.getPendingOrderCard(orderId);
     }
+
+    @PostMapping("/{orderId}/delete-completed")
+    public String deleteCompletedOrder(
+            @PathVariable UUID orderId
+    ) {
+        orderService.deleteCompletedOrder(orderId);
+
+        return "redirect:/orders/completed";
+    }
 }

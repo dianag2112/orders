@@ -15,12 +15,15 @@ body {
     color: #fff;
     font-family: 'Arial', sans-serif;
     min-height: 100vh;
+
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+
+    align-items: stretch;
+    justify-content: flex-start;
+
     overflow-y: auto;
     overflow-x: hidden;
-    padding-bottom: var(--footer-height);
 }
 
 .container {
@@ -65,7 +68,9 @@ body {
     position: relative;
     overflow: hidden;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
 
@@ -187,44 +192,6 @@ body {
     box-shadow: 0 8px 20px rgba(255, 0, 0, 0.45);
 }
 
-.footer-rope{
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    height: var(--footer-height);
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    padding: 14px 10px 18px;
-    text-align: center;
-
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(6px);
-    border-top: 1px solid rgba(255,255,255,0.10);
-    z-index: 9999;
-}
-
-.footer-rope .rope{
-    width: 160px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #ff1a1a, transparent);
-    margin-bottom: 12px;
-}
-
-.footer-text{
-    margin: 0;
-    font-family: var(--pirate, "Pirata One", serif);
-    color: #ff1a1a;
-    letter-spacing: 1px;
-    font-size: 0.95rem;
-    text-align: center;
-}
-
 .top-logo {
     width: 100%;
     display: flex !important;
@@ -232,4 +199,297 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+/* =========================================================
+   INDEX / LOGIN / REGISTER PAGE LAYOUT
+   Keep the content centred and the footer at the bottom.
+   ========================================================= */
+
+html {
+    width: 100%;
+    min-height: 100%;
+}
+
+body.shared-footer-page {
+    width: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    background: #000000;
+}
+
+/*
+ * The page content fills the available area above the footer
+ * and remains centred horizontally and vertically.
+ */
+body.shared-footer-page > main.container,
+body.shared-footer-page > .container,
+body.shared-footer-page > main.shared-page-content,
+body.shared-footer-page > .shared-page-content {
+    width: 100% !important;
+    max-width: 800px;
+
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 24px 20px !important;
+
+    flex: 1 1 auto !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    text-align: center;
+}
+
+/*
+ * Prevent page-specific login/register styles from
+ * giving the content another full viewport height.
+ */
+body.shared-footer-page .login-container,
+body.shared-footer-page .register-container,
+body.shared-footer-page .login-wrapper,
+body.shared-footer-page .register-wrapper,
+body.shared-footer-page .login-page,
+body.shared-footer-page .register-page {
+    min-height: 0 !important;
+}
+
+
+/* =========================================================
+   SHARED FOOTER
+   Same appearance on index, login and register.
+   ========================================================= */
+
+body.shared-footer-page > .shared-footer {
+    width: 100% !important;
+    max-width: none !important;
+
+    flex: 0 0 auto !important;
+    align-self: stretch !important;
+
+    margin: 0 !important;
+    padding: 28px 20px 24px !important;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.13);
+
+    background: #000000;
+
+    display: block !important;
+
+    text-align: center !important;
+}
+
+/*
+ * Red glowing line.
+ */
+body.shared-footer-page
+.shared-footer__line {
+    width: 170px !important;
+    max-width: 45vw !important;
+    height: 3px !important;
+
+    display: block !important;
+
+    margin: 0 auto 18px !important;
+
+    border: 0 !important;
+    border-radius: 999px !important;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    transparent 0%,
+                    rgba(255, 26, 26, 0.25) 15%,
+                    #ff1a1a 50%,
+                    rgba(255, 26, 26, 0.25) 85%,
+                    transparent 100%
+            ) !important;
+
+    box-shadow:
+            0 0 8px rgba(255, 26, 26, 0.55),
+            0 0 18px rgba(255, 26, 26, 0.25) !important;
+}
+
+/*
+ * Footer text.
+ */
+body.shared-footer-page
+.shared-footer__text {
+    width: 100% !important;
+    margin: 0 auto !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+
+    gap: 7px !important;
+
+    color: rgba(255, 255, 255, 0.68) !important;
+
+    font-family: "Cormorant Unicase", serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.5 !important;
+
+    text-align: center !important;
+}
+
+body.shared-footer-page
+.shared-footer__anchor {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+body.shared-footer-page
+.shared-footer__separator {
+    opacity: 0.62;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    body.shared-footer-page > main.container,
+    body.shared-footer-page > .container,
+    body.shared-footer-page > main.shared-page-content,
+    body.shared-footer-page > .shared-page-content {
+        padding: 18px 16px !important;
+    }
+
+    body.shared-footer-page > .shared-footer {
+        padding: 22px 14px 20px !important;
+    }
+
+    body.shared-footer-page
+    .shared-footer__line {
+        width: 120px !important;
+        max-width: 55vw !important;
+
+        margin-bottom: 15px !important;
+    }
+
+    body.shared-footer-page
+    .shared-footer__text {
+        gap: 5px !important;
+
+        font-size: 12px !important;
+        line-height: 1.6 !important;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+    body.shared-footer-page
+    .shared-footer__text {
+        flex-direction: column !important;
+        gap: 2px !important;
+    }
+
+    body.shared-footer-page
+    .shared-footer__separator {
+        display: none !important;
+    }
+}
+
+/* =========================================================
+   PUBLIC LANGUAGE SWITCHER
+   Index, login and register pages
+   ========================================================= */
+
+.public-language-switcher {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+
+    background: rgba(8, 8, 8, 0.9);
+
+    box-shadow:
+            0 5px 20px rgba(0, 0, 0, 0.42),
+            0 0 12px rgba(255, 0, 0, 0.12);
+}
+
+.public-language-switcher button {
+    min-width: 42px;
+    height: 34px;
+
+    padding: 0 10px;
+
+    border: 1px solid transparent;
+    border-radius: 999px;
+
+    background: transparent;
+    color: rgba(255, 255, 255, 0.72);
+
+    cursor: pointer;
+
+    font-family: "Pirata One", cursive;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+}
+
+.public-language-switcher button:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.public-language-switcher button.is-active {
+    border-color: #ff3939;
+
+    background: #ff0000;
+    color: #ffffff;
+
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.48);
+}
+
+/*
+ * Prevent both languages from flashing briefly
+ * before JavaScript selects the saved language.
+ */
+html:not(.public-language-ready)
+body.public-page [data-bilingual] {
+    visibility: hidden;
+}
+
+@media (max-width: 600px) {
+    .public-language-switcher {
+        top: 10px;
+        right: 10px;
+    }
+
+    .public-language-switcher button {
+        min-width: 38px;
+        height: 31px;
+        padding: 0 8px;
+        font-size: 0.85rem;
+    }
 }

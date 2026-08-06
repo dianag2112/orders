@@ -2,15 +2,39 @@
     --bg: #000000;
     --panel: rgba(18, 18, 18, .94);
     --tile: rgba(15, 15, 15, .98);
+
     --text: rgba(255, 255, 255, .92);
     --muted: rgba(255, 255, 255, .68);
+
     --line: rgba(255, 255, 255, .18);
     --line-soft: rgba(255, 255, 255, .10);
+
     --red: #ff1a1a;
     --red-light: #ff4d4d;
-    --headline: "Pirata One", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    --menu-font: "Cormorant Unicase", serif;
-    --body-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+    --compact-control-width: 180px;
+
+    --headline:
+            "Pirata One",
+            system-ui,
+            -apple-system,
+            "Segoe UI",
+            Roboto,
+            Arial,
+            sans-serif;
+
+    --menu-font:
+            "Cormorant Unicase",
+            serif;
+
+    --body-font:
+            ui-sans-serif,
+            system-ui,
+            -apple-system,
+            "Segoe UI",
+            Roboto,
+            Arial,
+            sans-serif;
 }
 
 * {
@@ -24,9 +48,12 @@ html {
 body {
     margin: 0;
     min-height: 100vh;
+
     overflow-x: hidden;
+
     background: var(--bg);
     color: var(--text);
+
     font-family: var(--body-font);
 }
 
@@ -39,15 +66,29 @@ input {
     font: inherit;
 }
 
+button[hidden],
+div[hidden] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
 .skip-link {
     position: absolute;
-    left: -9999px;
     top: 8px;
+    left: -9999px;
     z-index: 5000;
+
     padding: 8px 12px;
+
     border-radius: 8px;
+
     background: #ffffff;
     color: #000000;
+
     text-decoration: none;
 }
 
@@ -55,64 +96,34 @@ input {
     left: 12px;
 }
 
-/* Top navigation */
 
-.menu-toolbar {
-    max-width: 1050px;
-    margin: 0 auto;
-    padding: 16px 20px 0;
-    display: flex;
-    justify-content: flex-start;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.menu-toolbar .btn {
-    min-height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 16px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .04);
-    color: var(--text);
-    font-size: .9rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition:
-            transform .15s ease,
-            border-color .15s ease,
-            background .15s ease,
-            color .15s ease;
-}
-
-.menu-toolbar .btn:hover {
-    transform: translateY(-1px);
-    border-color: rgba(255, 255, 255, .34);
-    background: rgba(255, 255, 255, .08);
-    color: var(--red-light);
-}
-
-/* Language switcher */
+/* =========================================================
+   LANGUAGE SWITCHER
+   ========================================================= */
 
 .lang-switcher {
     position: fixed;
     top: 1rem;
     right: 1rem;
     z-index: 1500;
+
     display: flex;
     gap: .5rem;
 }
 
 .lang-switcher button {
     padding: .25rem .75rem;
+
     border: 1px solid #ffffff;
     border-radius: 999px;
+
     background: rgba(0, 0, 0, .72);
     color: #ffffff;
+
     cursor: pointer;
+
     font-size: .9rem;
+
     transition:
             transform .15s ease,
             background .15s ease,
@@ -126,21 +137,29 @@ input {
 .lang-switcher button.is-active {
     background: #ffffff;
     color: #000000;
+
     font-weight: 700;
 }
 
-/* Hero */
+
+/* =========================================================
+   HERO
+   ========================================================= */
 
 .hero {
     padding: 30px 0 20px;
+
     border-bottom: 1px solid var(--line);
+
     background: #000000;
 }
 
 .hero__inner {
     max-width: 1050px;
+
     margin: 0 auto;
     padding: 0 20px;
+
     text-align: center;
 }
 
@@ -152,46 +171,83 @@ input {
 
 .brand a {
     display: inline-flex;
+
     text-decoration: none;
 }
 
 .brand__logo {
     width: 210px;
     height: 210px;
+
     display: block;
+
     object-fit: contain;
+
     background: transparent;
 }
 
 .brand__sub {
     margin: 10px 0 0;
+
     color: var(--muted);
+
     font-family: var(--headline);
     font-size: 32px;
     letter-spacing: .03em;
 }
 
-/* Pending-order cards */
+/*
+ * Pirata One does not contain Bulgarian Cyrillic.
+ * Bulgarian therefore uses the same Cormorant font
+ * as the other menu headings.
+ */
+html[lang="bg"] .brand__sub {
+    font-family: var(--menu-font);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+
+/* =========================================================
+   PENDING ORDERS PANEL
+   ========================================================= */
 
 .pending-orders-panel {
     max-width: 1050px;
+
     margin: 20px auto 0;
     padding: 18px 20px;
+
     border: 1px solid var(--line-soft);
     border-radius: 18px;
+
     background: rgba(255, 255, 255, .025);
 }
 
+/*
+ * First column: heading and description.
+ * Last three columns: input, Create button and
+ * Completed Orders button — all exactly the same width.
+ */
 .pending-orders-panel__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 16px;
+    display: grid;
+    grid-template-columns:
+            minmax(0, 1fr)
+            repeat(3, var(--compact-control-width));
+
+    align-items: end;
+
+    gap: 12px;
     margin-bottom: 14px;
+}
+
+.pending-orders-panel__header > div {
+    min-width: 0;
 }
 
 .pending-orders-panel__header h2 {
     margin: 0 0 5px;
+
     font-family: var(--menu-font);
     font-size: 25px;
     font-weight: 600;
@@ -199,28 +255,159 @@ input {
 
 .pending-orders-panel__header p {
     margin: 0;
+
     color: var(--muted);
+
     font-size: 14px;
     line-height: 1.5;
 }
 
-.pending-orders-panel__manage {
-    flex-shrink: 0;
-    color: rgba(255, 255, 255, .72);
-    font-size: 14px;
-    text-decoration: none;
-    transition: color .15s ease;
+
+/* =========================================================
+   COMPACT CREATE-ORDER FORM
+   ========================================================= */
+
+/*
+ * Display contents makes the input and Create button
+ * direct children of the header grid.
+ */
+.menu-create-order-form {
+    display: contents;
+
+    margin: 0;
 }
 
-.pending-orders-panel__manage:hover {
-    color: var(--red-light);
+.menu-create-order-form input,
+.menu-create-order-button,
+.completed-orders-menu-link {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
 }
+
+.menu-create-order-form input {
+    padding: 0 12px;
+
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 12px;
+    outline: none;
+
+    background: rgba(255, 255, 255, .035);
+    color: var(--text);
+
+    font-size: 13px;
+
+    transition:
+            border-color .15s ease,
+            background .15s ease,
+            box-shadow .15s ease;
+}
+
+.menu-create-order-form input::placeholder {
+    color: rgba(255, 255, 255, .48);
+
+    text-overflow: ellipsis;
+}
+
+.menu-create-order-form input:focus {
+    border-color: rgba(255, 26, 26, .52);
+
+    background: rgba(255, 255, 255, .055);
+
+    box-shadow:
+            0 0 0 3px rgba(255, 26, 26, .08);
+}
+
+.menu-create-order-button {
+    padding: 0 12px;
+
+    border: 1px solid rgba(255, 26, 26, .38);
+    border-radius: 12px;
+
+    background: rgba(255, 26, 26, .10);
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    transition:
+            transform .15s ease,
+            border-color .15s ease,
+            background .15s ease,
+            color .15s ease;
+}
+
+.menu-create-order-button:hover {
+    transform: translateY(-1px);
+
+    border-color: rgba(255, 26, 26, .68);
+
+    background: rgba(255, 26, 26, .19);
+    color: #ffaaaa;
+}
+
+
+/* =========================================================
+   COMPLETED ORDERS LINK
+   ========================================================= */
+
+.completed-orders-menu-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 10px;
+
+    border: 1px solid rgba(34, 197, 94, .28);
+    border-radius: 12px;
+
+    background: rgba(34, 197, 94, .08);
+    color: #9be7b4;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+            transform .15s ease,
+            border-color .15s ease,
+            background .15s ease,
+            color .15s ease;
+}
+
+.completed-orders-menu-link:hover {
+    transform: translateY(-1px);
+
+    border-color: rgba(34, 197, 94, .52);
+
+    background: rgba(34, 197, 94, .15);
+    color: #c2f4d2;
+}
+
+.completed-orders-menu-link:focus-visible {
+    outline: 2px solid rgba(34, 197, 94, .65);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   PENDING ORDER CARDS
+   ========================================================= */
 
 .pending-orders-list {
     display: flex;
+
     gap: 10px;
     overflow-x: auto;
+
     padding: 4px 2px 12px;
+
     scrollbar-width: thin;
 }
 
@@ -230,47 +417,85 @@ input {
 
 .pending-orders-list::-webkit-scrollbar-thumb {
     border-radius: 999px;
+
     background: rgba(255, 255, 255, .18);
 }
 
 .pending-order-card {
-    min-width: 165px;
-    max-width: 230px;
+    min-width: 185px;
+    max-width: 240px;
+
     padding: 13px 14px;
+
     border: 1px solid rgba(255, 255, 255, .15);
     border-radius: 14px;
+
     background: rgba(255, 255, 255, .035);
     color: var(--text);
-    cursor: pointer;
+
     text-align: left;
+
     transition:
             transform .15s ease,
             border-color .15s ease,
             background .15s ease,
-            box-shadow .15s ease;
+            box-shadow .15s ease,
+            opacity .15s ease;
 }
 
 .pending-order-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, .34);
-    background: rgba(255, 255, 255, .07);
-}
 
-.pending-order-card:focus-visible {
-    outline: 2px solid rgba(255, 77, 77, .8);
-    outline-offset: 3px;
+    border-color: rgba(255, 255, 255, .34);
+
+    background: rgba(255, 255, 255, .07);
 }
 
 .pending-order-card.is-active {
     border-color: rgba(255, 26, 26, .78);
+
     background: rgba(255, 26, 26, .11);
-    box-shadow: 0 0 0 3px rgba(255, 26, 26, .07);
+
+    box-shadow:
+            0 0 0 3px rgba(255, 26, 26, .07);
+}
+
+.pending-order-card.is-busy {
+    opacity: .58;
+}
+
+.pending-order-card__select {
+    width: 100%;
+
+    display: block;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+    color: inherit;
+
+    cursor: pointer;
+
+    font: inherit;
+    text-align: left;
+}
+
+.pending-order-card__select:focus-visible {
+    outline: 2px solid rgba(255, 77, 77, .8);
+    outline-offset: 5px;
+
+    border-radius: 7px;
 }
 
 .pending-order-card__name {
     display: block;
+
     margin-bottom: 8px;
+
     overflow-wrap: anywhere;
+
     font-family: var(--menu-font);
     font-size: 19px;
     font-weight: 600;
@@ -279,60 +504,175 @@ input {
 .pending-order-card__details {
     display: flex;
     justify-content: space-between;
+
     gap: 12px;
+
     color: var(--muted);
+
     font-size: 13px;
 }
 
 .pending-order-card__amount {
     color: rgba(255, 255, 255, .86);
+
     white-space: nowrap;
+}
+
+.pending-order-card__actions {
+    display: grid;
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+
+    margin-top: 12px;
+    padding-top: 11px;
+
+    border-top:
+            1px solid rgba(255, 255, 255, .10);
+}
+
+.pending-order-card__action {
+    min-width: 0;
+    min-height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 7px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-family: var(--body-font);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.15;
+
+    text-align: center;
+
+    transition:
+            transform .15s ease,
+            background .15s ease,
+            border-color .15s ease,
+            color .15s ease;
+}
+
+.pending-order-card__action:hover {
+    transform: translateY(-1px);
+}
+
+.pending-order-card__action--complete {
+    border:
+            1px solid rgba(34, 197, 94, .45);
+
+    background:
+            rgba(34, 197, 94, .11);
+
+    color: #8df0ad;
+}
+
+.pending-order-card__action--complete:hover {
+    border-color:
+            rgba(34, 197, 94, .8);
+
+    background:
+            rgba(34, 197, 94, .20);
+}
+
+.pending-order-card__action--cancel {
+    border:
+            1px solid rgba(255, 77, 77, .45);
+
+    background:
+            rgba(255, 77, 77, .10);
+
+    color: #ff9c9c;
+}
+
+.pending-order-card__action--cancel:hover {
+    border-color:
+            rgba(255, 77, 77, .8);
+
+    background:
+            rgba(255, 77, 77, .18);
+}
+
+.pending-order-card button:disabled {
+    cursor: wait;
+
+    opacity: .55;
 }
 
 .pending-orders-empty {
     padding: 15px;
+
     border: 1px solid var(--line-soft);
     border-radius: 13px;
+
     background: rgba(255, 255, 255, .025);
     color: var(--muted);
+
     line-height: 1.5;
 }
 
 .selected-order-hint {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
     gap: 12px;
     margin-top: 4px;
+
     color: var(--muted);
+
     font-size: 14px;
 }
 
 .selected-order-open-button {
-    flex-shrink: 0;
     min-height: 36px;
+    flex-shrink: 0;
+
     padding: 0 13px;
-    border: 1px solid rgba(255, 26, 26, .35);
+
+    border:
+            1px solid rgba(255, 26, 26, .35);
+
     border-radius: 999px;
-    background: rgba(255, 26, 26, .10);
+
+    background:
+            rgba(255, 26, 26, .10);
+
     color: var(--text);
+
     cursor: pointer;
+
     font-size: 13px;
     font-weight: 700;
+
     transition:
             background .15s ease,
             border-color .15s ease;
 }
 
 .selected-order-open-button:hover {
-    border-color: rgba(255, 26, 26, .62);
-    background: rgba(255, 26, 26, .18);
+    border-color:
+            rgba(255, 26, 26, .62);
+
+    background:
+            rgba(255, 26, 26, .18);
 }
 
-/* Main menu */
+
+/* =========================================================
+   MAIN MENU
+   ========================================================= */
 
 .container {
     max-width: 1050px;
+
     margin: 0 auto;
     padding: 20px;
 }
@@ -349,18 +689,23 @@ input {
 .accordion {
     margin: 0;
     padding: 0;
+
     border: 0;
 }
 
 .accordion__summary {
-    list-style: none;
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 12px;
     padding: 18px 0;
+
     border-bottom: 1px solid var(--line);
+
     cursor: pointer;
+
+    list-style: none;
     user-select: none;
 }
 
@@ -370,19 +715,26 @@ input {
 
 .accordion__summary::after {
     content: "+";
+
     flex-shrink: 0;
+
     color: var(--muted);
+
     font-size: 24px;
     line-height: 1;
-    transition: transform .15s ease;
+
+    transition:
+            transform .15s ease;
 }
 
-.accordion[open] > .accordion__summary::after {
+.accordion[open] >
+.accordion__summary::after {
     transform: rotate(45deg);
 }
 
 .section__title {
     margin: 0;
+
     font-family: var(--menu-font);
     font-size: 28px;
     font-style: normal;
@@ -401,9 +753,15 @@ input {
 .subcat {
     margin: 22px 0 12px;
     padding: 10px 0 6px 12px;
-    border-top: 1px solid rgba(255, 255, 255, .10);
-    border-left: 3px solid rgba(208, 20, 20, .85);
+
+    border-top:
+            1px solid rgba(255, 255, 255, .10);
+
+    border-left:
+            3px solid rgba(208, 20, 20, .85);
+
     color: var(--text);
+
     font-family: var(--menu-font);
     font-size: 22px;
     font-weight: 600;
@@ -412,6 +770,7 @@ input {
 
 .menu-list .subcat:first-child {
     margin-top: 0;
+
     border-top: none;
 }
 
@@ -421,14 +780,20 @@ input {
 
 .menu-item-btn {
     width: 100%;
+
     padding: 0;
+
     border: 0;
     border-radius: 8px;
+
     background: transparent;
     color: inherit;
+
     cursor: pointer;
+
     font: inherit;
     text-align: left;
+
     transition:
             transform .12s ease,
             opacity .12s ease,
@@ -437,27 +802,36 @@ input {
 
 .menu-item-btn:hover {
     transform: translateX(4px);
-    background: rgba(255, 255, 255, .018);
+
+    background:
+            rgba(255, 255, 255, .018);
+
     opacity: .97;
 }
 
 .menu-item-btn:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, .45);
+    outline:
+            2px solid rgba(255, 255, 255, .45);
+
     outline-offset: 6px;
 }
 
 .menu-item-btn:disabled,
 .menu-item-btn.is-loading {
     cursor: wait;
+
     opacity: .5;
     pointer-events: none;
 }
 
 .menu-row {
     display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 10px;
+    grid-template-columns:
+            auto 1fr auto;
+
     align-items: baseline;
+
+    gap: 10px;
     padding: 6px 0;
 }
 
@@ -473,13 +847,17 @@ input {
     font-size: .9rem;
     font-style: italic;
     font-weight: 400;
+
     opacity: .85;
 }
 
 .item-dots {
     min-width: 24px;
+
     margin-top: 10px;
-    border-bottom: 1px dashed var(--line);
+
+    border-bottom:
+            1px dashed var(--line);
 }
 
 .item-price {
@@ -487,12 +865,15 @@ input {
     font-size: 18px;
     font-style: normal;
     font-weight: 500;
+
     white-space: nowrap;
 }
 
 .item-desc {
     margin: 4px 0 14px;
+
     color: var(--muted);
+
     font-size: 14px;
     line-height: 1.45;
 }
@@ -501,42 +882,10 @@ input {
     font-style: italic;
 }
 
-/* Menu footer */
 
-.footer {
-    margin-top: 50px;
-    padding-top: 25px;
-    border-top: 1px solid var(--line);
-}
-
-.footer__box {
-    width: 100%;
-}
-
-.footer__text {
-    margin: 8px 0 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: var(--muted);
-    font-family: var(--menu-font);
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 1.4;
-    text-align: center;
-}
-
-.footer__muted {
-    padding: 0 6px;
-    opacity: .5;
-}
-
-.footer__copy {
-    white-space: nowrap;
-}
-
-/* Order modal */
+/* =========================================================
+   ORDER MODAL
+   ========================================================= */
 
 .order-modal-backdrop[hidden] {
     display: none;
@@ -546,11 +895,15 @@ input {
     position: fixed;
     inset: 0;
     z-index: 3000;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     padding: 20px;
+
     background: rgba(0, 0, 0, .80);
+
     backdrop-filter: blur(6px);
 }
 
@@ -558,27 +911,40 @@ input {
     width: 100%;
     max-width: 570px;
     max-height: 84vh;
+
     display: flex;
     flex-direction: column;
+
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, .18);
+
+    border:
+            1px solid rgba(255, 255, 255, .18);
+
     border-radius: 20px;
+
     background: #101010;
-    box-shadow: 0 30px 100px rgba(0, 0, 0, .78);
+
+    box-shadow:
+            0 30px 100px rgba(0, 0, 0, .78);
 }
 
 .order-modal__header {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
+    justify-content: space-between;
+
     gap: 16px;
     padding: 20px;
-    border-bottom: 1px solid var(--line-soft);
+
+    border-bottom:
+            1px solid var(--line-soft);
 }
 
 .order-modal__eyebrow {
     margin: 0 0 5px;
+
     color: var(--red-light);
+
     font-size: 12px;
     font-weight: 700;
     letter-spacing: .14em;
@@ -587,7 +953,9 @@ input {
 
 .order-modal__header h2 {
     margin: 0;
+
     overflow-wrap: anywhere;
+
     font-family: var(--menu-font);
     font-size: 29px;
     font-weight: 600;
@@ -597,17 +965,28 @@ input {
     width: 39px;
     height: 39px;
     flex-shrink: 0;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     padding: 0 0 3px;
-    border: 1px solid rgba(255, 255, 255, .14);
+
+    border:
+            1px solid rgba(255, 255, 255, .14);
+
     border-radius: 50%;
-    background: rgba(255, 255, 255, .04);
+
+    background:
+            rgba(255, 255, 255, .04);
+
     color: #ffffff;
+
     cursor: pointer;
+
     font-size: 26px;
     line-height: 1;
+
     transition:
             color .15s ease,
             background .15s ease,
@@ -615,29 +994,43 @@ input {
 }
 
 .order-modal__close:hover {
-    border-color: rgba(255, 77, 77, .45);
-    background: rgba(255, 255, 255, .08);
+    border-color:
+            rgba(255, 77, 77, .45);
+
+    background:
+            rgba(255, 255, 255, .08);
+
     color: #ff8080;
 }
 
 .order-modal__summary {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
     gap: 12px;
     padding: 16px 20px;
 }
 
 .order-modal__summary-box {
     padding: 12px;
-    border: 1px solid var(--line-soft);
+
+    border:
+            1px solid var(--line-soft);
+
     border-radius: 13px;
-    background: rgba(255, 255, 255, .035);
+
+    background:
+            rgba(255, 255, 255, .035);
 }
 
 .order-modal__summary-box span {
     display: block;
+
     margin-bottom: 5px;
+
     color: var(--muted);
+
     font-size: 13px;
 }
 
@@ -647,6 +1040,7 @@ input {
 
 .order-modal__items {
     overflow-y: auto;
+
     padding: 0 20px 18px;
 }
 
@@ -656,26 +1050,40 @@ input {
 
 .order-modal__items::-webkit-scrollbar-thumb {
     border-radius: 999px;
-    background: rgba(255, 255, 255, .16);
+
+    background:
+            rgba(255, 255, 255, .16);
 }
 
 .order-modal__empty {
     padding: 20px;
-    border: 1px solid var(--line-soft);
+
+    border:
+            1px solid var(--line-soft);
+
     border-radius: 13px;
-    background: rgba(255, 255, 255, .025);
+
+    background:
+            rgba(255, 255, 255, .025);
+
     color: var(--muted);
+
     line-height: 1.5;
     text-align: center;
 }
 
 .order-modal-item {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns:
+            auto minmax(0, 1fr) auto;
+
     align-items: center;
+
     gap: 12px;
     padding: 13px 0;
-    border-bottom: 1px dashed rgba(255, 255, 255, .10);
+
+    border-bottom:
+            1px dashed rgba(255, 255, 255, .10);
 }
 
 .order-modal-item:last-child {
@@ -685,16 +1093,23 @@ input {
 .order-modal-item__remove {
     width: 29px;
     height: 29px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     padding: 0 0 2px;
+
     border: 0;
     border-radius: 50%;
+
     background: transparent;
     color: #ff6b6b;
+
     cursor: pointer;
+
     font-size: 20px;
+
     transition:
             transform .12s ease,
             background .12s ease,
@@ -703,7 +1118,10 @@ input {
 
 .order-modal-item__remove:hover {
     transform: scale(1.06);
-    background: rgba(255, 77, 77, .14);
+
+    background:
+            rgba(255, 77, 77, .14);
+
     color: #ff9a9a;
 }
 
@@ -713,8 +1131,11 @@ input {
 
 .order-modal-item__info strong {
     display: block;
+
     margin-bottom: 4px;
+
     overflow-wrap: anywhere;
+
     font-family: var(--menu-font);
     font-size: 17px;
     font-weight: 500;
@@ -722,76 +1143,109 @@ input {
 
 .order-modal-item__info span {
     color: var(--muted);
+
     font-size: 13px;
 }
 
 .order-modal-item__quantity {
     display: flex;
     align-items: center;
+
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, .14);
+
+    border:
+            1px solid rgba(255, 255, 255, .14);
+
     border-radius: 999px;
-    background: rgba(255, 255, 255, .025);
+
+    background:
+            rgba(255, 255, 255, .025);
 }
 
 .order-modal-item__quantity button {
     width: 35px;
     height: 35px;
+
     border: 0;
+
     background: transparent;
     color: #ffffff;
+
     cursor: pointer;
+
     font-size: 18px;
+
     transition:
             color .12s ease,
             background .12s ease;
 }
 
 .order-modal-item__quantity button:hover {
-    background: rgba(255, 255, 255, .07);
+    background:
+            rgba(255, 255, 255, .07);
+
     color: var(--red-light);
 }
 
 .order-modal-item__quantity button:disabled {
     cursor: wait;
+
     opacity: .55;
 }
 
 .order-modal-item__quantity span {
     min-width: 31px;
+
     text-align: center;
+
     font-size: 14px;
     font-weight: 700;
 }
 
 .order-modal__footer {
-    padding: 16px 20px;
-    border-top: 1px solid var(--line-soft);
+    padding: 0 20px 20px;
 }
 
 .order-modal__done {
     width: 100%;
     min-height: 45px;
+
     padding: 0 16px;
-    border: 1px solid rgba(255, 26, 26, .38);
+
+    border:
+            1px solid rgba(255, 26, 26, .38);
+
     border-radius: 13px;
-    background: rgba(255, 26, 26, .12);
+
+    background:
+            rgba(255, 26, 26, .12);
+
     color: #ffffff;
+
     cursor: pointer;
+
     font-weight: 700;
+
     transition:
             background .15s ease,
             border-color .15s ease;
 }
 
 .order-modal__done:hover {
-    border-color: rgba(255, 26, 26, .62);
-    background: rgba(255, 26, 26, .21);
+    border-color:
+            rgba(255, 26, 26, .62);
+
+    background:
+            rgba(255, 26, 26, .21);
 }
 
-/* Responsive */
+
+/* =========================================================
+   RESPONSIVE — TABLET
+   ========================================================= */
 
 @media (max-width: 900px) {
+
     .brand__logo {
         width: 180px;
         height: 180px;
@@ -815,14 +1269,33 @@ input {
     }
 }
 
-@media (max-width: 600px) {
-    .menu-toolbar {
-        padding: 66px 16px 0;
+
+/*
+ * On narrower screens, the heading and all three
+ * controls stack vertically. The three controls
+ * remain exactly equal in width.
+ */
+@media (max-width: 850px) {
+
+    .pending-orders-panel__header {
+        grid-template-columns: 1fr;
+
+        align-items: stretch;
     }
 
-    .menu-toolbar .btn {
-        flex: 1 1 auto;
+    .menu-create-order-form input,
+    .menu-create-order-button,
+    .completed-orders-menu-link {
+        width: 100%;
     }
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
 
     .lang-switcher {
         top: .75rem;
@@ -831,6 +1304,7 @@ input {
 
     .lang-switcher button {
         padding: .2rem .65rem;
+
         font-size: .82rem;
     }
 
@@ -857,12 +1331,11 @@ input {
     }
 
     .pending-orders-panel__header {
-        align-items: flex-start;
-        flex-direction: column;
+        gap: 12px;
     }
 
     .pending-order-card {
-        min-width: 145px;
+        min-width: 180px;
     }
 
     .selected-order-hint {
@@ -885,11 +1358,14 @@ input {
     .subcat {
         margin: 18px 0 10px;
         padding-left: 10px;
+
         font-size: 18px;
     }
 
     .menu-row {
-        grid-template-columns: auto 1fr auto;
+        grid-template-columns:
+                auto minmax(20px, 1fr) auto;
+
         gap: 8px;
     }
 
@@ -898,35 +1374,25 @@ input {
         font-size: 16px;
     }
 
+    .item-name {
+        overflow-wrap: anywhere;
+    }
+
     .item-desc {
         margin: 4px 0 12px;
+
         font-size: 13px;
-    }
-
-    .footer__text {
-        display: block;
-        margin: 0;
-    }
-
-    .footer-msg,
-    .footer__muted,
-    .footer__copy {
-        display: block;
-        margin: .25rem 0;
-    }
-
-    .footer__muted {
-        font-size: 1.2rem;
-        line-height: 1;
     }
 
     .order-modal-backdrop {
         align-items: flex-end;
+
         padding: 10px 10px 0;
     }
 
     .order-modal {
         max-height: 90vh;
+
         border-radius: 20px 20px 0 0;
     }
 
@@ -947,15 +1413,47 @@ input {
     }
 
     .order-modal__footer {
-        padding: 14px 17px 17px;
+        padding: 0 17px 17px;
     }
 
     .order-modal-item {
-        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-columns:
+                auto minmax(0, 1fr);
     }
 
     .order-modal-item__quantity {
         grid-column: 2;
+
         justify-self: start;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+    .pending-orders-panel {
+        margin: 12px;
+        padding: 14px;
+    }
+
+    .pending-order-card {
+        min-width: 175px;
+    }
+
+    .menu-row {
+        gap: 6px;
+    }
+
+    .item-name,
+    .item-price {
+        font-size: 15px;
+    }
+
+    .pending-order-card__actions {
+        grid-template-columns: 1fr;
     }
 }

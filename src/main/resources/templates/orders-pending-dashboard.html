@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<html lang="bg"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
 
@@ -8,7 +10,17 @@
 
     <title>Магелан — Текущи поръчки</title>
 
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
     <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap"
+          rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
 
     <link rel="stylesheet"
@@ -16,8 +28,16 @@
           href="/styles.css">
 
     <link rel="stylesheet"
-          th:href="@{/orders-dashboard.css}"
-          href="/orders-dashboard.css">
+          th:href="@{/orders-dashboard.css(v=2)}"
+          href="/orders-dashboard.css?v=2">
+
+    <link rel="stylesheet"
+          th:href="@{/unified-language-font.css}"
+          href="/unified-language-font.css">
+
+    <link rel="stylesheet"
+          th:href="@{/shared-footer.css}"
+          href="/shared-footer.css">
 
     <meta name="_csrf"
           th:content="${_csrf.token}">
@@ -25,8 +45,11 @@
     <meta name="_csrf_header"
           th:content="${_csrf.headerName}">
 
-    <!-- Styles needed only for the language switch and confirmation window -->
     <style>
+        /* =====================================================
+           LANGUAGE SWITCHER
+           ===================================================== */
+
         .orders-language-switcher {
             position: fixed;
             top: 16px;
@@ -49,6 +72,7 @@
 
             font-size: 0.85rem;
             font-weight: 700;
+
             cursor: pointer;
 
             transition:
@@ -65,6 +89,11 @@
             background: #ffffff;
             color: #000000;
         }
+
+
+        /* =====================================================
+           CANCEL CONFIRMATION MODAL
+           ===================================================== */
 
         body.cancel-modal-open {
             overflow: hidden;
@@ -86,6 +115,7 @@
             padding: 20px;
 
             background: rgba(0, 0, 0, 0.82);
+
             backdrop-filter: blur(6px);
         }
 
@@ -108,8 +138,8 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 16px;
 
+            gap: 16px;
             padding: 20px;
 
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -135,6 +165,13 @@
             letter-spacing: 1px;
         }
 
+        html[lang="bg"] .cancel-modal__header h2 {
+            font-family: "Cormorant Unicase", serif;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
         .cancel-modal__close {
             width: 38px;
             height: 38px;
@@ -154,6 +191,7 @@
 
             font-size: 1.55rem;
             line-height: 1;
+
             cursor: pointer;
         }
 
@@ -187,6 +225,7 @@
 
         .cancel-modal__order-label {
             display: block;
+
             margin-bottom: 5px;
 
             color: rgba(255, 255, 255, 0.58);
@@ -218,8 +257,8 @@
         .cancel-modal__actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
 
+            gap: 10px;
             padding: 16px 20px;
 
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -227,11 +266,13 @@
 
         .cancel-modal__button {
             min-height: 44px;
+
             padding: 0 17px;
 
             border-radius: 12px;
 
             font-weight: 700;
+
             cursor: pointer;
         }
 
@@ -259,16 +300,27 @@
 
         .cancel-modal__button:disabled {
             opacity: 0.6;
+
             cursor: wait;
         }
 
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
         @media (max-width: 760px) {
             .orders-language-switcher {
-                position: static;
+                top: 12px;
+                right: 12px;
+            }
 
-                justify-content: flex-end;
+            .orders-language-switcher button {
+                min-width: 42px;
 
-                padding: 14px 14px 0;
+                padding: 6px 11px;
+
+                font-size: 0.82rem;
             }
         }
 
@@ -296,11 +348,15 @@
 
 <body class="orders-page">
 
-<div class="bg" aria-hidden="true"></div>
+<div class="bg"
+     aria-hidden="true">
+</div>
 
 <!-- Language switch -->
 <div class="orders-language-switcher"
-     aria-label="Language switcher">
+     data-aria-bg="Избор на език"
+     data-aria-en="Language switcher"
+     aria-label="Избор на език">
 
     <button type="button"
             data-lang-switch="bg">
@@ -315,46 +371,26 @@
 
 <main class="orders-wrap">
 
-    <header class="orders-header">
+    <!-- Logo and page title -->
+    <header class="orders-hero">
 
-        <div class="orders-header__branding">
+        <a class="orders-hero__logo-link"
+           th:href="@{/home}"
+           href="/home"
+           data-aria-bg="Назад към началната страница"
+           data-aria-en="Back to the home page"
+           aria-label="Назад към началната страница">
 
-            <p class="eyebrow"
-               data-bilingual>
-                Конзола за поръчки / Pirate Orders Console
-            </p>
+            <img class="orders-hero__logo"
+                 src="/magelan-index.jpg"
+                 th:src="@{/magelan-index.jpg}"
+                 alt="Magelan logo">
+        </a>
 
-            <h1 class="orders-title"
-                data-bilingual>
-                Текущи поръчки / Pending Orders
-            </h1>
-
-            <p class="orders-subtitle"
-               data-bilingual>
-                Управлявайте всички активни поръчки от едно място. Добавяйте, премахвайте и променяйте количествата директно от таблото. / Manage all active orders from one place. Add, remove, and adjust item quantities directly from the dashboard.
-            </p>
-        </div>
-
-        <div class="orders-header__actions">
-
-            <a class="btn btn--ghost"
-               th:href="@{/home}"
-               data-bilingual>
-                Начало / Home
-            </a>
-
-            <a class="btn btn--ghost"
-               th:href="@{/menu}"
-               data-bilingual>
-                Меню / Menu
-            </a>
-
-            <a class="btn btn--ghost"
-               th:href="@{/orders/completed}"
-               data-bilingual>
-                Завършени поръчки / Completed Orders
-            </a>
-        </div>
+        <h1 class="orders-hero__title"
+            data-bilingual>
+            Текущи поръчки / Pending Orders
+        </h1>
     </header>
 
     <!-- Create new order -->
@@ -402,11 +438,18 @@
 
                 <p id="openOrdersCount"
                    th:attr="data-count=${pendingOrders == null
-                       ? 0
-                       : #lists.size(pendingOrders)}">
+               ? 0
+               : #lists.size(pendingOrders)}">
                     0 отворени поръчки
                 </p>
             </div>
+
+            <a class="btn completed-orders-link"
+               th:href="@{/orders/completed}"
+               href="/orders/completed"
+               data-bilingual>
+                Завършени поръчки / Completed Orders
+            </a>
         </div>
 
         <!-- Empty state -->
@@ -533,7 +576,7 @@
                                                     data-aria-en='Remove item'
                                                 "
                                                 aria-label="Премахни артикула"
-                                                title="Remove item">
+                                                title="Премахни артикула">
                                             ×
                                         </button>
 
@@ -559,7 +602,7 @@
                                                         data-aria-en='Decrease quantity'
                                                     "
                                                     aria-label="Намали количеството"
-                                                    title="Decrease quantity">
+                                                    title="Намали количеството">
                                                 −
                                             </button>
 
@@ -576,7 +619,7 @@
                                                         data-aria-en='Increase quantity'
                                                     "
                                                     aria-label="Увеличи количеството"
-                                                    title="Increase quantity">
+                                                    title="Увеличи количеството">
                                                 +
                                             </button>
                                         </div>
@@ -616,10 +659,6 @@
                         </button>
                     </form>
 
-                    <!--
-                        This form is intercepted by JavaScript.
-                        It is submitted only after confirmation.
-                    -->
                     <form class="js-cancel-order-form"
                           th:action="@{/orders/{orderId}/cancel(
                               orderId=${order.id}
@@ -639,6 +678,8 @@
     </section>
 </main>
 
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 <!-- Cancel confirmation window -->
 <div id="cancelModalBackdrop"
      class="cancel-modal-backdrop"
@@ -653,6 +694,7 @@
         <header class="cancel-modal__header">
 
             <div>
+
                 <p class="cancel-modal__eyebrow"
                    data-bilingual>
                     Потвърждение / Confirmation
@@ -751,16 +793,11 @@
      */
 
     function splitBilingualHtml(value) {
-        const html = String(value ?? "").trim();
+        const html =
+            String(value ?? "").trim();
 
-        /*
-         * Only a slash with spaces around it is considered
-         * the separator between Bulgarian and English.
-         *
-         * This protects names such as:
-         * Суджук/луканка / Sudzhuk...
-         */
-        const parts = html.split(/\s+\/\s+/);
+        const parts =
+            html.split(/\s+\/\s+/);
 
         if (parts.length < 2) {
             return null;
@@ -768,7 +805,9 @@
 
         return {
             bg: parts[0].trim(),
-            en: parts.slice(1).join(" / ").trim()
+            en: parts.slice(1)
+                .join(" / ")
+                .trim()
         };
     }
 
@@ -777,7 +816,8 @@
         const element =
             document.createElement("div");
 
-        element.innerHTML = value ?? "";
+        element.innerHTML =
+            value ?? "";
 
         return element.textContent ?? "";
     }
@@ -812,7 +852,10 @@
         language = currentLanguage
     ) {
         return htmlToPlainText(
-            bilingualHtml(value, language)
+            bilingualHtml(
+                value,
+                language
+            )
         ).trim();
     }
 
@@ -913,7 +956,8 @@
 
 
     function formatOpenOrderCount(count) {
-        const number = Number(count) || 0;
+        const number =
+            Number(count) || 0;
 
         if (currentLanguage === "bg") {
             if (number === 1) {
@@ -958,10 +1002,11 @@
             return;
         }
 
-        message.textContent = translated(
-            "Сигурни ли сте, че искате да отмените тази поръчка?",
-            "Are you sure you want to cancel this order?"
-        );
+        message.textContent =
+            translated(
+                "Сигурни ли сте, че искате да отмените тази поръчка?",
+                "Are you sure you want to cancel this order?"
+            );
     }
 
 
@@ -995,10 +1040,11 @@
         updateOpenOrderCount();
         updateCancelModalText();
 
-        document.title = translated(
-            "Магелан — Текущи поръчки",
-            "Magelan — Pending Orders"
-        );
+        document.title =
+            translated(
+                "Магелан — Текущи поръчки",
+                "Magelan — Pending Orders"
+            );
 
         document
             .querySelectorAll(
@@ -1013,10 +1059,6 @@
                 );
             });
 
-        /*
-         * AJAX-generated order items also need to be
-         * redrawn after changing the language.
-         */
         document
             .querySelectorAll(".order-card")
             .forEach(card => {
@@ -1075,14 +1117,19 @@
         };
 
         if (csrfToken && csrfHeader) {
-            headers[csrfHeader] = csrfToken;
+            headers[csrfHeader] =
+                csrfToken;
         }
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: headers,
-            credentials: "same-origin"
-        });
+        const response =
+            await fetch(
+                url,
+                {
+                    method: "POST",
+                    headers: headers,
+                    credentials: "same-origin"
+                }
+            );
 
         if (!response.ok) {
             throw new Error(
@@ -1096,7 +1143,8 @@
 
 
     function formatMoney(value) {
-        const number = Number(value);
+        const number =
+            Number(value);
 
         if (Number.isNaN(number)) {
             return `${value} €`;
@@ -1107,16 +1155,17 @@
 
 
     function escapeHtml(value) {
-        return String(value ?? "").replace(
-            /[&<>"']/g,
-            character => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                "\"": "&quot;",
-                "'": "&#039;"
-            })[character]
-        );
+        return String(value ?? "")
+            .replace(
+                /[&<>"']/g,
+                character => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    "\"": "&quot;",
+                    "'": "&#039;"
+                })[character]
+            );
     }
 
 
@@ -1229,19 +1278,17 @@
 
 
     function updateOrderCard(orderData) {
-        const card = document.querySelector(
-            `[data-order-id="${orderData.orderId}"]`
-        );
+        const card =
+            document.querySelector(
+                `[data-order-id="${orderData.orderId}"]`
+            );
 
         if (!card) {
             return;
         }
 
-        /*
-         * Cache the latest full response so product names can
-         * be redrawn if the language changes later.
-         */
-        card._orderData = orderData;
+        card._orderData =
+            orderData;
 
         const totalElement =
             card.querySelector(
@@ -1260,7 +1307,9 @@
 
         if (totalElement) {
             totalElement.textContent =
-                formatMoney(orderData.amount);
+                formatMoney(
+                    orderData.amount
+                );
         }
 
         if (countElement) {
@@ -1270,7 +1319,9 @@
 
         if (itemsContainer) {
             itemsContainer.innerHTML =
-                renderItems(orderData.items);
+                renderItems(
+                    orderData.items
+                );
         }
     }
 
@@ -1289,7 +1340,9 @@
             const orderData =
                 await postJson(url);
 
-            updateOrderCard(orderData);
+            updateOrderCard(
+                orderData
+            );
 
         } catch (error) {
             console.error(error);
@@ -1316,7 +1369,8 @@
      */
 
     function showCancelModal(form) {
-        cancelFormToSubmit = form;
+        cancelFormToSubmit =
+            form;
 
         const orderName =
             form.dataset.orderName || "";
@@ -1325,11 +1379,13 @@
             .getElementById(
                 "cancelModalOrderName"
             )
-            .textContent = orderName;
+            .textContent =
+            orderName;
 
         updateCancelModalText();
 
-        cancelModalBackdrop.hidden = false;
+        cancelModalBackdrop.hidden =
+            false;
 
         document.body.classList.add(
             "cancel-modal-open"
@@ -1340,13 +1396,18 @@
 
 
     function hideCancelModal() {
-        cancelModalBackdrop.hidden = true;
+        cancelModalBackdrop.hidden =
+            true;
 
         document.body.classList.remove(
             "cancel-modal-open"
         );
 
-        cancelFormToSubmit = null;
+        cancelFormToSubmit =
+            null;
+
+        confirmCancelOrderButton.disabled =
+            false;
     }
 
 
@@ -1363,13 +1424,11 @@
                 return;
             }
 
-            /*
-             * Stop the first submission and ask for
-             * confirmation instead.
-             */
             event.preventDefault();
 
-            showCancelModal(cancelForm);
+            showCancelModal(
+                cancelForm
+            );
         }
     );
 
@@ -1377,6 +1436,7 @@
     confirmCancelOrderButton.addEventListener(
         "click",
         () => {
+
             if (!cancelFormToSubmit) {
                 return;
             }
@@ -1384,13 +1444,9 @@
             const form =
                 cancelFormToSubmit;
 
-            confirmCancelOrderButton.disabled = true;
+            confirmCancelOrderButton.disabled =
+                true;
 
-            /*
-             * HTMLFormElement.submit() submits directly,
-             * so the submit listener does not open the
-             * confirmation window for a second time.
-             */
             form.submit();
         }
     );
@@ -1474,9 +1530,10 @@
     cancelModalBackdrop.addEventListener(
         "click",
         event => {
+
             if (
-                event.target
-                === cancelModalBackdrop
+                event.target ===
+                cancelModalBackdrop
             ) {
                 hideCancelModal();
             }
@@ -1487,6 +1544,7 @@
     document.addEventListener(
         "keydown",
         event => {
+
             if (
                 event.key === "Escape" &&
                 !cancelModalBackdrop.hidden

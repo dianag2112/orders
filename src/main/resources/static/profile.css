@@ -1,54 +1,301 @@
+:root {
+    --profile-bg: #000000;
+
+    --profile-panel:
+            rgba(20, 20, 20, .92);
+
+    --profile-text:
+            rgba(255, 255, 255, .92);
+
+    --profile-muted:
+            rgba(255, 255, 255, .66);
+
+    --profile-line:
+            rgba(255, 255, 255, .12);
+
+    --profile-line-strong:
+            rgba(255, 255, 255, .20);
+
+    --profile-red: #ff1a1a;
+    --profile-red-light: #ff5a5a;
+
+    --profile-green: #22c55e;
+
+    --profile-radius: 16px;
+
+    --profile-shadow:
+            0 22px 65px rgba(0, 0, 0, .58);
+
+    --profile-pirate:
+            "Pirata One",
+            ui-serif,
+            Georgia,
+            serif;
+
+    --profile-menu-font:
+            "Cormorant Unicase",
+            serif;
+
+    --profile-ui:
+            ui-sans-serif,
+            system-ui,
+            -apple-system,
+            "Segoe UI",
+            Roboto,
+            Arial,
+            sans-serif;
+}
+
+
+/* =========================================================
+   GENERAL
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+body.profile-page {
+    margin: 0;
+
+    overflow-x: hidden;
+
+    background: var(--profile-bg);
+    color: var(--profile-text);
+
+    font-family: var(--profile-ui);
+
+    -webkit-text-size-adjust: 100%;
+}
+
+a {
+    color: inherit;
+}
+
+
+/* =========================================================
+   LANGUAGE SWITCHER
+   ========================================================= */
+
+.profile-language-switcher {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 2000;
+
+    display: flex;
+
+    gap: 8px;
+}
+
+.profile-language-switcher button {
+    min-width: 48px;
+
+    padding: 7px 13px;
+
+    border:
+            1px solid rgba(255, 255, 255, .55);
+
+    border-radius: 999px;
+
+    background:
+            rgba(0, 0, 0, .78);
+
+    color: #ffffff;
+
+    cursor: pointer;
+
+    font-size: .85rem;
+    font-weight: 700;
+
+    transition:
+            transform .15s ease,
+            background .15s ease,
+            color .15s ease;
+}
+
+.profile-language-switcher button:hover {
+    transform: translateY(-1px);
+}
+
+.profile-language-switcher button.is-active {
+    background: #ffffff;
+    color: #000000;
+}
+
+
+/* =========================================================
+   PAGE LAYOUT
+   ========================================================= */
+
 .home-center {
-    min-height: 100vh;
+    width: 100%;
+    min-height: calc(100vh - 80px);
+
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #000;
-    padding: 20px;
+
+    gap: 22px;
+
+    padding: 28px 20px 42px;
+
+    background: var(--profile-bg);
 }
 
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+
+    width: 100%;
+}
+
+.logo-container a {
+    display: inline-flex;
+
+    border-radius: 16px;
+
+    text-decoration: none;
+}
+
+.logo-container a:focus-visible {
+    outline:
+            2px solid rgba(255, 77, 77, .8);
+
+    outline-offset: 5px;
+}
+
+.logo-image {
+    width: 190px;
+    height: 190px;
+
+    display: block;
+
+    object-fit: contain;
+
+    transition:
+            transform .18s ease,
+            opacity .18s ease;
+}
+
+.logo-container a:hover
+.logo-image {
+    transform: scale(1.015);
+
+    opacity: .94;
+}
+
+
+/* =========================================================
+   PROFILE PANEL
+   ========================================================= */
+
 .panel.profile-panel {
-    background: rgba(20, 20, 20, 0.9);
-    padding: 28px;
-    border-radius: 12px;
     width: 100%;
     max-width: 760px;
-    color: #fff;
+
+    padding: 28px;
+
+    border:
+            1px solid var(--profile-line);
+
+    border-radius:
+            var(--profile-radius);
+
+    background:
+            var(--profile-panel);
+
+    color:
+            var(--profile-text);
+
+    box-shadow:
+            var(--profile-shadow);
+
     text-align: left;
-    border: 1px solid #222;
 }
 
 .title {
-    font-family: 'Pirata One', cursive;
+    margin: 0 0 24px;
+
+    color:
+            var(--profile-red-light);
+
+    font-family:
+            var(--profile-pirate);
+
     font-size: 2.2rem;
-    margin-bottom: 24px;
-    color: #ff1a1a;
-    font-weight: normal;
+    font-weight: 400;
+    line-height: 1.2;
+
     text-align: center;
 }
 
-.profile-alert {
-    background: #102312;
-    border: 1px solid #1f8a3b;
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 16px;
-    color: #a4e9b8;
-    font-size: 0.9rem;
+html[lang="bg"] .title {
+    font-family:
+            var(--profile-menu-font);
+
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
 }
+
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+.profile-alert {
+    margin-bottom: 16px;
+    padding: 11px 13px;
+
+    border:
+            1px solid rgba(34, 197, 94, .48);
+
+    border-radius: 10px;
+
+    background:
+            rgba(34, 197, 94, .10);
+
+    color: #a4e9b8;
+
+    font-size: .92rem;
+    line-height: 1.45;
+}
+
+.profile-alert p {
+    margin: 0;
+}
+
+
+/* =========================================================
+   PROFILE CONTENT
+   ========================================================= */
 
 .profile-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+
+    gap: 22px;
 }
 
 .profile-main {
     display: flex;
-    gap: 18px;
     align-items: flex-start;
     flex-wrap: wrap;
+
+    gap: 18px;
 }
 
 .profile-avatar-wrap {
@@ -58,128 +305,272 @@
 .profile-avatar {
     width: 120px;
     height: 120px;
+
+    border:
+            2px solid var(--profile-red);
+
     border-radius: 50%;
+
     object-fit: cover;
-    border: 2px solid #ff1a1a;
-    box-shadow: 0 0 14px rgba(255, 0, 0, 0.5);
+
+    box-shadow:
+            0 0 14px rgba(255, 0, 0, .5);
 }
 
 .profile-info {
-    flex: 1;
     min-width: 220px;
+    flex: 1;
 }
+
+
+/* =========================================================
+   PROFILE ROWS
+   ========================================================= */
 
 .profile-row {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    padding: 6px 0;
-    border-bottom: 1px solid #333;
-    font-size: 0.95rem;
+    align-items: center;
+
+    gap: 18px;
+    padding: 14px 2px;
+
+    border-bottom:
+            1px solid var(--profile-line);
+
+    font-size: .97rem;
+}
+
+.profile-row:first-child {
+    padding-top: 4px;
 }
 
 .profile-row:last-child {
+    padding-bottom: 4px;
+
     border-bottom: none;
 }
 
 .profile-row .label {
-    color: #b8b8b8;
+    color:
+            var(--profile-muted);
 }
 
 .profile-row .value {
-    font-weight: 600;
-    color: #e3e3e3
+    color:
+            var(--profile-text);
+
+    font-weight: 650;
+    text-align: right;
+
+    overflow-wrap: anywhere;
 }
+
+.value--secret {
+    letter-spacing: 2px;
+
+    opacity: .9;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
 
 .profile-actions {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    align-items: stretch;
     flex-wrap: wrap;
-    margin-top: 10px;
+
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.profile-actions > a,
+.profile-actions > form {
+    width: 100%;
+    max-width: 280px;
+    flex: 1 1 220px;
+}
+
+.profile-actions form {
+    margin: 0;
 }
 
 .btn {
-    font-family: 'Pirata One', cursive;
-    letter-spacing: 1px;
-    padding: 10px 24px;
-    border-radius: 6px;
-    border: none;
-    text-decoration: none;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: 0.3s;
-    text-align: center;
-}
-
-.primary-btn {
-    background: #ff0000;
-    color: #fff;
-}
-
-.primary-btn:hover {
-    background: #cc0000;
-}
-
-.secondary-btn {
-    background: #444;
-    color: #fff;
-}
-
-.secondary-btn:hover {
-    background: #666;
-}
-
-.value--secret{
-    letter-spacing: 2px;
-    opacity: 0.9;
-}
-
-.footer-rope{
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-
-    height: var(--footer-height);
     width: 100%;
-    display: flex;
-    flex-direction: column;
+    min-height: 48px;
+
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    padding: 14px 10px 18px;
-    text-align: center;
+    padding: 9px 20px;
 
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(6px);
-    border-top: 1px solid rgba(255,255,255,0.10);
-    z-index: 9999;
-}
+    border:
+            1px solid transparent;
 
-.footer-rope .rope{
-    width: 160px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #ff1a1a, transparent);
-    margin-bottom: 12px;
-}
+    border-radius: 12px;
 
-.footer-text{
-    margin: 0;
-    font-family: var(--pirate, "Pirata One", serif);
-    color: #ff1a1a;
+    font-family:
+            var(--profile-pirate);
+
+    font-size: 1.08rem;
+    font-weight: 400;
     letter-spacing: 1px;
-    font-size: 0.95rem;
+    line-height: 1.15;
+
     text-align: center;
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+            transform .15s ease,
+            background .15s ease,
+            border-color .15s ease,
+            color .15s ease;
 }
+
+html[lang="bg"] .btn {
+    font-family:
+            var(--profile-menu-font);
+
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:focus-visible {
+    outline:
+            2px solid rgba(255, 255, 255, .70);
+
+    outline-offset: 3px;
+}
+
+.primary-btn {
+    border-color:
+            rgba(255, 26, 26, .55);
+
+    background:
+            rgba(255, 26, 26, .92);
+
+    color: #ffffff;
+}
+
+.primary-btn:hover {
+    border-color:
+            rgba(255, 90, 90, .82);
+
+    background: #d90000;
+}
+
+.secondary-btn {
+    border-color:
+            var(--profile-line-strong);
+
+    background:
+            rgba(255, 255, 255, .08);
+
+    color: #ffffff;
+}
+
+.secondary-btn:hover {
+    border-color:
+            rgba(255, 255, 255, .32);
+
+    background:
+            rgba(255, 255, 255, .15);
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
 
 @media (max-width: 640px) {
+    .profile-language-switcher {
+        top: 12px;
+        right: 12px;
+    }
+
+    .profile-language-switcher button {
+        min-width: 42px;
+
+        padding: 6px 11px;
+
+        font-size: .82rem;
+    }
+
+    .home-center {
+        justify-content: flex-start;
+
+        gap: 18px;
+        padding: 74px 14px 30px;
+    }
+
+    .logo-image {
+        width: 145px;
+        height: 145px;
+    }
+
     .panel.profile-panel {
-        padding: 22px;
+        padding: 22px 18px;
+    }
+
+    .title {
+        margin-bottom: 20px;
+
+        font-size: 1.9rem;
     }
 
     .profile-row {
         flex-direction: column;
         align-items: flex-start;
+
+        gap: 6px;
+        padding: 13px 0;
+    }
+
+    .profile-row .value {
+        width: 100%;
+
+        text-align: left;
+    }
+
+    .profile-actions > a,
+    .profile-actions > form {
+        max-width: none;
+        flex-basis: 100%;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 400px) {
+    .home-center {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .logo-image {
+        width: 130px;
+        height: 130px;
+    }
+
+    .panel.profile-panel {
+        padding: 20px 15px;
+    }
+
+    .title {
+        font-size: 1.72rem;
     }
 }

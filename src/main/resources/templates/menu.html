@@ -1,22 +1,39 @@
 <!doctype html>
-<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<html lang="bg"
+      xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="description" content="Magelan — pirate-themed restaurant menu.">
-    <meta name="theme-color" content="#000000">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
 
-    <meta property="og:title" content="Magelan — Menu">
-    <meta property="og:description" content="Magelan Restaurant Menu">
-    <meta property="og:image" content="/magelan-index.jpg">
+    <meta name="description"
+          content="Magelan — pirate-themed restaurant menu.">
 
-    <meta name="_csrf" th:content="${_csrf.token}">
-    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <meta name="theme-color"
+          content="#000000">
 
-    <title>Магелан — Меню</title>
+    <meta property="og:title"
+          content="Magelan — Menu">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <meta property="og:description"
+          content="Magelan Restaurant Menu">
+
+    <meta property="og:image"
+          content="/magelan-index.jpg">
+
+    <meta name="_csrf"
+          th:content="${_csrf.token}">
+
+    <meta name="_csrf_header"
+          th:content="${_csrf.headerName}">
+
+    <title>Magelan — Menu</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
     <link rel="preconnect"
           href="https://fonts.gstatic.com"
           crossorigin>
@@ -28,8 +45,16 @@
           rel="stylesheet">
 
     <link rel="stylesheet"
-          th:href="@{/menu.css}"
-          href="/menu.css">
+          th:href="@{/menu.css(v=20)}"
+          href="/menu.css?v=20">
+
+    <link rel="stylesheet"
+          th:href="@{/unified-language-font.css}"
+          href="/unified-language-font.css">
+
+    <link rel="stylesheet"
+          th:href="@{/shared-footer.css}"
+          href="/shared-footer.css">
 </head>
 
 <body th:attr="data-initial-order-id=${orderId}">
@@ -41,7 +66,9 @@
 </a>
 
 <div class="lang-switcher"
-     aria-label="Language switcher">
+     data-aria-bg="Избор на език"
+     data-aria-en="Language switcher"
+     aria-label="Избор на език">
 
     <button type="button"
             data-lang-switch="bg">
@@ -54,35 +81,24 @@
     </button>
 </div>
 
-<div class="menu-toolbar">
-
-    <a class="btn btn-secondary"
-       th:href="@{/home}"
-       data-bilingual>
-        Начало / Home
-    </a>
-
-    <a class="btn btn-secondary"
-       th:href="@{/orders/pending}"
-       data-bilingual>
-        Управление на поръчките / Manage orders
-    </a>
-</div>
-
 <header class="hero">
+
     <div class="hero__inner">
 
         <div class="brand">
 
-            <a th:href="@{/home}">
+            <a th:href="@{/home}"
+               href="/home">
+
                 <img class="brand__logo"
                      src="/magelan-index.jpg"
+                     th:src="@{/magelan-index.jpg}"
                      alt="Magelan logo">
             </a>
 
             <p class="brand__sub"
                data-bilingual>
-                Restaurant Menu
+                Меню / Restaurant Menu
             </p>
         </div>
     </div>
@@ -92,7 +108,8 @@
 
     <div class="pending-orders-panel__header">
 
-        <div>
+        <div class="pending-orders-panel__title">
+
             <h2 data-bilingual>
                 Текущи поръчки / Pending Orders
             </h2>
@@ -102,10 +119,30 @@
             </p>
         </div>
 
-        <a class="pending-orders-panel__manage"
-           th:href="@{/orders/pending}"
+        <form class="menu-create-order-form"
+              th:action="@{/orders/new}"
+              method="post">
+
+            <input type="text"
+                   name="orderName"
+                   data-placeholder-bg="Име или маса"
+                   data-placeholder-en="Name or table"
+                   placeholder="Име или маса"
+                   aria-label="Име или маса"
+                   required>
+
+            <button type="submit"
+                    class="menu-create-order-button"
+                    data-bilingual>
+                Създай / Create
+            </button>
+        </form>
+
+        <a class="completed-orders-menu-link"
+           th:href="@{/orders/completed}"
+           href="/orders/completed"
            data-bilingual>
-            Създаване и управление / Create and manage
+            Завършени поръчки / Completed Orders
         </a>
     </div>
 
@@ -118,38 +155,70 @@
     <div class="pending-orders-list"
          th:if="${!#lists.isEmpty(pendingOrders)}">
 
-        <button type="button"
-                class="pending-order-card js-open-order"
-                th:each="order : ${pendingOrders}"
-                th:attr="data-order-id=${order.id}">
+        <article class="pending-order-card"
+                 th:each="order : ${pendingOrders}"
+                 th:attr="data-order-id=${order.id}">
 
-            <span class="pending-order-card__name"
-                  th:text="${order.orderName}">
-                Table 5
-            </span>
+            <button type="button"
+                    class="pending-order-card__select js-open-order"
+                    th:attr="data-order-id=${order.id}">
 
-            <span class="pending-order-card__details">
-
-                <span class="pending-order-card__count"
-                      th:with="itemCount=${#lists.isEmpty(order.items)
-                          ? 0
-                          : #aggregates.sum(order.items.![quantity])}"
-                      th:attr="data-count=${itemCount}"
-                      th:text="${itemCount + ' артикула / '
-                          + itemCount + ' items'}">
-                    0 артикула / 0 items
+                <span class="pending-order-card__name"
+                      th:text="${order.orderName}">
+                    Table 5
                 </span>
 
-                <span class="pending-order-card__amount"
-                      th:text="${#numbers.formatDecimal(
-                          order.amount,
-                          1,
-                          2
-                      ) + ' €'}">
-                    0.00 €
+                <span class="pending-order-card__details">
+
+                    <span class="pending-order-card__count"
+                          th:with="itemCount=${#lists.isEmpty(order.items)
+                              ? 0
+                              : #aggregates.sum(order.items.![quantity])}"
+                          th:attr="data-count=${itemCount}"
+                          th:text="${itemCount + ' артикула / '
+                              + itemCount + ' items'}">
+                        0 артикула / 0 items
+                    </span>
+
+                    <span class="pending-order-card__amount"
+                          th:text="${#numbers.formatDecimal(
+                              order.amount,
+                              1,
+                              2
+                          ) + ' €'}">
+                        0.00 €
+                    </span>
                 </span>
-            </span>
-        </button>
+            </button>
+
+            <div class="pending-order-card__actions">
+
+                <button type="button"
+                        class="pending-order-card__action
+                               pending-order-card__action--complete
+                               js-complete-order"
+                        th:attr="data-order-id=${order.id}"
+                        data-bilingual>
+                    Приключи / Complete
+                </button>
+
+                <button type="button"
+                        class="pending-order-card__action
+                               pending-order-card__action--cancel
+                               js-cancel-order"
+                        th:attr="data-order-id=${order.id}"
+                        data-bilingual>
+                    Откажи / Cancel
+                </button>
+            </div>
+        </article>
+    </div>
+
+    <div id="pendingOrdersEmptyClient"
+         class="pending-orders-empty"
+         data-bilingual
+         hidden>
+        В момента няма текущи поръчки. / There are no pending orders.
     </div>
 
     <div class="selected-order-hint">
@@ -190,18 +259,15 @@
 
                 <div class="menu-list">
 
-                    <!-- Products without a subcategory -->
                     <th:block th:each="product : ${section.directProducts}">
 
                         <div class="menu-item-form">
 
                             <button type="button"
                                     class="menu-item-btn js-add-product"
-                                    th:attr="
-                                        data-product-id=${product.id},
-                                        data-product-name=${product.name},
-                                        aria-label=${'Add ' + product.name}
-                                    ">
+                                    th:attr="data-product-id=${product.id},
+                                             data-product-name=${product.name},
+                                             aria-label=${'Add ' + product.name}">
 
                                 <div class="menu-row">
 
@@ -236,7 +302,6 @@
                         </div>
                     </th:block>
 
-                    <!-- Products grouped in subcategories -->
                     <th:block th:each="sub : ${section.subcategories}">
 
                         <h3 class="subcat"
@@ -253,11 +318,9 @@
 
                                 <button type="button"
                                         class="menu-item-btn js-add-product"
-                                        th:attr="
-                                            data-product-id=${product.id},
-                                            data-product-name=${product.name},
-                                            aria-label=${'Add ' + product.name}
-                                        ">
+                                        th:attr="data-product-id=${product.id},
+                                                 data-product-name=${product.name},
+                                                 aria-label=${'Add ' + product.name}">
 
                                     <div class="menu-row">
 
@@ -291,36 +354,23 @@
                                 </button>
                             </div>
                         </th:block>
+
                     </th:block>
                 </div>
             </div>
         </details>
     </section>
-
-    <footer class="footer">
-
-        <div class="footer__box">
-
-            <p class="footer__text">
-
-                <span class="footer-msg"
-                      data-bilingual>
-                    За информация за алергени и други въпроси, моля обърнете се към нашия екип. / For allergens and special requests, please ask our crew.
-                </span>
-
-                <span class="footer__muted">
-                    •
-                </span>
-
-                <span class="footer__copy">
-                    © <span id="year"></span> Magelan
-                </span>
-            </p>
-        </div>
-    </footer>
 </main>
 
-<!-- Pending order modal -->
+<footer class="footer-rope">
+
+    <div class="rope"
+         aria-hidden="true">
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</footer>
+
 <div id="orderModalBackdrop"
      class="order-modal-backdrop"
      hidden>
@@ -333,6 +383,7 @@
         <header class="order-modal__header">
 
             <div>
+
                 <p class="order-modal__eyebrow"
                    data-bilingual>
                     Текуща поръчка / Pending order
@@ -403,34 +454,37 @@
     const DEFAULT_LANG = "bg";
 
     let currentLanguage = DEFAULT_LANG;
+
+    const csrfToken =
+        document.querySelector(
+            'meta[name="_csrf"]'
+        )?.content;
+
+    const csrfHeader =
+        document.querySelector(
+            'meta[name="_csrf_header"]'
+        )?.content;
+
+    const orderModalBackdrop =
+        document.getElementById(
+            "orderModalBackdrop"
+        );
+
+    const openSelectedOrderButton =
+        document.getElementById(
+            "openSelectedOrderButton"
+        );
+
     let activeOrderId = null;
     let activeOrderData = null;
 
-    const csrfToken =
-        document.querySelector('meta[name="_csrf"]')?.content;
 
-    const csrfHeader =
-        document.querySelector('meta[name="_csrf_header"]')?.content;
-
-    const orderModalBackdrop =
-        document.getElementById("orderModalBackdrop");
-
-    const openSelectedOrderButton =
-        document.getElementById("openSelectedOrderButton");
-
-    document.getElementById("year").textContent =
-        new Date().getFullYear();
-
-
-    /*
-     * Splits text in this format:
-     *
-     * Bulgarian text / English text
-     */
     function splitBilingualHtml(value) {
-        const html = String(value ?? "").trim();
+        const html =
+            String(value ?? "").trim();
 
-        const parts = html.split(/\s+\/\s+/);
+        const parts =
+            html.split(/\s+\/\s+/);
 
         if (parts.length < 2) {
             return null;
@@ -438,15 +492,20 @@
 
         return {
             bg: parts[0].trim(),
-            en: parts.slice(1).join(" / ").trim()
+            en: parts
+                .slice(1)
+                .join(" / ")
+                .trim()
         };
     }
 
 
     function htmlToPlainText(value) {
-        const element = document.createElement("div");
+        const element =
+            document.createElement("div");
 
-        element.innerHTML = value ?? "";
+        element.innerHTML =
+            value ?? "";
 
         return element.textContent ?? "";
     }
@@ -456,7 +515,8 @@
         value,
         language = currentLanguage
     ) {
-        const parts = splitBilingualHtml(value);
+        const parts =
+            splitBilingualHtml(value);
 
         if (!parts) {
             return String(value ?? "");
@@ -473,22 +533,24 @@
         language = currentLanguage
     ) {
         return htmlToPlainText(
-            bilingualHtml(value, language)
+            bilingualHtml(
+                value,
+                language
+            )
         ).trim();
     }
 
 
-    function translated(bgText, enText) {
+    function translated(
+        bgText,
+        enText
+    ) {
         return currentLanguage === "bg"
             ? bgText
             : enText;
     }
 
 
-    /*
-     * Saves both versions of the HTML before replacing
-     * the visible content.
-     */
     function prepareBilingualElement(element) {
         if (
             element.dataset.bg !== undefined &&
@@ -498,7 +560,9 @@
         }
 
         const parts =
-            splitBilingualHtml(element.innerHTML);
+            splitBilingualHtml(
+                element.innerHTML
+            );
 
         if (!parts) {
             return;
@@ -549,23 +613,22 @@
         count,
         language = currentLanguage
     ) {
-        const numericCount = Number(count) || 0;
+        const number =
+            Number(count) || 0;
 
         if (language === "bg") {
-            const word =
-                numericCount === 1
+            return `${number} ${
+                number === 1
                     ? "артикул"
-                    : "артикула";
-
-            return `${numericCount} ${word}`;
+                    : "артикула"
+            }`;
         }
 
-        const word =
-            numericCount === 1
+        return `${number} ${
+            number === 1
                 ? "item"
-                : "items";
-
-        return `${numericCount} ${word}`;
+                : "items"
+        }`;
     }
 
 
@@ -576,12 +639,9 @@
             )
             .forEach(element => {
 
-                const count =
-                    Number(element.dataset.count) || 0;
-
                 element.textContent =
                     formatItemCount(
-                        count,
+                        element.dataset.count,
                         currentLanguage
                     );
             });
@@ -604,10 +664,12 @@
             });
 
         document
-            .querySelectorAll(".js-add-product")
+            .querySelectorAll(
+                ".js-add-product"
+            )
             .forEach(button => {
 
-                const productName =
+                const name =
                     bilingualPlainText(
                         button.dataset.productName,
                         currentLanguage
@@ -616,9 +678,32 @@
                 button.setAttribute(
                     "aria-label",
                     translated(
-                        `Добави ${productName}`,
-                        `Add ${productName}`
+                        `Добави ${name}`,
+                        `Add ${name}`
                     )
+                );
+            });
+    }
+
+
+    function updateBilingualPlaceholders() {
+        document
+            .querySelectorAll(
+                "[data-placeholder-bg][data-placeholder-en]"
+            )
+            .forEach(element => {
+
+                const placeholder =
+                    currentLanguage === "bg"
+                        ? element.dataset.placeholderBg
+                        : element.dataset.placeholderEn;
+
+                element.placeholder =
+                    placeholder;
+
+                element.setAttribute(
+                    "aria-label",
+                    placeholder
                 );
             });
     }
@@ -670,20 +755,28 @@
         );
 
         document
-            .querySelectorAll("[data-bilingual]")
-            .forEach(applyLanguageToElement);
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                applyLanguageToElement
+            );
 
         updateOrderCountLabels();
         updateSelectedOrderText();
         updateAriaTranslations();
+        updateBilingualPlaceholders();
 
-        document.title = translated(
-            "Магелан — Меню",
-            "Magelan — Menu"
-        );
+        document.title =
+            translated(
+                "Магелан — Меню",
+                "Magelan — Menu"
+            );
 
         document
-            .querySelectorAll("[data-lang-switch]")
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
             .forEach(button => {
 
                 button.classList.toggle(
@@ -693,10 +786,6 @@
                 );
             });
 
-        /*
-         * Re-render modal product names in the
-         * selected language.
-         */
         if (activeOrderData) {
             renderModalItems(
                 activeOrderData.items
@@ -707,11 +796,17 @@
 
     function initLanguageSwitcher() {
         document
-            .querySelectorAll("[data-bilingual]")
-            .forEach(prepareBilingualElement);
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                prepareBilingualElement
+            );
 
         document
-            .querySelectorAll("[data-lang-switch]")
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
             .forEach(button => {
 
                 button.addEventListener(
@@ -724,11 +819,10 @@
                 );
             });
 
-        const savedLanguage =
+        setLanguage(
             localStorage.getItem("lang")
-            || DEFAULT_LANG;
-
-        setLanguage(savedLanguage);
+            || DEFAULT_LANG
+        );
     }
 
 
@@ -745,19 +839,23 @@
             csrfToken &&
             csrfHeader
         ) {
-            headers[csrfHeader] = csrfToken;
+            headers[csrfHeader] =
+                csrfToken;
         }
 
-        const response = await fetch(url, {
-            method: method,
-            headers: headers,
-            credentials: "same-origin"
-        });
+        const response =
+            await fetch(
+                url,
+                {
+                    method,
+                    headers,
+                    credentials: "same-origin"
+                }
+            );
 
         if (!response.ok) {
             throw new Error(
-                "Request failed with status "
-                + response.status
+                `Request failed with status ${response.status}`
             );
         }
 
@@ -765,28 +863,59 @@
     }
 
 
-    function formatMoney(value) {
-        const amount = Number(value);
+    async function postOrderAction(url) {
+        const headers = {
+            "X-Requested-With": "XMLHttpRequest"
+        };
 
-        if (Number.isNaN(amount)) {
-            return `${value} €`;
+        if (
+            csrfToken &&
+            csrfHeader
+        ) {
+            headers[csrfHeader] =
+                csrfToken;
         }
 
-        return `${amount.toFixed(2)} €`;
+        const response =
+            await fetch(
+                url,
+                {
+                    method: "POST",
+                    headers,
+                    credentials: "same-origin"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                `Request failed with status ${response.status}`
+            );
+        }
+    }
+
+
+    function formatMoney(value) {
+        const amount =
+            Number(value);
+
+        return Number.isNaN(amount)
+            ? `${value} €`
+            : `${amount.toFixed(2)} €`;
     }
 
 
     function escapeHtml(value) {
-        return String(value ?? "").replace(
-            /[&<>"']/g,
-            character => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                "\"": "&quot;",
-                "'": "&#039;"
-            })[character]
-        );
+        return String(value ?? "")
+            .replace(
+                /[&<>"']/g,
+                character => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    "\"": "&quot;",
+                    "'": "&#039;"
+                })[character]
+            );
     }
 
 
@@ -809,75 +938,80 @@
             return;
         }
 
-        container.innerHTML = items.map(item => {
+        container.innerHTML =
+            items.map(item => {
 
-            const productName =
-                bilingualPlainText(
-                    item.productName,
-                    currentLanguage
-                );
+                const name =
+                    bilingualPlainText(
+                        item.productName,
+                        currentLanguage
+                    );
 
-            return `
-                <article class="order-modal-item"
-                         data-item-id="${item.itemId}">
-
-                    <button type="button"
-                            class="order-modal-item__remove js-modal-remove"
-                            data-item-id="${item.itemId}"
-                            aria-label="${translated(
-                "Премахни артикула",
-                "Remove item"
-            )}">
-                        ×
-                    </button>
-
-                    <div class="order-modal-item__info">
-
-                        <strong>
-                            ${escapeHtml(productName)}
-                        </strong>
-
-                        <span>
-                            ${formatMoney(item.lineTotal)}
-                        </span>
-                    </div>
-
-                    <div class="order-modal-item__quantity">
+                return `
+                    <article class="order-modal-item"
+                             data-item-id="${item.itemId}">
 
                         <button type="button"
-                                class="js-modal-decrease"
+                                class="order-modal-item__remove
+                                       js-modal-remove"
                                 data-item-id="${item.itemId}"
                                 aria-label="${translated(
-                "Намали количеството",
-                "Decrease quantity"
-            )}">
-                            −
+                    "Премахни артикула",
+                    "Remove item"
+                )}">
+                            ×
                         </button>
 
-                        <span>
-                            ${item.quantity}
-                        </span>
+                        <div class="order-modal-item__info">
 
-                        <button type="button"
-                                class="js-modal-increase"
-                                data-item-id="${item.itemId}"
-                                aria-label="${translated(
-                "Увеличи количеството",
-                "Increase quantity"
-            )}">
-                            +
-                        </button>
-                    </div>
-                </article>
-            `;
-        }).join("");
+                            <strong>
+                                ${escapeHtml(name)}
+                            </strong>
+
+                            <span>
+                                ${formatMoney(item.lineTotal)}
+                            </span>
+                        </div>
+
+                        <div class="order-modal-item__quantity">
+
+                            <button type="button"
+                                    class="js-modal-decrease"
+                                    data-item-id="${item.itemId}"
+                                    aria-label="${translated(
+                    "Намали количеството",
+                    "Decrease quantity"
+                )}">
+                                −
+                            </button>
+
+                            <span>
+                                ${item.quantity}
+                            </span>
+
+                            <button type="button"
+                                    class="js-modal-increase"
+                                    data-item-id="${item.itemId}"
+                                    aria-label="${translated(
+                    "Увеличи количеството",
+                    "Increase quantity"
+                )}">
+                                +
+                            </button>
+                        </div>
+                    </article>
+                `;
+            }).join("");
     }
 
 
-    function updatePendingOrderCard(orderData) {
-        const card = document.querySelector(
-            `.pending-order-card[data-order-id="${orderData.orderId}"]`
-        );
+    function updatePendingOrderCard(
+        orderData
+    ) {
+        const card =
+            document.querySelector(
+                `.pending-order-card[data-order-id="${orderData.orderId}"]`
+            );
 
         if (!card) {
             return;
@@ -895,12 +1029,16 @@
 
         if (amountElement) {
             amountElement.textContent =
-                formatMoney(orderData.amount);
+                formatMoney(
+                    orderData.amount
+                );
         }
 
         if (countElement) {
             countElement.dataset.count =
-                String(orderData.totalItems);
+                String(
+                    orderData.totalItems
+                );
 
             countElement.textContent =
                 formatItemCount(
@@ -921,7 +1059,7 @@
                 card.classList.toggle(
                     "is-active",
                     card.dataset.orderId
-                    === orderId
+                    === String(orderId)
                 );
             });
     }
@@ -929,36 +1067,56 @@
 
     function renderOrder(orderData) {
         activeOrderData = orderData;
-        activeOrderId = orderData.orderId;
+        activeOrderId =
+            String(orderData.orderId);
 
         document
-            .getElementById("orderModalTitle")
+            .getElementById(
+                "orderModalTitle"
+            )
             .textContent =
             htmlToPlainText(
                 orderData.orderName
             ).trim();
 
         document
-            .getElementById("orderModalCount")
+            .getElementById(
+                "orderModalCount"
+            )
             .textContent =
             orderData.totalItems;
 
         document
-            .getElementById("orderModalTotal")
+            .getElementById(
+                "orderModalTotal"
+            )
             .textContent =
-            formatMoney(orderData.amount);
+            formatMoney(
+                orderData.amount
+            );
 
-        openSelectedOrderButton.hidden = false;
+        openSelectedOrderButton.hidden =
+            false;
 
         updateSelectedOrderText();
-        renderModalItems(orderData.items);
-        updatePendingOrderCard(orderData);
-        markActiveOrder(orderData.orderId);
+
+        renderModalItems(
+            orderData.items
+        );
+
+        updatePendingOrderCard(
+            orderData
+        );
+
+        markActiveOrder(
+            activeOrderId
+        );
     }
 
 
     function showOrderModal() {
-        orderModalBackdrop.hidden = false;
+        orderModalBackdrop.hidden =
+            false;
 
         document.body.classList.add(
             "modal-open"
@@ -973,7 +1131,8 @@
 
 
     function hideOrderModal() {
-        orderModalBackdrop.hidden = true;
+        orderModalBackdrop.hidden =
+            true;
 
         document.body.classList.remove(
             "modal-open"
@@ -1038,8 +1197,7 @@
         try {
             const orderData =
                 await requestJson(
-                    `/orders/${activeOrderId}/add-item-ajax`
-                    + `?productId=${encodeURIComponent(productId)}`,
+                    `/orders/${activeOrderId}/add-item-ajax?productId=${encodeURIComponent(productId)}`,
                     "POST"
                 );
 
@@ -1097,6 +1255,206 @@
     }
 
 
+    function setOrderCardBusy(
+        orderId,
+        busy
+    ) {
+        const card =
+            document.querySelector(
+                `.pending-order-card[data-order-id="${orderId}"]`
+            );
+
+        if (!card) {
+            return;
+        }
+
+        card
+            .querySelectorAll("button")
+            .forEach(button => {
+                button.disabled = busy;
+            });
+
+        card.classList.toggle(
+            "is-busy",
+            busy
+        );
+    }
+
+
+    function clearActiveOrder(orderId) {
+        if (
+            String(activeOrderId) !==
+            String(orderId)
+        ) {
+            return;
+        }
+
+        activeOrderId = null;
+        activeOrderData = null;
+
+        openSelectedOrderButton.hidden =
+            true;
+
+        hideOrderModal();
+        markActiveOrder("");
+        updateSelectedOrderText();
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+        url.searchParams.delete(
+            "orderId"
+        );
+
+        history.replaceState(
+            {},
+            "",
+            `${url.pathname}${url.search}${url.hash}`
+        );
+    }
+
+
+    function removePendingOrderCard(
+        orderId
+    ) {
+        const card =
+            document.querySelector(
+                `.pending-order-card[data-order-id="${orderId}"]`
+            );
+
+        card?.remove();
+
+        const remainingCards =
+            document.querySelectorAll(
+                ".pending-order-card"
+            );
+
+        if (remainingCards.length > 0) {
+            return;
+        }
+
+        const list =
+            document.querySelector(
+                ".pending-orders-list"
+            );
+
+        const emptyMessage =
+            document.getElementById(
+                "pendingOrdersEmptyClient"
+            );
+
+        if (list) {
+            list.hidden = true;
+        }
+
+        if (emptyMessage) {
+            emptyMessage.hidden = false;
+        }
+    }
+
+
+    async function completeOrder(button) {
+        const orderId =
+            button.dataset.orderId;
+
+        const confirmed =
+            window.confirm(
+                translated(
+                    "Сигурни ли сте, че искате да приключите тази поръчка?",
+                    "Are you sure you want to complete this order?"
+                )
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        setOrderCardBusy(
+            orderId,
+            true
+        );
+
+        try {
+            await postOrderAction(
+                `/orders/${orderId}/complete`
+            );
+
+            clearActiveOrder(orderId);
+
+            removePendingOrderCard(
+                orderId
+            );
+
+        } catch (error) {
+            console.error(error);
+
+            alert(
+                translated(
+                    "Поръчката не може да бъде приключена. Моля, опитайте отново.",
+                    "The order could not be completed. Please try again."
+                )
+            );
+
+            setOrderCardBusy(
+                orderId,
+                false
+            );
+        }
+    }
+
+
+    async function cancelOrder(button) {
+        const orderId =
+            button.dataset.orderId;
+
+        const confirmed =
+            window.confirm(
+                translated(
+                    "Сигурни ли сте, че искате да откажете тази поръчка? Това действие не може да бъде отменено.",
+                    "Are you sure you want to cancel this order? This action cannot be undone."
+                )
+            );
+
+        if (!confirmed) {
+            return;
+        }
+
+        setOrderCardBusy(
+            orderId,
+            true
+        );
+
+        try {
+            await postOrderAction(
+                `/orders/${orderId}/cancel`
+            );
+
+            clearActiveOrder(orderId);
+
+            removePendingOrderCard(
+                orderId
+            );
+
+        } catch (error) {
+            console.error(error);
+
+            alert(
+                translated(
+                    "Поръчката не може да бъде отказана. Моля, опитайте отново.",
+                    "The order could not be cancelled. Please try again."
+                )
+            );
+
+            setOrderCardBusy(
+                orderId,
+                false
+            );
+        }
+    }
+
+
     document.addEventListener(
         "click",
         event => {
@@ -1108,6 +1466,32 @@
 
             if (closeButton) {
                 hideOrderModal();
+                return;
+            }
+
+            const completeButton =
+                event.target.closest(
+                    ".js-complete-order"
+                );
+
+            if (completeButton) {
+                completeOrder(
+                    completeButton
+                );
+
+                return;
+            }
+
+            const cancelButton =
+                event.target.closest(
+                    ".js-cancel-order"
+                );
+
+            if (cancelButton) {
+                cancelOrder(
+                    cancelButton
+                );
+
                 return;
             }
 
@@ -1130,7 +1514,10 @@
                 );
 
             if (productButton) {
-                addProduct(productButton);
+                addProduct(
+                    productButton
+                );
+
                 return;
             }
 
@@ -1180,8 +1567,12 @@
     openSelectedOrderButton.addEventListener(
         "click",
         () => {
+
             if (activeOrderData) {
-                renderOrder(activeOrderData);
+                renderOrder(
+                    activeOrderData
+                );
+
                 showOrderModal();
             }
         }
@@ -1191,9 +1582,10 @@
     orderModalBackdrop.addEventListener(
         "click",
         event => {
+
             if (
-                event.target
-                === orderModalBackdrop
+                event.target ===
+                orderModalBackdrop
             ) {
                 hideOrderModal();
             }
@@ -1204,6 +1596,7 @@
     document.addEventListener(
         "keydown",
         event => {
+
             if (
                 event.key === "Escape" &&
                 !orderModalBackdrop.hidden
@@ -1217,14 +1610,18 @@
     document.addEventListener(
         "DOMContentLoaded",
         () => {
+
             initLanguageSwitcher();
 
             const initialOrderId =
-                document.body.dataset
+                document.body
+                    .dataset
                     .initialOrderId;
 
             if (initialOrderId) {
-                openOrder(initialOrderId);
+                openOrder(
+                    initialOrderId
+                );
             }
         }
     );

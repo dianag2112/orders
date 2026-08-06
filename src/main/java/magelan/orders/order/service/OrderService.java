@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,12 +43,28 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public List<Order> getPendingOrders() {
-        return orderRepository.findAllByOrderStatusOrderByCreatedOnAsc(OrderStatus.PENDING);
+        return orderRepository
+                .findAllByOrderStatusOrderByCreatedOnDesc(
+                        OrderStatus.PENDING
+                );
     }
 
     @Transactional(readOnly = true)
     public List<Order> getCompletedOrders() {
-        return orderRepository.findAllByOrderStatusOrderByCreatedOnAsc(OrderStatus.COMPLETED);
+        return orderRepository
+                .findAllByOrderStatusOrderByCreatedOnAsc(
+                        OrderStatus.COMPLETED
+                )
+                .stream()
+                .sorted(
+                        Comparator.comparing(
+                                (Order order) ->
+                                        order.getCompletedOn() != null
+                                                ? order.getCompletedOn()
+                                                : order.getCreatedOn()
+                        ).reversed()
+                )
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -105,6 +122,7 @@ public class OrderService {
     public void completeOrder(UUID orderId) {
         Order order = getById(orderId);
         order.setOrderStatus(OrderStatus.COMPLETED);
+        order.setCompletedOn(LocalDateTime.now());
         orderRepository.save(order);
     }
 
@@ -269,5 +287,24 @@ public class OrderService {
         }
 
         return order;
+    }
+
+    @Transactional
+    public void deleteCompletedOrder(UUID orderId) {
+        Order order = orderRepository
+                .findById(orderId)
+                .orElseThrow(
+                        () -> new IllegalArgumentException(
+                                "Order not found: " + orderId
+                        )
+                );
+
+        if (order.getOrderStatus() != OrderStatus.COMPLETED) {
+            throw new IllegalStateException(
+                    "Only completed orders can be permanently deleted."
+            );
+        }
+
+        orderRepository.delete(order);
     }
 }
