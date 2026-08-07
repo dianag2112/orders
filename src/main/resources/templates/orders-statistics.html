@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="bg"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Магелан — Статистика</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap"
+          rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          th:href="@{/orders-statistics.css(v=1)}"
+          href="/orders-statistics.css?v=1">
+
+    <link rel="stylesheet"
+          th:href="@{/unified-language-font.css}"
+          href="/unified-language-font.css">
+
+    <link rel="stylesheet"
+          th:href="@{/shared-footer.css}"
+          href="/shared-footer.css">
+</head>
+
+<body>
+
+<div class="statistics-language-switcher"
+     data-aria-bg="Избор на език"
+     data-aria-en="Language switcher"
+     aria-label="Избор на език">
+
+    <button type="button"
+            data-lang-switch="bg">
+        БГ
+    </button>
+
+    <button type="button"
+            data-lang-switch="en">
+        EN
+    </button>
+</div>
+
+<div class="statistics-page">
+
+    <header class="statistics-hero">
+
+        <a class="statistics-hero__logo-link"
+           th:href="@{/home}"
+           href="/home">
+
+            <img class="statistics-hero__logo"
+                 src="/magelan-index.jpg"
+                 th:src="@{/magelan-index.jpg}"
+                 alt="Magelan logo">
+        </a>
+
+        <h1 class="statistics-hero__title"
+            data-bilingual>
+            Статистика / Statistics
+        </h1>
+
+        <p class="statistics-hero__subtitle"
+           data-bilingual>
+            Оборот и завършени поръчки / Revenue and completed orders
+        </p>
+    </header>
+
+    <main class="statistics-panel">
+
+        <div class="statistics-navigation">
+
+            <a class="statistics-nav-button"
+               th:href="@{/orders/completed}"
+               href="/orders/completed">
+
+                <span aria-hidden="true">
+                    ←
+                </span>
+
+                <span data-bilingual>
+                    Завършени поръчки / Completed Orders
+                </span>
+            </a>
+        </div>
+
+        <section class="statistics-summary">
+
+            <!-- Today -->
+            <article class="statistics-card statistics-card--today">
+
+                <span class="statistics-card__eyebrow"
+                      data-bilingual>
+                    Текущ работен ден / Current Business Day
+                </span>
+
+                <strong class="statistics-card__amount"
+                        th:text="${#numbers.formatDecimal(
+                            todayRevenue == null
+                                ? 0
+                                : todayRevenue,
+                            1,
+                            2
+                        ) + ' €'}">
+                    0.00 €
+                </strong>
+
+                <span class="statistics-card__orders"
+                      th:text="${todayCompletedOrders == null
+                          ? 0
+                          : todayCompletedOrders}">
+                    0
+                </span>
+
+                <span class="statistics-card__orders-label"
+                      data-bilingual>
+                    завършени поръчки / completed orders
+                </span>
+            </article>
+
+            <!-- Week -->
+            <article class="statistics-card">
+
+                <span class="statistics-card__eyebrow"
+                      data-bilingual>
+                    Тази седмица / This Week
+                </span>
+
+                <strong class="statistics-card__amount"
+                        th:text="${#numbers.formatDecimal(
+                            weekRevenue == null
+                                ? 0
+                                : weekRevenue,
+                            1,
+                            2
+                        ) + ' €'}">
+                    0.00 €
+                </strong>
+
+                <span class="statistics-card__orders"
+                      th:text="${weekCompletedOrders == null
+                          ? 0
+                          : weekCompletedOrders}">
+                    0
+                </span>
+
+                <span class="statistics-card__orders-label"
+                      data-bilingual>
+                    завършени поръчки / completed orders
+                </span>
+            </article>
+
+            <!-- Month -->
+            <article class="statistics-card">
+
+                <span class="statistics-card__eyebrow"
+                      data-bilingual>
+                    Този месец / This Month
+                </span>
+
+                <strong class="statistics-card__amount"
+                        th:text="${#numbers.formatDecimal(
+                            monthRevenue == null
+                                ? 0
+                                : monthRevenue,
+                            1,
+                            2
+                        ) + ' €'}">
+                    0.00 €
+                </strong>
+
+                <span class="statistics-card__orders"
+                      th:text="${monthCompletedOrders == null
+                          ? 0
+                          : monthCompletedOrders}">
+                    0
+                </span>
+
+                <span class="statistics-card__orders-label"
+                      data-bilingual>
+                    завършени поръчки / completed orders
+                </span>
+            </article>
+        </section>
+
+
+        <!-- Daily history -->
+        <section class="daily-history">
+
+            <div class="daily-history__heading">
+
+                <div>
+                    <h2 data-bilingual>
+                        Дневен оборот / Daily Revenue
+                    </h2>
+
+                    <p data-bilingual>
+                        Всеки работен ден започва в 06:00. / Each business day begins at 06:00.
+                    </p>
+                </div>
+            </div>
+
+            <div class="daily-history__empty"
+                 th:if="${dailyRevenueHistory == null
+                     or #lists.isEmpty(dailyRevenueHistory)}">
+
+                <span aria-hidden="true">
+                    📊
+                </span>
+
+                <p data-bilingual>
+                    Все още няма записана статистика. / No revenue history has been recorded yet.
+                </p>
+            </div>
+
+            <div class="daily-history__table-wrapper"
+                 th:if="${dailyRevenueHistory != null
+                     and !#lists.isEmpty(dailyRevenueHistory)}">
+
+                <table class="daily-history__table">
+
+                    <thead>
+                    <tr>
+
+                        <th data-bilingual>
+                            Работен ден / Business Day
+                        </th>
+
+                        <th data-bilingual>
+                            Поръчки / Orders
+                        </th>
+
+                        <th data-bilingual>
+                            Оборот / Revenue
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="day : ${dailyRevenueHistory}">
+
+                        <td th:text="${#temporals.format(
+                            day.businessDate,
+                            'dd.MM.yyyy'
+                        )}">
+                            07.08.2026
+                        </td>
+
+                        <td th:text="${day.completedOrders}">
+                            0
+                        </td>
+
+                        <td>
+
+                            <strong th:text="${#numbers.formatDecimal(
+                                day.totalRevenue,
+                                1,
+                                2
+                            ) + ' €'}">
+                                0.00 €
+                            </strong>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+    const DEFAULT_LANGUAGE = "bg";
+
+    let currentLanguage =
+        DEFAULT_LANGUAGE;
+
+
+    function splitBilingualHtml(value) {
+        const html =
+            String(value ?? "").trim();
+
+        const parts =
+            html.split(/\s+\/\s+/);
+
+        if (parts.length < 2) {
+            return null;
+        }
+
+        return {
+            bg: parts[0].trim(),
+
+            en: parts
+                .slice(1)
+                .join(" / ")
+                .trim()
+        };
+    }
+
+
+    function prepareBilingualElement(element) {
+        if (
+            element.dataset.bg !== undefined &&
+            element.dataset.en !== undefined
+        ) {
+            return;
+        }
+
+        const parts =
+            splitBilingualHtml(
+                element.innerHTML
+            );
+
+        if (!parts) {
+            return;
+        }
+
+        element.dataset.bg =
+            parts.bg;
+
+        element.dataset.en =
+            parts.en;
+    }
+
+
+    function applyLanguageToElement(element) {
+        prepareBilingualElement(element);
+
+        if (
+            element.dataset.bg === undefined ||
+            element.dataset.en === undefined
+        ) {
+            return;
+        }
+
+        element.innerHTML =
+            currentLanguage === "bg"
+                ? element.dataset.bg
+                : element.dataset.en;
+    }
+
+
+    function updateAriaLabels() {
+        document
+            .querySelectorAll(
+                "[data-aria-bg][data-aria-en]"
+            )
+            .forEach(element => {
+
+                const label =
+                    currentLanguage === "bg"
+                        ? element.dataset.ariaBg
+                        : element.dataset.ariaEn;
+
+                element.setAttribute(
+                    "aria-label",
+                    label
+                );
+
+                element.setAttribute(
+                    "title",
+                    label
+                );
+            });
+    }
+
+
+    function setLanguage(language) {
+        currentLanguage =
+            language === "en"
+                ? "en"
+                : "bg";
+
+        document.documentElement.setAttribute(
+            "lang",
+            currentLanguage
+        );
+
+        localStorage.setItem(
+            "lang",
+            currentLanguage
+        );
+
+        document
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                applyLanguageToElement
+            );
+
+        updateAriaLabels();
+
+        document.title =
+            currentLanguage === "bg"
+                ? "Магелан — Статистика"
+                : "Magelan — Statistics";
+
+        document
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
+            .forEach(button => {
+
+                button.classList.toggle(
+                    "is-active",
+                    button.dataset.langSwitch
+                    === currentLanguage
+                );
+            });
+    }
+
+
+    function initLanguageSwitcher() {
+        document
+            .querySelectorAll(
+                "[data-bilingual]"
+            )
+            .forEach(
+                prepareBilingualElement
+            );
+
+        document
+            .querySelectorAll(
+                "[data-lang-switch]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+                        setLanguage(
+                            button.dataset.langSwitch
+                        );
+                    }
+                );
+            });
+
+        setLanguage(
+            localStorage.getItem("lang")
+            || DEFAULT_LANGUAGE
+        );
+    }
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initLanguageSwitcher
+    );
+</script>
+
+</body>
+</html>

@@ -24,8 +24,8 @@
           rel="stylesheet">
 
     <link rel="stylesheet"
-          th:href="@{/orders-completed.css(v=3)}"
-          href="/orders-completed.css?v=3">
+          th:href="@{/orders-completed.css(v=5)}"
+          href="/orders-completed.css?v=5">
 
     <link rel="stylesheet"
           th:href="@{/unified-language-font.css}"
@@ -92,19 +92,94 @@
 
                 <p id="completedOrdersCount"
                    th:attr="data-count=${completedOrders == null
-               ? 0
-               : #lists.size(completedOrders)}">
+                       ? 0
+                       : #lists.size(completedOrders)}">
                     0 завършени поръчки
                 </p>
             </div>
 
-            <a class="btn pending-orders-link"
-               th:href="@{/orders/pending}"
-               href="/orders/pending"
-               data-bilingual>
-                Текущи поръчки / Pending Orders
-            </a>
+            <div class="section-heading__actions">
+
+                <a class="btn statistics-link"
+                   th:href="@{/orders/statistics}"
+                   href="/orders/statistics">
+
+                    <span aria-hidden="true">
+                        📊
+                    </span>
+
+                    <span data-bilingual>
+                        Статистика / Statistics
+                    </span>
+                </a>
+
+                <a class="btn pending-orders-link"
+                   th:href="@{/orders/pending}"
+                   href="/orders/pending"
+                   data-bilingual>
+                    Текущи поръчки / Pending Orders
+                </a>
+            </div>
         </div>
+
+        <!-- Current business day revenue -->
+        <section class="daily-revenue"
+                 aria-labelledby="dailyRevenueTitle">
+
+            <div class="daily-revenue__icon"
+                 aria-hidden="true">
+                €
+            </div>
+
+            <div class="daily-revenue__main">
+
+                <span id="dailyRevenueTitle"
+                      class="daily-revenue__label"
+                      data-bilingual>
+                    Оборот за текущия работен ден / Current Business Day Revenue
+                </span>
+
+                <strong class="daily-revenue__amount"
+                        th:text="${#numbers.formatDecimal(
+                            todayRevenue == null
+                                ? 0
+                                : todayRevenue,
+                            1,
+                            2
+                        ) + ' €'}">
+                    0.00 €
+                </strong>
+
+                <span id="todayCompletedOrdersCount"
+                      class="daily-revenue__orders"
+                      th:attr="data-count=${todayCompletedOrders == null
+                          ? 0
+                          : todayCompletedOrders}">
+                    0 завършени поръчки
+                </span>
+            </div>
+
+            <div class="daily-revenue__business-day">
+
+                <span class="daily-revenue__business-day-label"
+                      data-bilingual>
+                    Работен ден / Business Day
+                </span>
+
+                <strong th:if="${currentBusinessDate != null}"
+                        th:text="${#temporals.format(
+                            currentBusinessDate,
+                            'dd.MM.yyyy'
+                        )}">
+                    07.08.2026
+                </strong>
+
+                <span class="daily-revenue__reset"
+                      data-bilingual>
+                    06:00 – 05:59 / 06:00 – 05:59
+                </span>
+            </div>
+        </section>
 
         <!-- Empty state -->
         <div class="empty-state"
@@ -310,10 +385,6 @@
         DEFAULT_LANGUAGE;
 
 
-    /*
-     * Divides bilingual values using only a slash
-     * with spaces around it.
-     */
     function splitBilingualHtml(value) {
         const html =
             String(value ?? "").trim();
@@ -491,6 +562,37 @@
     }
 
 
+    function updateTodayCompletedOrdersCount() {
+        const element =
+            document.getElementById(
+                "todayCompletedOrdersCount"
+            );
+
+        if (!element) {
+            return;
+        }
+
+        const count =
+            Number(
+                element.dataset.count
+            ) || 0;
+
+        if (currentLanguage === "bg") {
+            element.textContent =
+                count === 1
+                    ? "1 завършена поръчка през този работен ден"
+                    : `${count} завършени поръчки през този работен ден`;
+
+            return;
+        }
+
+        element.textContent =
+            count === 1
+                ? "1 completed order this business day"
+                : `${count} completed orders this business day`;
+    }
+
+
     function updateReceiptLinks() {
         document
             .querySelectorAll(
@@ -519,18 +621,14 @@
     }
 
 
-    /*
-     * Confirmation before permanently deleting
-     * a completed order.
-     */
     function confirmCompletedOrderDeletion(form) {
         const orderName =
             form.dataset.orderName || "";
 
         const message =
             currentLanguage === "bg"
-                ? `Сигурни ли сте, че искате да изтриете поръчка „${orderName}“?\n\nПоръчката и всички нейни артикули ще бъдат окончателно изтрити. Това действие не може да бъде отменено.`
-                : `Are you sure you want to delete the order "${orderName}"?\n\nThe order and all of its items will be permanently deleted. This action cannot be undone.`;
+                ? `Сигурни ли сте, че искате да изтриете поръчка „${orderName}“?\n\nПоръчката и всички нейни артикули ще бъдат окончателно изтрити. Данните за вече отчетения оборот ще бъдат запазени. Това действие не може да бъде отменено.`
+                : `Are you sure you want to delete the order "${orderName}"?\n\nThe order and all of its items will be permanently deleted. Previously recorded revenue data will be preserved. This action cannot be undone.`;
 
         return window.confirm(message);
     }
@@ -563,6 +661,7 @@
         updateAriaLabels();
         updateProductNames();
         updateCompletedOrderCount();
+        updateTodayCompletedOrdersCount();
         updateReceiptLinks();
 
         document.title =

@@ -45,8 +45,8 @@
           rel="stylesheet">
 
     <link rel="stylesheet"
-          th:href="@{/menu.css(v=20)}"
-          href="/menu.css?v=20">
+          th:href="@{/menu.css(v=21)}"
+          href="/menu.css?v=21">
 
     <link rel="stylesheet"
           th:href="@{/unified-language-font.css}"
@@ -371,6 +371,10 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </footer>
 
+<!-- ======================================================
+     OPEN ORDER MODAL
+     ====================================================== -->
+
 <div id="orderModalBackdrop"
      class="order-modal-backdrop"
      hidden>
@@ -438,13 +442,25 @@
             </div>
         </div>
 
+        <!-- Complete / Cancel actions -->
         <footer class="order-modal__footer">
 
             <button type="button"
-                    class="order-modal__done"
-                    data-close-order-modal
+                    id="modalCompleteOrderButton"
+                    class="order-modal__action
+                           order-modal__action--complete
+                           js-complete-order"
                     data-bilingual>
-                Продължи към менюто / Continue adding items
+                Приключи / Complete
+            </button>
+
+            <button type="button"
+                    id="modalCancelOrderButton"
+                    class="order-modal__action
+                           order-modal__action--cancel
+                           js-cancel-order"
+                    data-bilingual>
+                Откажи / Cancel
             </button>
         </footer>
     </section>
@@ -453,27 +469,45 @@
 <script>
     const DEFAULT_LANG = "bg";
 
-    let currentLanguage = DEFAULT_LANG;
+    let currentLanguage =
+        DEFAULT_LANG;
+
 
     const csrfToken =
         document.querySelector(
             'meta[name="_csrf"]'
         )?.content;
 
+
     const csrfHeader =
         document.querySelector(
             'meta[name="_csrf_header"]'
         )?.content;
+
 
     const orderModalBackdrop =
         document.getElementById(
             "orderModalBackdrop"
         );
 
+
     const openSelectedOrderButton =
         document.getElementById(
             "openSelectedOrderButton"
         );
+
+
+    const modalCompleteOrderButton =
+        document.getElementById(
+            "modalCompleteOrderButton"
+        );
+
+
+    const modalCancelOrderButton =
+        document.getElementById(
+            "modalCancelOrderButton"
+        );
+
 
     let activeOrderId = null;
     let activeOrderData = null;
@@ -492,6 +526,7 @@
 
         return {
             bg: parts[0].trim(),
+
             en: parts
                 .slice(1)
                 .join(" / ")
@@ -568,8 +603,11 @@
             return;
         }
 
-        element.dataset.bg = parts.bg;
-        element.dataset.en = parts.en;
+        element.dataset.bg =
+            parts.bg;
+
+        element.dataset.en =
+            parts.en;
     }
 
 
@@ -599,8 +637,11 @@
             return;
         }
 
-        element.dataset.bg = bgText;
-        element.dataset.en = enText;
+        element.dataset.bg =
+            bgText;
+
+        element.dataset.en =
+            enText;
 
         element.textContent =
             currentLanguage === "bg"
@@ -663,6 +704,7 @@
                 );
             });
 
+
         document
             .querySelectorAll(
                 ".js-add-product"
@@ -715,6 +757,7 @@
                 "selectedOrderText"
             );
 
+
         if (!activeOrderData) {
             setBilingualText(
                 element,
@@ -725,10 +768,12 @@
             return;
         }
 
+
         const orderName =
             htmlToPlainText(
                 activeOrderData.orderName
             ).trim();
+
 
         setBilingualText(
             element,
@@ -744,15 +789,18 @@
                 ? "en"
                 : "bg";
 
+
         document.documentElement.setAttribute(
             "lang",
             currentLanguage
         );
 
+
         localStorage.setItem(
             "lang",
             currentLanguage
         );
+
 
         document
             .querySelectorAll(
@@ -762,16 +810,22 @@
                 applyLanguageToElement
             );
 
+
         updateOrderCountLabels();
+
         updateSelectedOrderText();
+
         updateAriaTranslations();
+
         updateBilingualPlaceholders();
+
 
         document.title =
             translated(
                 "Магелан — Меню",
                 "Magelan — Menu"
             );
+
 
         document
             .querySelectorAll(
@@ -785,6 +839,7 @@
                     === currentLanguage
                 );
             });
+
 
         if (activeOrderData) {
             renderModalItems(
@@ -803,6 +858,7 @@
                 prepareBilingualElement
             );
 
+
         document
             .querySelectorAll(
                 "[data-lang-switch]"
@@ -819,6 +875,7 @@
                 );
             });
 
+
         setLanguage(
             localStorage.getItem("lang")
             || DEFAULT_LANG
@@ -834,6 +891,7 @@
             "X-Requested-With": "XMLHttpRequest"
         };
 
+
         if (
             method !== "GET" &&
             csrfToken &&
@@ -842,6 +900,7 @@
             headers[csrfHeader] =
                 csrfToken;
         }
+
 
         const response =
             await fetch(
@@ -853,11 +912,13 @@
                 }
             );
 
+
         if (!response.ok) {
             throw new Error(
                 `Request failed with status ${response.status}`
             );
         }
+
 
         return await response.json();
     }
@@ -868,6 +929,7 @@
             "X-Requested-With": "XMLHttpRequest"
         };
 
+
         if (
             csrfToken &&
             csrfHeader
@@ -875,6 +937,7 @@
             headers[csrfHeader] =
                 csrfToken;
         }
+
 
         const response =
             await fetch(
@@ -885,6 +948,7 @@
                     credentials: "same-origin"
                 }
             );
+
 
         if (!response.ok) {
             throw new Error(
@@ -897,6 +961,7 @@
     function formatMoney(value) {
         const amount =
             Number(value);
+
 
         return Number.isNaN(amount)
             ? `${value} €`
@@ -925,6 +990,7 @@
                 "orderModalItems"
             );
 
+
         if (!items || items.length === 0) {
             container.innerHTML = `
                 <div class="order-modal__empty">
@@ -938,6 +1004,7 @@
             return;
         }
 
+
         container.innerHTML =
             items.map(item => {
 
@@ -946,6 +1013,7 @@
                         item.productName,
                         currentLanguage
                     );
+
 
                 return `
                     <article class="order-modal-item"
@@ -1013,19 +1081,23 @@
                 `.pending-order-card[data-order-id="${orderData.orderId}"]`
             );
 
+
         if (!card) {
             return;
         }
+
 
         const amountElement =
             card.querySelector(
                 ".pending-order-card__amount"
             );
 
+
         const countElement =
             card.querySelector(
                 ".pending-order-card__count"
             );
+
 
         if (amountElement) {
             amountElement.textContent =
@@ -1034,11 +1106,13 @@
                 );
         }
 
+
         if (countElement) {
             countElement.dataset.count =
                 String(
                     orderData.totalItems
                 );
+
 
             countElement.textContent =
                 formatItemCount(
@@ -1065,10 +1139,39 @@
     }
 
 
+    /*
+     * Connects the two buttons in the open modal
+     * to the order that is currently open.
+     */
+    function updateModalOrderActions(
+        orderId
+    ) {
+        if (modalCompleteOrderButton) {
+            modalCompleteOrderButton.dataset.orderId =
+                String(orderId);
+
+            modalCompleteOrderButton.disabled =
+                false;
+        }
+
+
+        if (modalCancelOrderButton) {
+            modalCancelOrderButton.dataset.orderId =
+                String(orderId);
+
+            modalCancelOrderButton.disabled =
+                false;
+        }
+    }
+
+
     function renderOrder(orderData) {
-        activeOrderData = orderData;
+        activeOrderData =
+            orderData;
+
         activeOrderId =
             String(orderData.orderId);
+
 
         document
             .getElementById(
@@ -1079,12 +1182,14 @@
                 orderData.orderName
             ).trim();
 
+
         document
             .getElementById(
                 "orderModalCount"
             )
             .textContent =
             orderData.totalItems;
+
 
         document
             .getElementById(
@@ -1095,18 +1200,32 @@
                 orderData.amount
             );
 
+
+        /*
+         * Set the currently opened order ID on the
+         * Complete and Cancel modal buttons.
+         */
+        updateModalOrderActions(
+            activeOrderId
+        );
+
+
         openSelectedOrderButton.hidden =
             false;
 
+
         updateSelectedOrderText();
+
 
         renderModalItems(
             orderData.items
         );
 
+
         updatePendingOrderCard(
             orderData
         );
+
 
         markActiveOrder(
             activeOrderId
@@ -1118,9 +1237,11 @@
         orderModalBackdrop.hidden =
             false;
 
+
         document.body.classList.add(
             "modal-open"
         );
+
 
         orderModalBackdrop
             .querySelector(
@@ -1133,6 +1254,7 @@
     function hideOrderModal() {
         orderModalBackdrop.hidden =
             true;
+
 
         document.body.classList.remove(
             "modal-open"
@@ -1147,8 +1269,14 @@
                     `/orders/${orderId}/card`
                 );
 
-            renderOrder(orderData);
+
+            renderOrder(
+                orderData
+            );
+
+
             showOrderModal();
+
 
             history.replaceState(
                 {},
@@ -1157,7 +1285,9 @@
             );
 
         } catch (error) {
+
             console.error(error);
+
 
             alert(
                 translated(
@@ -1181,18 +1311,24 @@
             return;
         }
 
+
         const productId =
             button.dataset.productId;
+
 
         if (!productId) {
             return;
         }
 
-        button.disabled = true;
+
+        button.disabled =
+            true;
+
 
         button.classList.add(
             "is-loading"
         );
+
 
         try {
             const orderData =
@@ -1201,11 +1337,18 @@
                     "POST"
                 );
 
-            renderOrder(orderData);
+
+            renderOrder(
+                orderData
+            );
+
+
             showOrderModal();
 
         } catch (error) {
+
             console.error(error);
+
 
             alert(
                 translated(
@@ -1215,7 +1358,10 @@
             );
 
         } finally {
-            button.disabled = false;
+
+            button.disabled =
+                false;
+
 
             button.classList.remove(
                 "is-loading"
@@ -1228,7 +1374,9 @@
         button,
         url
     ) {
-        button.disabled = true;
+        button.disabled =
+            true;
+
 
         try {
             const orderData =
@@ -1237,10 +1385,15 @@
                     "POST"
                 );
 
-            renderOrder(orderData);
+
+            renderOrder(
+                orderData
+            );
 
         } catch (error) {
+
             console.error(error);
+
 
             alert(
                 translated(
@@ -1250,11 +1403,20 @@
             );
 
         } finally {
-            button.disabled = false;
+
+            button.disabled =
+                false;
         }
     }
 
 
+    /*
+     * Disables both:
+     * - buttons on the little order card
+     * - buttons in the open modal
+     *
+     * while Complete/Cancel is being processed.
+     */
     function setOrderCardBusy(
         orderId,
         busy
@@ -1264,20 +1426,34 @@
                 `.pending-order-card[data-order-id="${orderId}"]`
             );
 
-        if (!card) {
-            return;
+
+        if (card) {
+
+            card
+                .querySelectorAll("button")
+                .forEach(button => {
+
+                    button.disabled =
+                        busy;
+                });
+
+
+            card.classList.toggle(
+                "is-busy",
+                busy
+            );
         }
 
-        card
-            .querySelectorAll("button")
-            .forEach(button => {
-                button.disabled = busy;
-            });
 
-        card.classList.toggle(
-            "is-busy",
-            busy
-        );
+        document
+            .querySelectorAll(
+                `.order-modal__action[data-order-id="${orderId}"]`
+            )
+            .forEach(button => {
+
+                button.disabled =
+                    busy;
+            });
     }
 
 
@@ -1289,24 +1465,57 @@
             return;
         }
 
-        activeOrderId = null;
-        activeOrderData = null;
+
+        activeOrderId =
+            null;
+
+        activeOrderData =
+            null;
+
 
         openSelectedOrderButton.hidden =
             true;
 
+
+        if (modalCompleteOrderButton) {
+            delete modalCompleteOrderButton
+                .dataset
+                .orderId;
+
+            modalCompleteOrderButton.disabled =
+                false;
+        }
+
+
+        if (modalCancelOrderButton) {
+            delete modalCancelOrderButton
+                .dataset
+                .orderId;
+
+            modalCancelOrderButton.disabled =
+                false;
+        }
+
+
         hideOrderModal();
+
+
         markActiveOrder("");
+
+
         updateSelectedOrderText();
+
 
         const url =
             new URL(
                 window.location.href
             );
 
+
         url.searchParams.delete(
             "orderId"
         );
+
 
         history.replaceState(
             {},
@@ -1324,33 +1533,42 @@
                 `.pending-order-card[data-order-id="${orderId}"]`
             );
 
+
         card?.remove();
+
 
         const remainingCards =
             document.querySelectorAll(
                 ".pending-order-card"
             );
 
+
         if (remainingCards.length > 0) {
             return;
         }
+
 
         const list =
             document.querySelector(
                 ".pending-orders-list"
             );
 
+
         const emptyMessage =
             document.getElementById(
                 "pendingOrdersEmptyClient"
             );
 
+
         if (list) {
-            list.hidden = true;
+            list.hidden =
+                true;
         }
 
+
         if (emptyMessage) {
-            emptyMessage.hidden = false;
+            emptyMessage.hidden =
+                false;
         }
     }
 
@@ -1358,6 +1576,12 @@
     async function completeOrder(button) {
         const orderId =
             button.dataset.orderId;
+
+
+        if (!orderId) {
+            return;
+        }
+
 
         const confirmed =
             window.confirm(
@@ -1367,28 +1591,38 @@
                 )
             );
 
+
         if (!confirmed) {
             return;
         }
+
 
         setOrderCardBusy(
             orderId,
             true
         );
 
+
         try {
+
             await postOrderAction(
                 `/orders/${orderId}/complete`
             );
 
-            clearActiveOrder(orderId);
+
+            clearActiveOrder(
+                orderId
+            );
+
 
             removePendingOrderCard(
                 orderId
             );
 
         } catch (error) {
+
             console.error(error);
+
 
             alert(
                 translated(
@@ -1396,6 +1630,7 @@
                     "The order could not be completed. Please try again."
                 )
             );
+
 
             setOrderCardBusy(
                 orderId,
@@ -1409,6 +1644,12 @@
         const orderId =
             button.dataset.orderId;
 
+
+        if (!orderId) {
+            return;
+        }
+
+
         const confirmed =
             window.confirm(
                 translated(
@@ -1417,28 +1658,38 @@
                 )
             );
 
+
         if (!confirmed) {
             return;
         }
+
 
         setOrderCardBusy(
             orderId,
             true
         );
 
+
         try {
+
             await postOrderAction(
                 `/orders/${orderId}/cancel`
             );
 
-            clearActiveOrder(orderId);
+
+            clearActiveOrder(
+                orderId
+            );
+
 
             removePendingOrderCard(
                 orderId
             );
 
         } catch (error) {
+
             console.error(error);
+
 
             alert(
                 translated(
@@ -1446,6 +1697,7 @@
                     "The order could not be cancelled. Please try again."
                 )
             );
+
 
             setOrderCardBusy(
                 orderId,
@@ -1464,17 +1716,29 @@
                     "[data-close-order-modal]"
                 );
 
+
             if (closeButton) {
+
                 hideOrderModal();
+
                 return;
             }
 
+
+            /*
+             * Works for BOTH:
+             *
+             * - the small-card Complete button
+             * - the modal Complete button
+             */
             const completeButton =
                 event.target.closest(
                     ".js-complete-order"
                 );
 
+
             if (completeButton) {
+
                 completeOrder(
                     completeButton
                 );
@@ -1482,12 +1746,21 @@
                 return;
             }
 
+
+            /*
+             * Works for BOTH:
+             *
+             * - the small-card Cancel button
+             * - the modal Cancel button
+             */
             const cancelButton =
                 event.target.closest(
                     ".js-cancel-order"
                 );
 
+
             if (cancelButton) {
+
                 cancelOrder(
                     cancelButton
                 );
@@ -1495,12 +1768,15 @@
                 return;
             }
 
+
             const orderButton =
                 event.target.closest(
                     ".js-open-order"
                 );
 
+
             if (orderButton) {
+
                 openOrder(
                     orderButton.dataset.orderId
                 );
@@ -1508,12 +1784,15 @@
                 return;
             }
 
+
             const productButton =
                 event.target.closest(
                     ".js-add-product"
                 );
 
+
             if (productButton) {
+
                 addProduct(
                     productButton
                 );
@@ -1521,12 +1800,15 @@
                 return;
             }
 
+
             const increaseButton =
                 event.target.closest(
                     ".js-modal-increase"
                 );
 
+
             if (increaseButton) {
+
                 updateModalItem(
                     increaseButton,
                     `/orders/items/${increaseButton.dataset.itemId}/increase`
@@ -1535,12 +1817,15 @@
                 return;
             }
 
+
             const decreaseButton =
                 event.target.closest(
                     ".js-modal-decrease"
                 );
 
+
             if (decreaseButton) {
+
                 updateModalItem(
                     decreaseButton,
                     `/orders/items/${decreaseButton.dataset.itemId}/decrease`
@@ -1549,12 +1834,15 @@
                 return;
             }
 
+
             const removeButton =
                 event.target.closest(
                     ".js-modal-remove"
                 );
 
+
             if (removeButton) {
+
                 updateModalItem(
                     removeButton,
                     `/orders/items/${removeButton.dataset.itemId}/remove-ajax`
@@ -1569,9 +1857,11 @@
         () => {
 
             if (activeOrderData) {
+
                 renderOrder(
                     activeOrderData
                 );
+
 
                 showOrderModal();
             }
@@ -1587,6 +1877,7 @@
                 event.target ===
                 orderModalBackdrop
             ) {
+
                 hideOrderModal();
             }
         }
@@ -1601,6 +1892,7 @@
                 event.key === "Escape" &&
                 !orderModalBackdrop.hidden
             ) {
+
                 hideOrderModal();
             }
         }
@@ -1613,12 +1905,15 @@
 
             initLanguageSwitcher();
 
+
             const initialOrderId =
                 document.body
                     .dataset
                     .initialOrderId;
 
+
             if (initialOrderId) {
+
                 openOrder(
                     initialOrderId
                 );

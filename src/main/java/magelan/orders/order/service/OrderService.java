@@ -11,6 +11,7 @@ import magelan.orders.order.repository.OrderItemRepository;
 import magelan.orders.order.repository.OrderRepository;
 import magelan.orders.product.model.Product;
 import magelan.orders.product.repository.ProductRepository;
+import magelan.orders.revenue.service.DailyRevenueService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,28 +30,43 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
 
+    /*
+     * Handles the restaurant's revenue history and
+     * Europe/Sofia business-day calculations.
+     */
+    private final DailyRevenueService dailyRevenueService;
+
+
     @Transactional
     public Order createPendingOrder(String orderName) {
+
         Order order = Order.builder()
                 .orderName(orderName)
                 .orderStatus(OrderStatus.PENDING)
                 .amount(BigDecimal.ZERO)
-                .createdOn(LocalDateTime.now())
+                .createdOn(
+                        dailyRevenueService
+                                .getCurrentSofiaDateTime()
+                )
                 .build();
 
         return orderRepository.save(order);
     }
 
+
     @Transactional(readOnly = true)
     public List<Order> getPendingOrders() {
+
         return orderRepository
                 .findAllByOrderStatusOrderByCreatedOnDesc(
                         OrderStatus.PENDING
                 );
     }
 
+
     @Transactional(readOnly = true)
     public List<Order> getCompletedOrders() {
+
         return orderRepository
                 .findAllByOrderStatusOrderByCreatedOnAsc(
                         OrderStatus.COMPLETED
@@ -67,140 +83,408 @@ public class OrderService {
                 .toList();
     }
 
+
     @Transactional(readOnly = true)
     public Order getById(UUID orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+
+        return orderRepository
+                .findById(orderId)
+                .orElseThrow(
+                        () ->
+                                new RuntimeException(
+                                        "Order not found: "
+                                                + orderId
+                                )
+                );
     }
+
 
     @Transactional
-    public void addProductToOrder(UUID orderId, UUID productId) {
-        Order order = getById(orderId);
+    public void addProductToOrder(
+            UUID orderId,
+            UUID productId
+    ) {
 
-        if (order.getOrderStatus() != OrderStatus.PENDING) {
-            throw new IllegalStateException("Items can only be added to pending orders.");
+        Order order =
+                getById(orderId);
+
+        if (
+                order.getOrderStatus()
+                        != OrderStatus.PENDING
+        ) {
+
+            throw new IllegalStateException(
+                    "Items can only be added to pending orders."
+            );
         }
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found: " + productId));
 
-        OrderItem item = orderItemRepository.findByOrderAndProduct(order, product)
-                .orElseGet(() -> {
-                    OrderItem newItem = OrderItem.builder()
-                            .order(order)
-                            .product(product)
-                            .quantity(0)
-                            .unitPrice(product.getPrice())
-                            .createdOn(LocalDateTime.now())
-                            .build();
+        Product product =
+                productRepository
+                        .findById(productId)
+                        .orElseThrow(
+                                () ->
+                                        new RuntimeException(
+                                                "Product not found: "
+                                                        + productId
+                                        )
+                        );
 
-                    order.getItems().add(newItem);
-                    return newItem;
-                });
 
-        item.setQuantity(item.getQuantity() + 1);
-        item.setUnitPrice(product.getPrice());
+        OrderItem item =
+                orderItemRepository
+                        .findByOrderAndProduct(
+                                order,
+                                product
+                        )
+                        .orElseGet(
+                                () -> {
+
+                                    OrderItem newItem =
+                                            OrderItem.builder()
+                                                    .order(order)
+                                                    .product(product)
+                                                    .quantity(0)
+                                                    .unitPrice(
+                                                            product.getPrice()
+                                                    )
+                                                    .createdOn(
+                                                            dailyRevenueService
+                                                                    .getCurrentSofiaDateTime()
+                                                    )
+                                                    .build();
+
+                                    order.getItems()
+                                            .add(newItem);
+
+                                    return newItem;
+                                }
+                        );
+
+
+        item.setQuantity(
+                item.getQuantity() + 1
+        );
+
+        item.setUnitPrice(
+                product.getPrice()
+        );
+
 
         recalculateAmount(order);
+
         orderRepository.save(order);
     }
+
 
     @Transactional
     public void removeItem(UUID itemId) {
-        OrderItem item = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Order item not found: " + itemId));
 
-        Order order = item.getOrder();
-        order.getItems().remove(item);
+        OrderItem item =
+                orderItemRepository
+                        .findById(itemId)
+                        .orElseThrow(
+                                () ->
+                                        new RuntimeException(
+                                                "Order item not found: "
+                                                        + itemId
+                                        )
+                        );
+
+        Order order =
+                item.getOrder();
+
+        order.getItems()
+                .remove(item);
+
         orderItemRepository.delete(item);
 
         recalculateAmount(order);
+
         orderRepository.save(order);
     }
 
+
+    /*
+     * Completes an order and records its revenue.
+     *
+     * IMPORTANT:
+     *
+     * The order and revenue update happen inside the
+     * same transaction.
+     *
+     * The completion time is Europe/Sofia time.
+     *
+     * An order completed between 00:00 and 05:59
+     * belongs to the previous business day.
+     */
     @Transactional
     public void completeOrder(UUID orderId) {
-        Order order = getById(orderId);
-        order.setOrderStatus(OrderStatus.COMPLETED);
-        order.setCompletedOn(LocalDateTime.now());
+
+        Order order =
+                getById(orderId);
+
+
+        /*
+         * Prevent accidentally recording the same
+         * completed order twice.
+         */
+        if (
+                order.getOrderStatus()
+                        == OrderStatus.COMPLETED
+        ) {
+
+            log.warn(
+                    "Order {} is already completed. "
+                            + "Revenue will not be recorded again.",
+                    orderId
+            );
+
+            return;
+        }
+
+
+        if (
+                order.getOrderStatus()
+                        != OrderStatus.PENDING
+        ) {
+
+            throw new IllegalStateException(
+                    "Only pending orders can be completed."
+            );
+        }
+
+
+        /*
+         * Make absolutely sure the final amount is
+         * correct before recording the sale.
+         */
+        recalculateAmount(order);
+
+
+        LocalDateTime completedAt =
+                dailyRevenueService
+                        .getCurrentSofiaDateTime();
+
+
+        order.setOrderStatus(
+                OrderStatus.COMPLETED
+        );
+
+        order.setCompletedOn(
+                completedAt
+        );
+
+
         orderRepository.save(order);
+
+
+        /*
+         * Permanently add this sale to the appropriate
+         * business day's revenue.
+         */
+        dailyRevenueService
+                .recordCompletedOrder(
+                        order.getAmount(),
+                        completedAt
+                );
+
+
+        log.info(
+                "Completed order {} with amount {} at {}",
+                orderId,
+                order.getAmount(),
+                completedAt
+        );
     }
+
 
     @Transactional
     public void cancelOrder(UUID orderId) {
-        Order order = getById(orderId);
-        order.setOrderStatus(OrderStatus.CANCELLED);
+
+        Order order =
+                getById(orderId);
+
+        order.setOrderStatus(
+                OrderStatus.CANCELLED
+        );
+
         orderRepository.save(order);
     }
 
-    private void recalculateAmount(Order order) {
-        BigDecimal total = order.getItems().stream()
-                .map(OrderItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    private void recalculateAmount(
+            Order order
+    ) {
+
+        BigDecimal total =
+                order.getItems()
+                        .stream()
+                        .map(
+                                OrderItem::getTotalPrice
+                        )
+                        .reduce(
+                                BigDecimal.ZERO,
+                                BigDecimal::add
+                        );
 
         order.setAmount(total);
     }
 
-    @Transactional
-    public Order increaseItemQuantity(UUID itemId) {
-        OrderItem item = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Order item not found"));
 
-        item.setQuantity(item.getQuantity() + 1);
+    @Transactional
+    public Order increaseItemQuantity(
+            UUID itemId
+    ) {
+
+        OrderItem item =
+                orderItemRepository
+                        .findById(itemId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Order item not found"
+                                        )
+                        );
+
+
+        item.setQuantity(
+                item.getQuantity() + 1
+        );
+
         orderItemRepository.save(item);
 
-        Order order = item.getOrder();
+
+        Order order =
+                item.getOrder();
+
         recalculateAmount(order);
+
         orderRepository.save(order);
 
-        return orderRepository.findById(order.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        return orderRepository
+                .findById(
+                        order.getId()
+                )
+                .orElseThrow(
+                        () ->
+                                new IllegalArgumentException(
+                                        "Order not found"
+                                )
+                );
     }
 
+
     @Transactional
-    public Order decreaseItemQuantity(UUID itemId) {
-        OrderItem item = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Order item not found"));
+    public Order decreaseItemQuantity(
+            UUID itemId
+    ) {
 
-        Order order = item.getOrder();
+        OrderItem item =
+                orderItemRepository
+                        .findById(itemId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Order item not found"
+                                        )
+                        );
 
-        if (item.getQuantity() <= 1) {
-            order.getItems().remove(item);
-            orderItemRepository.delete(item);
+
+        Order order =
+                item.getOrder();
+
+
+        if (
+                item.getQuantity()
+                        <= 1
+        ) {
+
+            order.getItems()
+                    .remove(item);
+
+            orderItemRepository
+                    .delete(item);
+
 
             recalculateAmount(order);
+
             orderRepository.save(order);
 
-            return orderRepository.findById(order.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+            return orderRepository
+                    .findById(
+                            order.getId()
+                    )
+                    .orElseThrow(
+                            () ->
+                                    new IllegalArgumentException(
+                                            "Order not found"
+                                    )
+                    );
         }
 
-        item.setQuantity(item.getQuantity() - 1);
+
+        item.setQuantity(
+                item.getQuantity() - 1
+        );
+
         orderItemRepository.save(item);
 
+
         recalculateAmount(order);
+
         orderRepository.save(order);
 
-        return orderRepository.findById(order.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        return orderRepository
+                .findById(
+                        order.getId()
+                )
+                .orElseThrow(
+                        () ->
+                                new IllegalArgumentException(
+                                        "Order not found"
+                                )
+                );
     }
 
-    private OrderCardResponse mapToOrderCardResponse(Order order) {
-        List<OrderItemResponse> items = order.getItems()
-                .stream()
-                .map(item -> new OrderItemResponse(
-                        item.getId(),
-                        item.getProduct().getName(),
-                        item.getQuantity(),
-                        item.getUnitPrice(),
-                        item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
-                ))
-                .toList();
 
-        int totalItems = order.getItems()
-                .stream()
-                .mapToInt(OrderItem::getQuantity)
-                .sum();
+    private OrderCardResponse mapToOrderCardResponse(
+            Order order
+    ) {
+
+        List<OrderItemResponse> items =
+                order.getItems()
+                        .stream()
+                        .map(
+                                item ->
+                                        new OrderItemResponse(
+                                                item.getId(),
+                                                item.getProduct()
+                                                        .getName(),
+                                                item.getQuantity(),
+                                                item.getUnitPrice(),
+                                                item.getUnitPrice()
+                                                        .multiply(
+                                                                BigDecimal.valueOf(
+                                                                        item.getQuantity()
+                                                                )
+                                                        )
+                                        )
+                        )
+                        .toList();
+
+
+        int totalItems =
+                order.getItems()
+                        .stream()
+                        .mapToInt(
+                                OrderItem::getQuantity
+                        )
+                        .sum();
+
 
         return new OrderCardResponse(
                 order.getId(),
@@ -211,100 +495,230 @@ public class OrderService {
         );
     }
 
+
     @Transactional
-    public OrderCardResponse removeItemAndReturnOrderCard(UUID itemId) {
-        OrderItem item = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Item not found"));
+    public OrderCardResponse removeItemAndReturnOrderCard(
+            UUID itemId
+    ) {
 
-        Order order = item.getOrder();
+        OrderItem item =
+                orderItemRepository
+                        .findById(itemId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Item not found"
+                                        )
+                        );
 
-        order.getItems().remove(item);
-        orderItemRepository.delete(item);
+
+        Order order =
+                item.getOrder();
+
+
+        order.getItems()
+                .remove(item);
+
+        orderItemRepository
+                .delete(item);
+
 
         recalculateAmount(order);
+
         orderRepository.save(order);
 
-        return mapToOrderCardResponse(order);
+
+        return mapToOrderCardResponse(
+                order
+        );
     }
 
-    @Transactional
-    public OrderCardResponse increaseItemQuantityAndReturnOrderCard(UUID itemId) {
-        OrderItem item = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Item not found"));
 
-        item.setQuantity(item.getQuantity() + 1);
+    @Transactional
+    public OrderCardResponse increaseItemQuantityAndReturnOrderCard(
+            UUID itemId
+    ) {
+
+        OrderItem item =
+                orderItemRepository
+                        .findById(itemId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Item not found"
+                                        )
+                        );
+
+
+        item.setQuantity(
+                item.getQuantity() + 1
+        );
+
         orderItemRepository.save(item);
 
-        Order order = item.getOrder();
+
+        Order order =
+                item.getOrder();
+
+
         recalculateAmount(order);
+
         orderRepository.save(order);
 
-        return mapToOrderCardResponse(order);
+
+        return mapToOrderCardResponse(
+                order
+        );
     }
+
 
     @Transactional
-    public OrderCardResponse decreaseItemQuantityAndReturnOrderCard(UUID itemId) {
-        OrderItem item = orderItemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Item not found"));
+    public OrderCardResponse decreaseItemQuantityAndReturnOrderCard(
+            UUID itemId
+    ) {
 
-        Order order = item.getOrder();
+        OrderItem item =
+                orderItemRepository
+                        .findById(itemId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Item not found"
+                                        )
+                        );
 
-        if (item.getQuantity() <= 1) {
-            order.getItems().remove(item);
-            orderItemRepository.delete(item);
+
+        Order order =
+                item.getOrder();
+
+
+        if (
+                item.getQuantity()
+                        <= 1
+        ) {
+
+            order.getItems()
+                    .remove(item);
+
+            orderItemRepository
+                    .delete(item);
+
         } else {
-            item.setQuantity(item.getQuantity() - 1);
-            orderItemRepository.save(item);
+
+            item.setQuantity(
+                    item.getQuantity() - 1
+            );
+
+            orderItemRepository
+                    .save(item);
         }
 
+
         recalculateAmount(order);
+
         orderRepository.save(order);
 
-        return mapToOrderCardResponse(order);
+
+        return mapToOrderCardResponse(
+                order
+        );
     }
 
-    @Transactional(readOnly = true)
-    public OrderCardResponse getPendingOrderCard(UUID orderId) {
-        Order order = getById(orderId);
 
-        if (order.getOrderStatus() != OrderStatus.PENDING) {
+    @Transactional(readOnly = true)
+    public OrderCardResponse getPendingOrderCard(
+            UUID orderId
+    ) {
+
+        Order order =
+                getById(orderId);
+
+
+        if (
+                order.getOrderStatus()
+                        != OrderStatus.PENDING
+        ) {
+
             throw new IllegalStateException(
                     "Only pending orders can be opened from the menu."
             );
         }
 
-        return mapToOrderCardResponse(order);
+
+        return mapToOrderCardResponse(
+                order
+        );
     }
 
-    @Transactional(readOnly = true)
-    public Order getCompletedOrderById(UUID orderId) {
-        Order order = getById(orderId);
 
-        if (order.getOrderStatus() != OrderStatus.COMPLETED) {
+    @Transactional(readOnly = true)
+    public Order getCompletedOrderById(
+            UUID orderId
+    ) {
+
+        Order order =
+                getById(orderId);
+
+
+        if (
+                order.getOrderStatus()
+                        != OrderStatus.COMPLETED
+        ) {
+
             throw new IllegalStateException(
                     "A receipt can only be generated for a completed order."
             );
         }
 
+
         return order;
     }
 
-    @Transactional
-    public void deleteCompletedOrder(UUID orderId) {
-        Order order = orderRepository
-                .findById(orderId)
-                .orElseThrow(
-                        () -> new IllegalArgumentException(
-                                "Order not found: " + orderId
-                        )
-                );
 
-        if (order.getOrderStatus() != OrderStatus.COMPLETED) {
+    /*
+     * Permanently deletes the completed order itself.
+     *
+     * Revenue is deliberately NOT changed here.
+     *
+     * Once money has been recorded in daily_revenue,
+     * deleting an old completed order must not erase
+     * the restaurant's historical revenue.
+     */
+    @Transactional
+    public void deleteCompletedOrder(
+            UUID orderId
+    ) {
+
+        Order order =
+                orderRepository
+                        .findById(orderId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Order not found: "
+                                                        + orderId
+                                        )
+                        );
+
+
+        if (
+                order.getOrderStatus()
+                        != OrderStatus.COMPLETED
+        ) {
+
             throw new IllegalStateException(
                     "Only completed orders can be permanently deleted."
             );
         }
 
+
         orderRepository.delete(order);
+
+
+        log.info(
+                "Deleted completed order {}. "
+                        + "Historical revenue was preserved.",
+                orderId
+        );
     }
 }

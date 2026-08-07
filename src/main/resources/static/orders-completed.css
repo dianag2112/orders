@@ -265,9 +265,16 @@ html[lang="bg"]
     color: var(--muted);
 }
 
+.section-heading__actions {
+    display: flex;
+    align-items: stretch;
+
+    gap: 10px;
+}
+
 
 /* =========================================================
-   PENDING ORDERS LINK
+   NAVIGATION BUTTONS
    ========================================================= */
 
 .pending-orders-link {
@@ -292,11 +299,167 @@ html[lang="bg"]
     color: #ffe2ad;
 }
 
-.pending-orders-link:focus-visible {
-    outline:
-            2px solid rgba(245, 158, 11, .7);
+.statistics-link {
+    flex-shrink: 0;
 
-    outline-offset: 3px;
+    gap: 7px;
+
+    border-color:
+            rgba(34, 197, 94, .32);
+
+    background:
+            rgba(34, 197, 94, .09);
+
+    color: #9be7b4;
+}
+
+.statistics-link:hover {
+    border-color:
+            rgba(34, 197, 94, .58);
+
+    background:
+            rgba(34, 197, 94, .17);
+
+    color: #c7f4d5;
+}
+
+
+/* =========================================================
+   DAILY REVENUE
+   ========================================================= */
+
+.daily-revenue {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns:
+        auto
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 18px;
+
+    margin: 0 0 18px;
+    padding: 18px 20px;
+
+    border:
+            1px solid rgba(34, 197, 94, .30);
+
+    border-radius: var(--radius);
+
+    background:
+            linear-gradient(
+                    135deg,
+                    rgba(34, 197, 94, .13),
+                    rgba(34, 197, 94, .035)
+            );
+
+    box-shadow:
+            inset 0 1px 0
+            rgba(255, 255, 255, .035);
+}
+
+.daily-revenue__icon {
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+            1px solid rgba(34, 197, 94, .36);
+
+    border-radius: 50%;
+
+    background:
+            rgba(34, 197, 94, .11);
+
+    color: #86efac;
+
+    font-family: var(--pirate);
+    font-size: 1.85rem;
+    line-height: 1;
+}
+
+.daily-revenue__main {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.daily-revenue__label {
+    color: #9be7b4;
+
+    font-family: var(--pirate);
+    font-size: 1.08rem;
+    font-weight: 400;
+    letter-spacing: .5px;
+}
+
+html[lang="bg"]
+.daily-revenue__label {
+    font-family: var(--menu-font);
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.daily-revenue__amount {
+    color: #ffffff;
+
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.daily-revenue__orders {
+    color: var(--muted);
+
+    font-size: .88rem;
+    line-height: 1.4;
+}
+
+.daily-revenue__business-day {
+    min-width: 150px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    gap: 3px;
+
+    padding-left: 18px;
+
+    border-left:
+            1px solid rgba(255, 255, 255, .10);
+
+    text-align: right;
+}
+
+.daily-revenue__business-day-label {
+    color: var(--muted);
+
+    font-size: .78rem;
+}
+
+.daily-revenue__business-day strong {
+    color: #ffffff;
+
+    font-size: 1rem;
+}
+
+.daily-revenue__reset {
+    color:
+            rgba(255, 255, 255, .48);
+
+    font-size: .75rem;
 }
 
 
@@ -757,6 +920,28 @@ html[lang="bg"]
     .completed-grid {
         grid-template-columns: 1fr;
     }
+
+    .daily-revenue {
+        grid-template-columns:
+            auto
+            minmax(0, 1fr);
+    }
+
+    .daily-revenue__business-day {
+        grid-column: 2;
+
+        align-items: flex-start;
+
+        padding-top: 10px;
+        padding-left: 0;
+
+        border-top:
+                1px solid rgba(255, 255, 255, .08);
+
+        border-left: none;
+
+        text-align: left;
+    }
 }
 
 
@@ -802,8 +987,33 @@ html[lang="bg"]
         align-items: stretch;
     }
 
+    .section-heading__actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .statistics-link,
     .pending-orders-link {
         width: 100%;
+
+        text-align: center;
+    }
+
+    .daily-revenue {
+        gap: 14px;
+
+        padding: 16px;
+    }
+
+    .daily-revenue__icon {
+        width: 50px;
+        height: 50px;
+
+        font-size: 1.55rem;
+    }
+
+    .daily-revenue__amount {
+        font-size: 1.75rem;
     }
 
     .completed-card__header {
@@ -837,6 +1047,42 @@ html[lang="bg"]
 
     .section-heading h2 {
         font-size: 1.4rem;
+    }
+
+    .section-heading__actions {
+        grid-template-columns: 1fr;
+    }
+
+    .daily-revenue {
+        grid-template-columns: 1fr;
+
+        align-items: flex-start;
+
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .daily-revenue__icon {
+        width: 44px;
+        height: 44px;
+
+        font-size: 1.4rem;
+    }
+
+    .daily-revenue__amount {
+        font-size: 1.55rem;
+    }
+
+    .daily-revenue__label {
+        font-size: .98rem;
+    }
+
+    .daily-revenue__business-day {
+        grid-column: auto;
+
+        width: 100%;
+
+        padding-top: 10px;
     }
 
     .completed-card {

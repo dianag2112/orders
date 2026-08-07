@@ -196,11 +196,6 @@ div[hidden] {
     letter-spacing: .03em;
 }
 
-/*
- * Pirata One does not contain Bulgarian Cyrillic.
- * Bulgarian therefore uses the same Cormorant font
- * as the other menu headings.
- */
 html[lang="bg"] .brand__sub {
     font-family: var(--menu-font);
     font-weight: 600;
@@ -224,13 +219,9 @@ html[lang="bg"] .brand__sub {
     background: rgba(255, 255, 255, .025);
 }
 
-/*
- * First column: heading and description.
- * Last three columns: input, Create button and
- * Completed Orders button — all exactly the same width.
- */
 .pending-orders-panel__header {
     display: grid;
+
     grid-template-columns:
             minmax(0, 1fr)
             repeat(3, var(--compact-control-width));
@@ -267,10 +258,6 @@ html[lang="bg"] .brand__sub {
    COMPACT CREATE-ORDER FORM
    ========================================================= */
 
-/*
- * Display contents makes the input and Create button
- * direct children of the header grid.
- */
 .menu-create-order-form {
     display: contents;
 
@@ -520,6 +507,7 @@ html[lang="bg"] .brand__sub {
 
 .pending-order-card__actions {
     display: grid;
+
     grid-template-columns:
             repeat(2, minmax(0, 1fr));
 
@@ -826,6 +814,7 @@ html[lang="bg"] .brand__sub {
 
 .menu-row {
     display: grid;
+
     grid-template-columns:
             auto 1fr auto;
 
@@ -1005,6 +994,7 @@ html[lang="bg"] .brand__sub {
 
 .order-modal__summary {
     display: grid;
+
     grid-template-columns:
             repeat(2, minmax(0, 1fr));
 
@@ -1074,6 +1064,7 @@ html[lang="bg"] .brand__sub {
 
 .order-modal-item {
     display: grid;
+
     grid-template-columns:
             auto minmax(0, 1fr) auto;
 
@@ -1202,41 +1193,111 @@ html[lang="bg"] .brand__sub {
     font-weight: 700;
 }
 
+
+/* =========================================================
+   ORDER MODAL ACTIONS
+   ========================================================= */
+
 .order-modal__footer {
+    display: grid;
+
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
     padding: 0 20px 20px;
 }
 
-.order-modal__done {
+.order-modal__action {
     width: 100%;
-    min-height: 45px;
+    min-width: 0;
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     padding: 0 16px;
 
-    border:
-            1px solid rgba(255, 26, 26, .38);
-
     border-radius: 13px;
-
-    background:
-            rgba(255, 26, 26, .12);
-
-    color: #ffffff;
 
     cursor: pointer;
 
+    font-family: var(--body-font);
+    font-size: 14px;
     font-weight: 700;
+    line-height: 1.2;
+
+    text-align: center;
 
     transition:
+            transform .15s ease,
+            border-color .15s ease,
             background .15s ease,
-            border-color .15s ease;
+            color .15s ease,
+            opacity .15s ease;
 }
 
-.order-modal__done:hover {
-    border-color:
-            rgba(255, 26, 26, .62);
+.order-modal__action:hover {
+    transform: translateY(-1px);
+}
+
+
+/* Complete */
+
+.order-modal__action--complete {
+    border:
+            1px solid rgba(34, 197, 94, .45);
 
     background:
-            rgba(255, 26, 26, .21);
+            rgba(34, 197, 94, .11);
+
+    color: #8df0ad;
+}
+
+.order-modal__action--complete:hover {
+    border-color:
+            rgba(34, 197, 94, .80);
+
+    background:
+            rgba(34, 197, 94, .20);
+
+    color: #bcf7cf;
+}
+
+
+/* Cancel */
+
+.order-modal__action--cancel {
+    border:
+            1px solid rgba(255, 77, 77, .45);
+
+    background:
+            rgba(255, 77, 77, .10);
+
+    color: #ff9c9c;
+}
+
+.order-modal__action--cancel:hover {
+    border-color:
+            rgba(255, 77, 77, .80);
+
+    background:
+            rgba(255, 77, 77, .18);
+
+    color: #ffc1c1;
+}
+
+
+/* Busy state */
+
+.order-modal__action:disabled {
+    transform: none;
+
+    cursor: wait;
+
+    opacity: .50;
 }
 
 
@@ -1270,11 +1331,10 @@ html[lang="bg"] .brand__sub {
 }
 
 
-/*
- * On narrower screens, the heading and all three
- * controls stack vertically. The three controls
- * remain exactly equal in width.
- */
+/* =========================================================
+   RESPONSIVE — HEADER CONTROLS
+   ========================================================= */
+
 @media (max-width: 850px) {
 
     .pending-orders-panel__header {
@@ -1413,7 +1473,17 @@ html[lang="bg"] .brand__sub {
     }
 
     .order-modal__footer {
+        gap: 9px;
+
         padding: 0 17px 17px;
+    }
+
+    .order-modal__action {
+        min-height: 45px;
+
+        padding: 0 10px;
+
+        font-size: 13px;
     }
 
     .order-modal-item {
@@ -1455,5 +1525,103 @@ html[lang="bg"] .brand__sub {
 
     .pending-order-card__actions {
         grid-template-columns: 1fr;
+    }
+
+    /*
+     * The modal is wider than the little cards,
+     * so Complete and Cancel can remain comfortably
+     * side by side even on small phones.
+     */
+    .order-modal__footer {
+        grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .order-modal__action {
+        padding: 0 8px;
+
+        font-size: 12px;
+    }
+}
+
+
+/* =========================================================
+   HOME-STYLE ROPE FOOTER
+   ========================================================= */
+
+.footer-rope {
+    width: min(1050px, 100%);
+
+    margin: 48px auto 0;
+    padding: 0 20px 28px;
+
+    text-align: center;
+}
+
+.rope {
+    width: 100%;
+    height: 7px;
+
+    margin-bottom: 18px;
+
+    border:
+            1px solid rgba(255, 255, 255, .10);
+
+    border-radius: 999px;
+
+    background:
+            repeating-linear-gradient(
+                    135deg,
+                    #5f3f22 0 8px,
+                    #b07b3f 8px 16px,
+                    #7a522b 16px 24px
+            );
+
+    box-shadow:
+            0 2px 8px rgba(0, 0, 0, .55),
+            inset 0 1px 1px rgba(255, 255, 255, .18);
+}
+
+.footer-text {
+    margin: 0;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+    gap: .3rem .55rem;
+
+    color: var(--muted);
+
+    font-family: var(--menu-font);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+
+    .footer-rope {
+        margin-top: 34px;
+
+        padding: 0 16px 22px;
+    }
+
+    .rope {
+        height: 6px;
+
+        margin-bottom: 14px;
+    }
+
+    .footer-text {
+        gap: .2rem .4rem;
+
+        font-size: 13px;
+        line-height: 1.55;
     }
 }

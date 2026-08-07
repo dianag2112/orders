@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -94,6 +97,17 @@ public class ProductDataSeeder implements CommandLineRunner {
                 null,
                 null,
                 3
+        );
+        saveIfMissing(
+                "Хляб / Bread",
+                "филия / slice",
+                "0.30",
+                ProductCategory.SOUP,
+                2,
+                "Супи / Soups",
+                null,
+                null,
+                4
         );
 
         // 3. COLD APPETIZERS
@@ -801,7 +815,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Вурстчета / Würstchen <i>(small sausages)</i>",
                 "200 г / 200 g",
-                "3.90",
+                "5.20",
                 ProductCategory.GRILL,
                 7,
                 "Скара / Grill",
@@ -1007,7 +1021,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Кока-кола / Coca-Cola",
                 "330 мл / 330 ml",
-                "1.60",
+                "1.80",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1018,7 +1032,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Швепс / Schweppes",
                 "330 мл / 330 ml",
-                "1.60",
+                "1.80",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1029,7 +1043,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Тоник / Schweppes Tonic",
                 "330 мл / 330 ml",
-                "1.60",
+                "1.80",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1040,7 +1054,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Сода / Sparkling water",
                 "250 мл / 250 ml",
-                "1.50",
+                "1.60",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1051,7 +1065,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Натурален сок / Fruit Juice",
                 "200 мл / 200 ml",
-                "1.50",
+                "1.60",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1140,7 +1154,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Нишко пиво“ / \"Nishko pivo\"",
                 "500 мл / 500 ml",
-                "2.40",
+                "2.60",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1151,7 +1165,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Будвайзер“ / \"Budweiser\"",
                 "500 мл / 500 ml",
-                "2.60",
+                "2.90",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1173,7 +1187,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Козел“ / \"Kozel\"",
                 "500 мл / 500 ml",
-                "3.10",
+                "3.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1206,7 +1220,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Цар“ / \"Tsar\"",
                 "250 мл / 250 ml",
-                "1.30",
+                "1.40",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1252,7 +1266,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Савой“ / \"Savoy\" (Vodka)",
                 "50 мл / 50 ml",
-                "1.30",
+                "1.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1263,7 +1277,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Флирт“ / \"Flirt\"",
                 "50 мл / 50 ml",
-                "1.30",
+                "1.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1274,7 +1288,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Житня“ / \"Zytnia\"",
                 "50 мл / 50 ml",
-                "1.30",
+                "1.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1341,7 +1355,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "„Савой“ / \"Savoy\" (Gin)",
                 "50 мл / 50 ml",
-                "1.30",
+                "1.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1462,7 +1476,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         );
 
         saveIfMissing(
-                "„Пещерска“ / \"Peshterska\"",
+                "Ракия / Rakia",
                 "50 мл / 50 ml",
                 "1.50",
                 ProductCategory.DRINK,
@@ -1473,9 +1487,9 @@ public class ProductDataSeeder implements CommandLineRunner {
                 1
         );
         saveIfMissing(
-                "„Троянска сливова“ / \"Troyanska slivova\" (plum)",
+                "„Пещерска“ / \"Peshterska\"",
                 "50 мл / 50 ml",
-                "1.90",
+                "1.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1484,9 +1498,9 @@ public class ProductDataSeeder implements CommandLineRunner {
                 2
         );
         saveIfMissing(
-                "„Сунгурларска“ / \"Sungurlarska\"",
+                "„Троянска сливова“ / \"Troyanska slivova\" (plum)",
                 "50 мл / 50 ml",
-                "1.70",
+                "2.00",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1495,9 +1509,9 @@ public class ProductDataSeeder implements CommandLineRunner {
                 3
         );
         saveIfMissing(
-                "„Поморийска“ / \"Pomoriyska\"",
+                "„Сунгурларска“ / \"Sungurlarska\"",
                 "50 мл / 50 ml",
-                "1.70",
+                "1.90",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1506,7 +1520,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 4
         );
         saveIfMissing(
-                "„Поморийска“ (мускатова) / \"Pomoriyska\" (muscat)",
+                "„Поморийска“ / \"Pomoriyska\"",
                 "50 мл / 50 ml",
                 "1.90",
                 ProductCategory.DRINK,
@@ -1517,9 +1531,9 @@ public class ProductDataSeeder implements CommandLineRunner {
                 5
         );
         saveIfMissing(
-                "„Бургаска мускатова“ / \"Burgaska muskatova\" (muscat)",
+                "„Поморийска“ (мускатова) / \"Pomoriyska\" (muscat)",
                 "50 мл / 50 ml",
-                "1.90",
+                "2.10",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1528,9 +1542,9 @@ public class ProductDataSeeder implements CommandLineRunner {
                 6
         );
         saveIfMissing(
-                "„Стралджанска мускатова“ / \"Straldzhanska muskatova\" (muscat)",
+                "„Бургаска мускатова“ / \"Burgaska muskatova\" (muscat)",
                 "50 мл / 50 ml",
-                "2.90",
+                "2.10",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1539,9 +1553,9 @@ public class ProductDataSeeder implements CommandLineRunner {
                 7
         );
         saveIfMissing(
-                "„Сливенска перла“ / \"Slivenska perla\"",
+                "„Стралджанска мускатова“ / \"Straldzhanska muskatova\" (muscat)",
                 "50 мл / 50 ml",
-                "2.90",
+                "3.10",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
@@ -1549,7 +1563,40 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Ракия / Rakia",
                 8
         );
+        saveIfMissing(
+                "„Сливенска перла“ / \"Slivenska perla\"",
+                "50 мл / 50 ml",
+                "3.10",
+                ProductCategory.DRINK,
+                9,
+                "Напитки / Drinks",
+                8,
+                "Ракия / Rakia",
+                9
+        );
 
+        saveIfMissing(
+                "Вишновка / Sour cherry liqueur",
+                "25 мл / 25 ml",
+                "1.00",
+                ProductCategory.DRINK,
+                9,
+                "Напитки / Drinks",
+                9,
+                "Други / Others",
+                1
+        );
+        saveIfMissing(
+                "Лимончело / Limoncello",
+                "25 мл / 25 ml",
+                "1.00",
+                ProductCategory.DRINK,
+                9,
+                "Напитки / Drinks",
+                9,
+                "Други / Others",
+                2
+        );
         saveIfMissing(
                 "Текила „Сауца Голд“ / \"Sauza Gold\" Tequila",
                 "25 мл / 25 ml",
@@ -1559,7 +1606,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                1
+                3
         );
         saveIfMissing(
                 "„Йегермайстер“ / \"Jagermeister\"",
@@ -1570,7 +1617,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                2
+                4
         );
         saveIfMissing(
                 "Узо „Пломари“ / Ouzo \"Plomari\"",
@@ -1581,7 +1628,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                3
+                5
         );
         saveIfMissing(
                 "Мастика „Пещера“ / Mastika \"Peshtera\"",
@@ -1592,29 +1639,29 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                4
+                6
         );
         saveIfMissing(
                 "Мента „Пещера“ / Menta \"Peshtera\" <i>(mint liqueur)</i>",
                 "50 мл / 50 ml",
-                "1.30",
+                "1.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                5
+                7
         );
         saveIfMissing(
                 "Ром „Атлантик“ / \"Atlantic\" rum",
                 "50 мл / 50 ml",
-                "1.30",
+                "1.50",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                6
+                8
         );
         saveIfMissing(
                 "Ром „Капитан Морган“ / \"Captain Morgan\" rum",
@@ -1625,29 +1672,29 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                7
+                9
         );
         saveIfMissing(
                 "Мартини / Martini",
                 "50 мл / 50 ml",
-                "2.00",
+                "2.10",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                8
+                10
         );
         saveIfMissing(
                 "Бренди „Плиска“ / \"Pliska\" brandy",
                 "50 мл / 50 ml",
-                "2.00",
+                "2.10",
                 ProductCategory.DRINK,
                 9,
                 "Напитки / Drinks",
                 9,
                 "Други / Others",
-                9
+                11
         );
 
         // 10. CRUNCHY
@@ -1687,7 +1734,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Шоколад „Милка“ / \"Milka\" chocolate",
                 "100 г / 100 g",
-                "2.60",
+                "3.00",
                 ProductCategory.CRUNCHY,
                 10,
                 "Хрупки / Crunchy snacks",
@@ -1710,28 +1757,215 @@ public class ProductDataSeeder implements CommandLineRunner {
             String subcategoryTitle,
             int itemOrder
     ) {
-        productRepository.findByName(name).ifPresentOrElse(
-                existing -> log.debug("Product already exists: {}", name),
-                () -> {
-                    LocalDateTime now = LocalDateTime.now();
+        BigDecimal newPrice =
+                new BigDecimal(price);
 
-                    Product product = Product.builder()
-                            .name(name)
-                            .description(description)
-                            .price(new BigDecimal(price))
-                            .category(category)
-                            .sectionOrder(sectionOrder)
-                            .sectionTitle(sectionTitle)
-                            .subcategoryOrder(subcategoryOrder)
-                            .subcategoryTitle(subcategoryTitle)
-                            .itemOrder(itemOrder)
-                            .createdOn(now)
-                            .updatedOn(now)
-                            .build();
+        /*
+         * First try the exact product name.
+         *
+         * This is especially useful for your existing database,
+         * because some old products may currently share the same
+         * menu position.
+         */
+        Optional<Product> productByName =
+                productRepository.findByName(name);
 
-                    productRepository.save(product);
-                    log.info("Seeded product: {}", name);
-                }
+        Product existing = null;
+
+        if (productByName.isPresent()) {
+
+            existing =
+                    productByName.get();
+
+        } else {
+
+            List<Product> productsAtPosition =
+                    productRepository.findAllByMenuPosition(
+                            category,
+                            sectionOrder,
+                            subcategoryOrder,
+                            itemOrder
+                    );
+
+            if (productsAtPosition.size() == 1) {
+
+                existing =
+                        productsAtPosition.get(0);
+
+            } else if (productsAtPosition.size() > 1) {
+
+                /*
+                 * Do NOT delete anything automatically.
+                 *
+                 * Old completed orders may reference one of these
+                 * products, so automatic deletion would be risky.
+                 */
+                log.warn(
+                        "Multiple products found at menu position: " +
+                                "category={}, section={}, subcategory={}, item={}. " +
+                                "Using the oldest record for '{}'.",
+                        category,
+                        sectionOrder,
+                        subcategoryOrder,
+                        itemOrder,
+                        name
+                );
+
+                existing =
+                        productsAtPosition.get(0);
+            }
+        }
+
+
+        /*
+         * Existing product -> synchronize its information.
+         */
+        if (existing != null) {
+
+            boolean priceChanged =
+                    existing.getPrice() == null
+                            || existing.getPrice()
+                            .compareTo(newPrice) != 0;
+
+            boolean changed =
+                    !Objects.equals(
+                            existing.getName(),
+                            name
+                    )
+                            || !Objects.equals(
+                            existing.getDescription(),
+                            description
+                    )
+                            || priceChanged
+                            || !Objects.equals(
+                            existing.getCategory(),
+                            category
+                    )
+                            || !Objects.equals(
+                            existing.getSectionOrder(),
+                            sectionOrder
+                    )
+                            || !Objects.equals(
+                            existing.getSectionTitle(),
+                            sectionTitle
+                    )
+                            || !Objects.equals(
+                            existing.getSubcategoryOrder(),
+                            subcategoryOrder
+                    )
+                            || !Objects.equals(
+                            existing.getSubcategoryTitle(),
+                            subcategoryTitle
+                    )
+                            || !Objects.equals(
+                            existing.getItemOrder(),
+                            itemOrder
+                    );
+
+            if (!changed) {
+
+                log.debug(
+                        "Product unchanged: {}",
+                        name
+                );
+
+                return;
+            }
+
+
+            String oldName =
+                    existing.getName();
+
+            BigDecimal oldPrice =
+                    existing.getPrice();
+
+
+            existing.setName(
+                    name
+            );
+
+            existing.setDescription(
+                    description
+            );
+
+            existing.setPrice(
+                    newPrice
+            );
+
+            existing.setCategory(
+                    category
+            );
+
+            existing.setSectionOrder(
+                    sectionOrder
+            );
+
+            existing.setSectionTitle(
+                    sectionTitle
+            );
+
+            existing.setSubcategoryOrder(
+                    subcategoryOrder
+            );
+
+            existing.setSubcategoryTitle(
+                    subcategoryTitle
+            );
+
+            existing.setItemOrder(
+                    itemOrder
+            );
+
+            existing.setUpdatedOn(
+                    LocalDateTime.now()
+            );
+
+
+            productRepository.save(
+                    existing
+            );
+
+
+            log.info(
+                    "Updated product: {} -> {}, price: {} -> {}",
+                    oldName,
+                    name,
+                    oldPrice,
+                    newPrice
+            );
+
+            return;
+        }
+
+
+        /*
+         * No existing product -> create a new one.
+         */
+        LocalDateTime now =
+                LocalDateTime.now();
+
+        Product product =
+                Product.builder()
+                        .name(name)
+                        .description(description)
+                        .price(newPrice)
+                        .category(category)
+                        .sectionOrder(sectionOrder)
+                        .sectionTitle(sectionTitle)
+                        .subcategoryOrder(subcategoryOrder)
+                        .subcategoryTitle(subcategoryTitle)
+                        .itemOrder(itemOrder)
+                        .createdOn(now)
+                        .updatedOn(now)
+                        .build();
+
+        productRepository.save(
+                product
+        );
+
+        log.info(
+                "Seeded new product: {}",
+                name
         );
     }
 }
