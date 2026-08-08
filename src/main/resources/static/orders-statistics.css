@@ -399,9 +399,14 @@ html[lang="bg"]
     border-bottom: none;
 }
 
-.daily-history__table td:last-child,
-.daily-history__table th:last-child {
+.daily-history__table td:nth-child(3),
+.daily-history__table th:nth-child(3) {
     text-align: right;
+}
+
+.daily-history__table td:nth-child(4),
+.daily-history__table th:nth-child(4) {
+    text-align: center;
 }
 
 .daily-history__table td:nth-child(2),
@@ -413,6 +418,61 @@ html[lang="bg"]
     color: var(--green-light);
 }
 
+.daily-history__action-cell {
+    width: 110px;
+}
+
+.delete-revenue-day-form {
+    margin: 0;
+}
+
+.delete-revenue-day-button {
+    min-height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 12px;
+
+    border:
+            1px solid rgba(255, 77, 77, .42);
+
+    border-radius: 9px;
+
+    background:
+            rgba(255, 77, 77, .09);
+
+    color: #ff9a9a;
+
+    cursor: pointer;
+
+    font-family: var(--ui);
+    font-size: .78rem;
+    font-weight: 700;
+
+    transition:
+            background .15s ease,
+            border-color .15s ease,
+            color .15s ease;
+}
+
+.delete-revenue-day-button:hover {
+    border-color:
+            rgba(255, 77, 77, .75);
+
+    background:
+            rgba(255, 77, 77, .18);
+
+    color: #ffc0c0;
+}
+
+.current-day-label {
+    color: var(--muted);
+
+    font-size: .75rem;
+    white-space: nowrap;
+}
 
 /* Tablet */
 

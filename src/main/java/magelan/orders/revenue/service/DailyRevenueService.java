@@ -354,6 +354,24 @@ public class DailyRevenueService {
                 .findAllByOrderByBusinessDateDesc();
     }
 
+    @Transactional
+    public void deleteRevenueDay(
+            LocalDate businessDate
+    ) {
+        if (businessDate == null) {
+            throw new IllegalArgumentException(
+                    "Business date cannot be null."
+            );
+        }
+
+        dailyRevenueRepository
+                .findByBusinessDate(
+                        businessDate
+                )
+                .ifPresent(
+                        dailyRevenueRepository::delete
+                );
+    }
 
     public boolean hasRevenueHistory() {
         return dailyRevenueRepository

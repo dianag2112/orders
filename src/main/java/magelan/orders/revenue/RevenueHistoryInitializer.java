@@ -8,12 +8,17 @@ import magelan.orders.order.repository.OrderRepository;
 import magelan.orders.revenue.service.DailyRevenueService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(
+        name = "magelan.revenue.backfill-enabled",
+        havingValue = "true"
+)
 @RequiredArgsConstructor
 public class RevenueHistoryInitializer
         implements CommandLineRunner {
