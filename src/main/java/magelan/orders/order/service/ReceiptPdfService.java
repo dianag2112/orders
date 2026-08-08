@@ -138,7 +138,7 @@ public class ReceiptPdfService {
                 commands,
                 translate(language, "Създадена: ", "Created: ")
                         + DATE_FORMATTER.format(order.getCreatedOn()),
-                10.5f,
+                12f,
                 Alignment.LEFT,
                 font
         );
@@ -155,7 +155,7 @@ public class ReceiptPdfService {
             addWrappedText(
                     commands,
                     item.getQuantity() + " x " + productName,
-                    13f,
+                    13.5f,
                     Alignment.LEFT,
                     font
             );
@@ -166,10 +166,10 @@ public class ReceiptPdfService {
                             + " x "
                             + formatMoney(item.getUnitPrice()),
                     formatMoney(item.getTotalPrice()),
-                    11.5f
+                    13.5f
             );
 
-            addSpacer(commands, 1.5f);
+            addSpacer(commands, 3f);
         }
 
         addSeparator(commands);
@@ -382,7 +382,7 @@ public class ReceiptPdfService {
                         text,
                         null,
                         fontSize,
-                        fontSize + 1.5f,
+                        fontSize + 2.5f,
                         alignment
                 )
         );
@@ -400,7 +400,7 @@ public class ReceiptPdfService {
                         leftText,
                         rightText,
                         fontSize,
-                        fontSize + 1.5f,
+                        fontSize + 2.5f,
                         Alignment.LEFT
                 )
         );
