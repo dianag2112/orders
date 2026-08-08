@@ -45,8 +45,8 @@
           rel="stylesheet">
 
     <link rel="stylesheet"
-          th:href="@{/menu.css(v=21)}"
-          href="/menu.css?v=21">
+          th:href="@{/menu.css(v=22)}"
+          href="/menu.css?v=22">
 
     <link rel="stylesheet"
           th:href="@{/unified-language-font.css}"
@@ -1028,14 +1028,21 @@
 
                         <div class="order-modal-item__info">
 
-                            <strong>
-                                ${escapeHtml(name)}
-                            </strong>
+    <strong>
+        ${escapeHtml(name)}
+    </strong>
 
-                            <span>
-                                ${formatMoney(item.lineTotal)}
-                            </span>
-                        </div>
+    <div class="order-modal-item__price-row">
+
+        <span class="order-modal-item__unit-price">
+            ${item.quantity} x ${formatMoney(item.unitPrice)}
+        </span>
+
+        <span class="order-modal-item__line-total">
+            ${formatMoney(item.lineTotal)}
+        </span>
+    </div>
+</div>
 
                         <div class="order-modal-item__quantity">
 
