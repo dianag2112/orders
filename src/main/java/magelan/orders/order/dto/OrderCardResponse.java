@@ -16,17 +16,34 @@ public class OrderCardResponse {
     private UUID orderId;
     private String orderName;
     private BigDecimal amount;
-    private int totalItems;
+    private BigDecimal totalItems;
     private List<OrderItemResponse> items;
 
-    public static OrderCardResponse from(Order order) {
-        List<OrderItemResponse> itemResponses = order.getItems().stream()
-                .map(OrderItemResponse::from)
-                .toList();
 
-        int totalItems = order.getItems().stream()
-                .mapToInt(OrderItem::getQuantity)
-                .sum();
+    public static OrderCardResponse from(
+            Order order
+    ) {
+
+        List<OrderItemResponse> itemResponses =
+                order.getItems()
+                        .stream()
+                        .map(
+                                OrderItemResponse::from
+                        )
+                        .toList();
+
+
+        BigDecimal totalItems =
+                order.getItems()
+                        .stream()
+                        .map(
+                                OrderItem::getQuantity
+                        )
+                        .reduce(
+                                BigDecimal.ZERO,
+                                BigDecimal::add
+                        );
+
 
         return new OrderCardResponse(
                 order.getId(),

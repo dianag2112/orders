@@ -653,15 +653,18 @@
         const number =
             Number(count) || 0;
 
+        const formattedNumber =
+            formatQuantity(number);
+
         if (language === "bg") {
-            return `${number} ${
+            return `${formattedNumber} ${
                 number === 1
                     ? "артикул"
                     : "артикула"
             }`;
         }
 
-        return `${number} ${
+        return `${formattedNumber} ${
             number === 1
                 ? "item"
                 : "items"
@@ -964,6 +967,18 @@
             : `${amount.toFixed(2)} €`;
     }
 
+    function formatQuantity(value) {
+        const quantity =
+            Number(value);
+
+        if (Number.isNaN(quantity)) {
+            return value;
+        }
+
+        return Number.isInteger(quantity)
+            ? quantity.toString()
+            : quantity.toFixed(1);
+    }
 
     function escapeHtml(value) {
         return String(value ?? "")
@@ -1035,7 +1050,7 @@
     <div class="order-modal-item__price-row">
 
         <span class="order-modal-item__unit-price">
-            ${item.quantity} x ${formatMoney(item.unitPrice)}
+            ${formatQuantity(item.quantity)} x ${formatMoney(item.unitPrice)}
         </span>
 
         <span class="order-modal-item__line-total">

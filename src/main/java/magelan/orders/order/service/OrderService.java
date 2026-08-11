@@ -26,6 +26,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private static final BigDecimal ONE =
+            BigDecimal.ONE;
+
+    private static final BigDecimal HALF =
+            new BigDecimal("0.5");
+
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
@@ -144,7 +150,7 @@ public class OrderService {
                                             OrderItem.builder()
                                                     .order(order)
                                                     .product(product)
-                                                    .quantity(0)
+                                                    .quantity(BigDecimal.ZERO)
                                                     .unitPrice(
                                                             product.getPrice()
                                                     )
@@ -163,7 +169,8 @@ public class OrderService {
 
 
         item.setQuantity(
-                item.getQuantity() + 1
+                item.getQuantity()
+                        .add(ONE)
         );
 
         item.setUnitPrice(
@@ -349,7 +356,8 @@ public class OrderService {
 
 
         item.setQuantity(
-                item.getQuantity() + 1
+                item.getQuantity()
+                        .add(HALF)
         );
 
         orderItemRepository.save(item);
@@ -398,7 +406,8 @@ public class OrderService {
 
         if (
                 item.getQuantity()
-                        <= 1
+                        .compareTo(HALF)
+                        <= 0
         ) {
 
             order.getItems()
@@ -427,7 +436,8 @@ public class OrderService {
 
 
         item.setQuantity(
-                item.getQuantity() - 1
+                item.getQuantity()
+                        .subtract(HALF)
         );
 
         orderItemRepository.save(item);
@@ -466,24 +476,22 @@ public class OrderService {
                                                         .getName(),
                                                 item.getQuantity(),
                                                 item.getUnitPrice(),
-                                                item.getUnitPrice()
-                                                        .multiply(
-                                                                BigDecimal.valueOf(
-                                                                        item.getQuantity()
-                                                                )
-                                                        )
+                                                item.getTotalPrice()
                                         )
                         )
                         .toList();
 
 
-        int totalItems =
+        BigDecimal totalItems =
                 order.getItems()
                         .stream()
-                        .mapToInt(
+                        .map(
                                 OrderItem::getQuantity
                         )
-                        .sum();
+                        .reduce(
+                                BigDecimal.ZERO,
+                                BigDecimal::add
+                        );
 
 
         return new OrderCardResponse(
@@ -551,7 +559,8 @@ public class OrderService {
 
 
         item.setQuantity(
-                item.getQuantity() + 1
+                item.getQuantity()
+                        .add(HALF)
         );
 
         orderItemRepository.save(item);
@@ -594,7 +603,8 @@ public class OrderService {
 
         if (
                 item.getQuantity()
-                        <= 1
+                        .compareTo(HALF)
+                        <= 0
         ) {
 
             order.getItems()
@@ -606,7 +616,8 @@ public class OrderService {
         } else {
 
             item.setQuantity(
-                    item.getQuantity() - 1
+                    item.getQuantity()
+                            .subtract(HALF)
             );
 
             orderItemRepository

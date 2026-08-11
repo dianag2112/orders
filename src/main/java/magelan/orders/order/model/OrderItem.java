@@ -20,14 +20,33 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(
+            optional = false,
+            fetch = FetchType.LAZY
+    )
     private Order order;
 
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    @ManyToOne(
+            optional = false,
+            fetch = FetchType.EAGER
+    )
     private Product product;
 
-    @Column(nullable = false)
-    private Integer quantity;
+    /*
+     * Quantity supports half portions:
+     *
+     * 0.5
+     * 1.0
+     * 1.5
+     * 2.0
+     * etc.
+     */
+    @Column(
+            nullable = false,
+            precision = 10,
+            scale = 1
+    )
+    private BigDecimal quantity;
 
     @Column(nullable = false)
     private BigDecimal unitPrice;
@@ -35,7 +54,11 @@ public class OrderItem {
     @Column(nullable = false)
     private LocalDateTime createdOn;
 
+
     public BigDecimal getTotalPrice() {
-        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+
+        return unitPrice.multiply(
+                quantity
+        );
     }
 }

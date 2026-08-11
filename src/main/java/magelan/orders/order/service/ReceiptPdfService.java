@@ -154,7 +154,9 @@ public class ReceiptPdfService {
 
             addWrappedText(
                     commands,
-                    item.getQuantity() + " x " + productName,
+                    formatQuantity(item.getQuantity())
+                            + " x "
+                            + productName,
                     13.5f,
                     Alignment.LEFT,
                     font
@@ -162,7 +164,7 @@ public class ReceiptPdfService {
 
             addRow(
                     commands,
-                    item.getQuantity()
+                    formatQuantity(item.getQuantity())
                             + " x "
                             + formatMoney(item.getUnitPrice()),
                     formatMoney(item.getTotalPrice()),
@@ -622,6 +624,18 @@ public class ReceiptPdfService {
                 .setScale(2, RoundingMode.HALF_UP)
                 .toPlainString()
                 + " €";
+    }
+
+    private String formatQuantity(
+            BigDecimal quantity
+    ) {
+        if (quantity == null) {
+            return "0";
+        }
+
+        return quantity
+                .stripTrailingZeros()
+                .toPlainString();
     }
 
     private enum CommandType {

@@ -8,21 +8,21 @@ import java.util.UUID;
 public record OrderItemResponse(
         UUID itemId,
         String productName,
-        int quantity,
+        BigDecimal quantity,
         BigDecimal unitPrice,
         BigDecimal lineTotal
 ) {
 
-    public static OrderItemResponse from(OrderItem item) {
-        BigDecimal lineTotal = item.getUnitPrice()
-                .multiply(BigDecimal.valueOf(item.getQuantity()));
+    public static OrderItemResponse from(
+            OrderItem item
+    ) {
 
         return new OrderItemResponse(
                 item.getId(),
                 item.getProduct().getName(),
                 item.getQuantity(),
                 item.getUnitPrice(),
-                lineTotal
+                item.getTotalPrice()
         );
     }
 }
