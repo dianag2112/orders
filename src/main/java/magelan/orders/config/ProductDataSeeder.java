@@ -109,6 +109,17 @@ public class ProductDataSeeder implements CommandLineRunner {
                 null,
                 4
         );
+        saveIfMissing(
+                "Кутия / Takeaway box",
+                "брой / pc",
+                "0.50",
+                ProductCategory.SOUP,
+                2,
+                "Супи / Soups",
+                null,
+                null,
+                5
+        );
 
         // 3. COLD APPETIZERS
         saveIfMissing(
