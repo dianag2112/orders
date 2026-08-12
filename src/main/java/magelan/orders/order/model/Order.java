@@ -42,4 +42,25 @@ public class Order {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdOn ASC")
     private List<OrderItem> items = new ArrayList<>();
+
+    public String getFormattedTotalItems() {
+
+        if (items == null || items.isEmpty()) {
+            return "0";
+        }
+
+        BigDecimal total =
+                items.stream()
+                        .map(
+                                OrderItem::getQuantity
+                        )
+                        .reduce(
+                                BigDecimal.ZERO,
+                                BigDecimal::add
+                        );
+
+        return total
+                .stripTrailingZeros()
+                .toPlainString();
+    }
 }

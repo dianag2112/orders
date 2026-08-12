@@ -1,6 +1,7 @@
 package magelan.orders.revenue.service;
 
 import lombok.RequiredArgsConstructor;
+import magelan.orders.revenue.dto.MonthlyRevenueSummary;
 import magelan.orders.revenue.model.DailyRevenue;
 import magelan.orders.revenue.repository.DailyRevenueRepository;
 import org.springframework.stereotype.Service;
@@ -11,9 +12,13 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -349,10 +354,102 @@ public class DailyRevenueService {
     }
 
 
+    /*
+     * Complete day-by-day revenue history.
+     *
+     * Newest business day appears first.
+     */
     public List<DailyRevenue> getHistory() {
         return dailyRevenueRepository
                 .findAllByOrderByBusinessDateDesc();
     }
+
+
+    /*
+     * Month-by-month revenue history.
+     *
+     * This is calculated from the existing daily
+     * revenue records. Nothing additional is stored
+     * in the database.
+     *
+     * Example:
+     *
+     * 01 Aug = 100 €
+     * 02 Aug = 150 €
+     * 03 Aug = 200 €
+     *
+     * August = 450 €
+     *
+     * Newest month appears first.
+     */
+    public List<MonthlyRevenueSummary> getMonthlyHistory() {
+
+        Map<YearMonth, List<DailyRevenue>> revenueByMonth =
+                getHistory()
+                        .stream()
+                        .collect(
+                                Collectors.groupingBy(
+                                        dailyRevenue ->
+                                                YearMonth.from(
+                                                        dailyRevenue
+                                                                .getBusinessDate()
+                                                )
+                                )
+                        );
+
+
+        return revenueByMonth
+                .entrySet()
+                .stream()
+                .sorted(
+                        Comparator.comparing(
+                                (
+                                        Map.Entry<
+                                                YearMonth,
+                                                List<DailyRevenue>
+                                                > entry
+                                ) ->
+                                        entry.getKey()
+                        ).reversed()
+                )
+                .map(entry -> {
+
+                    YearMonth yearMonth =
+                            entry.getKey();
+
+                    List<DailyRevenue> days =
+                            entry.getValue();
+
+
+                    BigDecimal totalRevenue =
+                            days.stream()
+                                    .map(
+                                            DailyRevenue::getTotalRevenue
+                                    )
+                                    .reduce(
+                                            BigDecimal.ZERO,
+                                            BigDecimal::add
+                                    );
+
+
+                    int completedOrders =
+                            days.stream()
+                                    .mapToInt(
+                                            DailyRevenue::getCompletedOrders
+                                    )
+                                    .sum();
+
+
+                    return new MonthlyRevenueSummary(
+                            yearMonth.getYear(),
+                            yearMonth.getMonthValue(),
+                            totalRevenue,
+                            completedOrders
+                    );
+                })
+                .toList();
+    }
+
 
     @Transactional
     public void deleteRevenueDay(
@@ -372,6 +469,7 @@ public class DailyRevenueService {
                         dailyRevenueRepository::delete
                 );
     }
+
 
     public boolean hasRevenueHistory() {
         return dailyRevenueRepository

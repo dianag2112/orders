@@ -1216,6 +1216,50 @@ html[lang="bg"] .brand__sub {
     font-weight: 700;
 }
 
+.order-modal-item__quantity-input {
+    width: 46px;
+    min-width: 46px;
+    height: 35px;
+
+    padding: 0 3px;
+
+    border: 0;
+    outline: none;
+
+    background: transparent;
+    color: #ffffff;
+
+    font-family: var(--body-font);
+    font-size: 14px;
+    font-weight: 700;
+
+    text-align: center;
+}
+
+.order-modal-item__quantity-input:focus {
+    background:
+            rgba(255, 255, 255, .07);
+}
+
+.order-modal-item__quantity-input:disabled {
+    opacity: .55;
+}
+
+
+/*
+ * Hide the browser's own number arrows.
+ * We already have Magelan's − and + buttons.
+ */
+.order-modal-item__quantity-input::-webkit-outer-spin-button,
+.order-modal-item__quantity-input::-webkit-inner-spin-button {
+    margin: 0;
+
+    -webkit-appearance: none;
+}
+
+.order-modal-item__quantity-input {
+    -moz-appearance: textfield;
+}
 
 /* =========================================================
    ORDER MODAL ACTIONS

@@ -80,7 +80,17 @@ public class RevenueStatisticsController {
 
 
         /*
-         * Complete daily history
+         * Complete month-by-month history
+         */
+        model.addAttribute(
+                "monthlyRevenueHistory",
+                dailyRevenueService
+                        .getMonthlyHistory()
+        );
+
+
+        /*
+         * Complete day-by-day history
          */
         model.addAttribute(
                 "dailyRevenueHistory",

@@ -61,4 +61,15 @@ public class OrderItem {
                 quantity
         );
     }
+
+    public String getFormattedQuantity() {
+
+        if (quantity == null) {
+            return "0";
+        }
+
+        return quantity
+                .stripTrailingZeros()
+                .toPlainString();
+    }
 }

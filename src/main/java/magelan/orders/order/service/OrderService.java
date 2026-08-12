@@ -357,7 +357,7 @@ public class OrderService {
 
         item.setQuantity(
                 item.getQuantity()
-                        .add(HALF)
+                        .add(ONE)
         );
 
         orderItemRepository.save(item);
@@ -406,7 +406,7 @@ public class OrderService {
 
         if (
                 item.getQuantity()
-                        .compareTo(HALF)
+                        .compareTo(ONE)
                         <= 0
         ) {
 
@@ -437,7 +437,7 @@ public class OrderService {
 
         item.setQuantity(
                 item.getQuantity()
-                        .subtract(HALF)
+                        .subtract(ONE)
         );
 
         orderItemRepository.save(item);
@@ -560,7 +560,7 @@ public class OrderService {
 
         item.setQuantity(
                 item.getQuantity()
-                        .add(HALF)
+                        .add(ONE)
         );
 
         orderItemRepository.save(item);
@@ -603,7 +603,7 @@ public class OrderService {
 
         if (
                 item.getQuantity()
-                        .compareTo(HALF)
+                        .compareTo(ONE)
                         <= 0
         ) {
 
@@ -617,7 +617,7 @@ public class OrderService {
 
             item.setQuantity(
                     item.getQuantity()
-                            .subtract(HALF)
+                            .subtract(ONE)
             );
 
             orderItemRepository
@@ -628,6 +628,96 @@ public class OrderService {
         recalculateAmount(order);
 
         orderRepository.save(order);
+
+
+        return mapToOrderCardResponse(
+                order
+        );
+    }
+
+    @Transactional
+    public OrderCardResponse setItemQuantityAndReturnOrderCard(
+            UUID itemId,
+            BigDecimal quantity
+    ) {
+
+        if (quantity == null) {
+            throw new IllegalArgumentException(
+                    "Quantity is required."
+            );
+        }
+
+
+        /*
+         * Minimum allowed quantity is 0.5.
+         */
+        if (
+                quantity.compareTo(HALF)
+                        < 0
+        ) {
+            throw new IllegalArgumentException(
+                    "Quantity must be at least 0.5."
+            );
+        }
+
+
+        /*
+         * Only multiples of 0.5 are allowed:
+         *
+         * 0.5, 1, 1.5, 2, 2.5...
+         */
+        if (
+                quantity.remainder(HALF)
+                        .compareTo(BigDecimal.ZERO)
+                        != 0
+        ) {
+            throw new IllegalArgumentException(
+                    "Quantity must be a multiple of 0.5."
+            );
+        }
+
+
+        OrderItem item =
+                orderItemRepository
+                        .findById(itemId)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Item not found"
+                                        )
+                        );
+
+
+        Order order =
+                item.getOrder();
+
+
+        if (
+                order.getOrderStatus()
+                        != OrderStatus.PENDING
+        ) {
+            throw new IllegalStateException(
+                    "Only pending orders can be changed."
+            );
+        }
+
+
+        item.setQuantity(
+                quantity
+        );
+
+        orderItemRepository.save(
+                item
+        );
+
+
+        recalculateAmount(
+                order
+        );
+
+        orderRepository.save(
+                order
+        );
 
 
         return mapToOrderCardResponse(

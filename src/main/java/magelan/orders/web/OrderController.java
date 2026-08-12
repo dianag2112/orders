@@ -7,6 +7,7 @@ import magelan.orders.revenue.service.DailyRevenueService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
 
 import java.util.UUID;
 
@@ -178,6 +179,20 @@ public class OrderController {
                 );
     }
 
+    @PostMapping("/items/{itemId}/quantity")
+    @ResponseBody
+    public OrderCardResponse setItemQuantity(
+            @PathVariable UUID itemId,
+            @RequestParam BigDecimal quantity
+    ) {
+
+        return orderService
+                .setItemQuantityAndReturnOrderCard(
+                        itemId,
+                        quantity
+                );
+    }
+
 
     @PostMapping("/items/{itemId}/remove-ajax")
     @ResponseBody
@@ -195,7 +210,7 @@ public class OrderController {
     public record OrderItemRowResponse(
             UUID itemId,
             String productName,
-            int quantity,
+            BigDecimal quantity,
             String unitPrice,
             String lineTotal
     ) {

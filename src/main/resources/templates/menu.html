@@ -45,8 +45,8 @@
           rel="stylesheet">
 
     <link rel="stylesheet"
-          th:href="@{/menu.css(v=22)}"
-          href="/menu.css?v=22">
+          th:href="@{/menu.css(v=23)}"
+          href="/menu.css?v=23">
 
     <link rel="stylesheet"
           th:href="@{/unified-language-font.css}"
@@ -1061,30 +1061,39 @@
 
                         <div class="order-modal-item__quantity">
 
-                            <button type="button"
-                                    class="js-modal-decrease"
-                                    data-item-id="${item.itemId}"
-                                    aria-label="${translated(
+    <button type="button"
+            class="js-modal-decrease"
+            data-item-id="${item.itemId}"
+            aria-label="${translated(
                     "Намали количеството",
                     "Decrease quantity"
                 )}">
-                                −
-                            </button>
+        −
+    </button>
 
-                            <span>
-                                ${item.quantity}
-                            </span>
+    <input type="number"
+           class="order-modal-item__quantity-input
+                  js-modal-quantity-input"
+           data-item-id="${item.itemId}"
+           value="${formatQuantity(item.quantity)}"
+           min="0.5"
+           step="0.5"
+           inputmode="decimal"
+           aria-label="${translated(
+                    "Количество",
+                    "Quantity"
+                )}">
 
-                            <button type="button"
-                                    class="js-modal-increase"
-                                    data-item-id="${item.itemId}"
-                                    aria-label="${translated(
+    <button type="button"
+            class="js-modal-increase"
+            data-item-id="${item.itemId}"
+            aria-label="${translated(
                     "Увеличи количеството",
                     "Increase quantity"
                 )}">
-                                +
-                            </button>
-                        </div>
+        +
+    </button>
+</div>
                     </article>
                 `;
             }).join("");
@@ -1427,6 +1436,123 @@
         }
     }
 
+    async function updateModalItemQuantity(
+        input
+    ) {
+        const itemId =
+            input.dataset.itemId;
+
+        if (!itemId) {
+            return;
+        }
+
+
+        const rawValue =
+            String(input.value)
+                .replace(",", ".")
+                .trim();
+
+        const quantity =
+            Number(rawValue);
+
+
+        const isValid =
+            Number.isFinite(quantity) &&
+            quantity >= 0.5 &&
+            Number.isInteger(quantity * 2);
+
+
+        if (!isValid) {
+
+            /*
+             * IMPORTANT:
+             * Restore the previous valid value BEFORE
+             * showing the alert.
+             *
+             * This prevents the change event from firing
+             * repeatedly with the same invalid value.
+             */
+            const currentItem =
+                activeOrderData
+                    ?.items
+                    ?.find(
+                        item =>
+                            String(item.itemId) ===
+                            String(itemId)
+                    );
+
+
+            if (currentItem) {
+
+                input.value =
+                    formatQuantity(
+                        currentItem.quantity
+                    );
+
+            } else {
+
+                input.value =
+                    "1";
+            }
+
+
+            alert(
+                translated(
+                    "Количеството трябва да бъде 0.5, 1, 1.5, 2, 2.5 и т.н.",
+                    "Quantity must be 0.5, 1, 1.5, 2, 2.5, etc."
+                )
+            );
+
+
+            return;
+        }
+
+
+        input.disabled =
+            true;
+
+
+        try {
+
+            const orderData =
+                await requestJson(
+                    `/orders/items/${itemId}/quantity?quantity=${encodeURIComponent(quantity)}`,
+                    "POST"
+                );
+
+
+            renderOrder(
+                orderData
+            );
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            alert(
+                translated(
+                    "Количеството не може да бъде променено. Моля, опитайте отново.",
+                    "The quantity could not be changed. Please try again."
+                )
+            );
+
+
+            if (activeOrderData) {
+
+                renderOrder(
+                    activeOrderData
+                );
+            }
+
+        } finally {
+
+            input.disabled =
+                false;
+        }
+    }
 
     /*
      * Disables both:
@@ -1742,6 +1868,26 @@
                 return;
             }
 
+            document.addEventListener(
+                "change",
+                event => {
+
+                    const quantityInput =
+                        event.target.closest(
+                            ".js-modal-quantity-input"
+                        );
+
+
+                    if (!quantityInput) {
+                        return;
+                    }
+
+
+                    updateModalItemQuantity(
+                        quantityInput
+                    );
+                }
+            );
 
             /*
              * Works for BOTH:
@@ -1905,6 +2051,23 @@
     document.addEventListener(
         "keydown",
         event => {
+
+            /*
+             * Enter saves a manually entered quantity.
+             */
+            if (
+                event.key === "Enter" &&
+                event.target.matches(
+                    ".js-modal-quantity-input"
+                )
+            ) {
+                event.preventDefault();
+
+                event.target.blur();
+
+                return;
+            }
+
 
             if (
                 event.key === "Escape" &&

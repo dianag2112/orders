@@ -245,9 +245,7 @@
                             Артикули / Items
                         </span>
 
-                        <strong th:text="${#aggregates.sum(
-                            order.items.![quantity]
-                        )} ?: 0">
+                        <strong th:text="${order.formattedTotalItems}">
                             0
                         </strong>
                     </div>
@@ -297,7 +295,7 @@
                             <div class="items-list__left">
 
                                 <span class="item-qty"
-                                      th:text="${item.quantity}">
+                                      th:text="${item.formattedQuantity}">
                                     1
                                 </span>
 

@@ -196,6 +196,95 @@
             </article>
         </section>
 
+        <!-- Monthly history -->
+        <section class="daily-history monthly-history">
+
+            <div class="daily-history__heading">
+
+                <div>
+                    <h2 data-bilingual>
+                        Месечен оборот / Monthly Revenue
+                    </h2>
+
+                    <p data-bilingual>
+                        Обобщение на оборота по месеци. / Revenue summary by month.
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="daily-history__empty"
+                 th:if="${monthlyRevenueHistory == null
+             or #lists.isEmpty(monthlyRevenueHistory)}">
+
+        <span aria-hidden="true">
+            📅
+        </span>
+
+                <p data-bilingual>
+                    Все още няма месечна статистика. / No monthly revenue history has been recorded yet.
+                </p>
+            </div>
+
+
+            <div class="daily-history__table-wrapper"
+                 th:if="${monthlyRevenueHistory != null
+             and !#lists.isEmpty(monthlyRevenueHistory)}">
+
+                <table class="daily-history__table monthly-history__table">
+
+                    <thead>
+                    <tr>
+
+                        <th data-bilingual>
+                            Месец / Month
+                        </th>
+
+                        <th data-bilingual>
+                            Поръчки / Orders
+                        </th>
+
+                        <th data-bilingual>
+                            Оборот / Revenue
+                        </th>
+
+                    </tr>
+                    </thead>
+
+                    <tbody>
+
+                    <tr th:each="month : ${monthlyRevenueHistory}">
+
+                        <td>
+
+                            <strong class="js-month-name"
+                                    th:attr="data-year=${month.year},
+                                     data-month=${month.month}">
+                                August 2026
+                            </strong>
+                        </td>
+
+                        <td th:text="${month.completedOrders}">
+                            0
+                        </td>
+
+                        <td>
+
+                            <strong th:text="${#numbers.formatDecimal(
+                        month.totalRevenue,
+                        1,
+                        2
+                    ) + ' €'}">
+                                0.00 €
+                            </strong>
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
         <!-- Daily history -->
         <section class="daily-history">
@@ -319,6 +408,38 @@
     let currentLanguage =
         DEFAULT_LANGUAGE;
 
+    const MONTH_NAMES = {
+
+        bg: [
+            "Януари",
+            "Февруари",
+            "Март",
+            "Април",
+            "Май",
+            "Юни",
+            "Юли",
+            "Август",
+            "Септември",
+            "Октомври",
+            "Ноември",
+            "Декември"
+        ],
+
+        en: [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ]
+    };
 
     function splitBilingualHtml(value) {
         const html =
@@ -422,6 +543,45 @@
         );
     }
 
+    function updateMonthNames() {
+
+        document
+            .querySelectorAll(
+                ".js-month-name"
+            )
+            .forEach(element => {
+
+                const year =
+                    Number(
+                        element.dataset.year
+                    );
+
+                const month =
+                    Number(
+                        element.dataset.month
+                    );
+
+
+                if (
+                    !year ||
+                    month < 1 ||
+                    month > 12
+                ) {
+                    return;
+                }
+
+
+                const monthName =
+                    MONTH_NAMES[
+                        currentLanguage
+                        ][month - 1];
+
+
+                element.textContent =
+                    `${monthName} ${year}`;
+            });
+    }
+
     function setLanguage(language) {
         currentLanguage =
             language === "en"
@@ -447,6 +607,8 @@
             );
 
         updateAriaLabels();
+
+        updateMonthNames();
 
         document.title =
             currentLanguage === "bg"
