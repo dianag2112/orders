@@ -1071,15 +1071,14 @@
         −
     </button>
 
-    <input type="number"
-           class="order-modal-item__quantity-input
-                  js-modal-quantity-input"
-           data-item-id="${item.itemId}"
-           value="${formatQuantity(item.quantity)}"
-           min="0.5"
-           step="0.5"
-           inputmode="decimal"
-           aria-label="${translated(
+    <input type="text"
+       class="order-modal-item__quantity-input
+              js-modal-quantity-input"
+       data-item-id="${item.itemId}"
+       value="${formatQuantity(item.quantity)}"
+       inputmode="decimal"
+       autocomplete="off"
+       aria-label="${translated(
                     "Количество",
                     "Quantity"
                 )}">
@@ -1449,8 +1448,8 @@
 
         const rawValue =
             String(input.value)
-                .replace(",", ".")
-                .trim();
+                .trim()
+                .replace(",", ".");
 
         const quantity =
             Number(rawValue);
