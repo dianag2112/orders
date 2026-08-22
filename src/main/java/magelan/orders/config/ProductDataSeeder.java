@@ -1631,7 +1631,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 4
         );
         saveIfMissing(
-                "Узо „Пломари“ / Ouzo \"Plomari\"",
+                "Узо / Ouzo",
                 "50 мл / 50 ml",
                 "2.30",
                 ProductCategory.DRINK,
