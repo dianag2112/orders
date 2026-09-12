@@ -1241,7 +1241,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         );
 
         saveIfMissing(
-                "Чаша / Glass",
+                "Чаша вино / Glass of wine",
                 "200 мл / 200 ml",
                 "3.10",
                 ProductCategory.DRINK,
@@ -1252,7 +1252,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 1
         );
         saveIfMissing(
-                "Гарафа / Carafe",
+                "Гарафа вино (500 мл) / Carafe of wine (500 ml)",
                 "500 мл / 500 ml",
                 "6.20",
                 ProductCategory.DRINK,
@@ -1263,7 +1263,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 2
         );
         saveIfMissing(
-                "Гарафа / Carafe (1000 ml)",
+                "Гарафа вино (1000 мл) / Carafe of wine (1000 ml)",
                 "1000 мл / 1000 ml",
                 "12.40",
                 ProductCategory.DRINK,
@@ -1330,7 +1330,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 5
         );
         saveIfMissing(
-                "„Смирноф“ / \"Smirnoff\"",
+                "„Коскенкорва“ / \"Koskenkorva\"",
                 "50 мл / 50 ml",
                 "2.30",
                 ProductCategory.DRINK,
@@ -1341,7 +1341,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 6
         );
         saveIfMissing(
-                "„Абсолют“ / \"Absolut\"",
+                "„Смирноф“ / \"Smirnoff\"",
                 "50 мл / 50 ml",
                 "2.30",
                 ProductCategory.DRINK,
@@ -1352,7 +1352,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 7
         );
         saveIfMissing(
-                "„Финландия“ / \"Finlandia\"",
+                "„Абсолют“ / \"Absolut\"",
                 "50 мл / 50 ml",
                 "2.30",
                 ProductCategory.DRINK,
@@ -1361,6 +1361,17 @@ public class ProductDataSeeder implements CommandLineRunner {
                 5,
                 "Водка / Vodka",
                 8
+        );
+        saveIfMissing(
+                "„Финландия“ / \"Finlandia\"",
+                "50 мл / 50 ml",
+                "2.30",
+                ProductCategory.DRINK,
+                9,
+                "Напитки / Drinks",
+                5,
+                "Водка / Vodka",
+                9
         );
 
         saveIfMissing(
