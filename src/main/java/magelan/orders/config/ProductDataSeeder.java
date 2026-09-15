@@ -580,7 +580,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Телешки език / Beef tongue",
                 "150 г / 150 g",
-                "6.40",
+                "7.40",
                 ProductCategory.HOT_APPETIZER,
                 5,
                 "Топли предястия / Hot appetizers",
@@ -591,7 +591,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Шкембе в масло / Tripe in butter",
                 "150 г / 150 g",
-                "3.60",
+                "4.20",
                 ProductCategory.HOT_APPETIZER,
                 5,
                 "Топли предястия / Hot appetizers",
