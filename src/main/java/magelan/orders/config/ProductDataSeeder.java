@@ -1108,6 +1108,18 @@ public class ProductDataSeeder implements CommandLineRunner {
         );
 
         saveIfMissing(
+                "„Редбул“ / \"Redbull\"",
+                "250 мл / 250 ml",
+                "2.60",
+                ProductCategory.DRINK,
+                9,
+                "Напитки / Drinks",
+                2,
+                "Безалкохолни напитки / Soft drinks",
+                8
+        );
+
+        saveIfMissing(
                 "„Ариана“ / \"Ariana\"",
                 "500 мл / 500 ml",
                 "2.10",
