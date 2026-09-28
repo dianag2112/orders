@@ -670,7 +670,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Катино мезе <i>(свинско месо, лук, гъби, подправки)</i> / Katino meze <i>(pork, onions, mushrooms, spices)</i>",
                 "300 г / 300 g",
-                "5.60",
+                "6.50",
                 ProductCategory.MEZE,
                 6,
                 "Мезета / Meze",
@@ -681,7 +681,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Мезелък за двама <i>(наденица, пилешко филе, бекон, лук)</i> / Meze for two <i>(sausage, chicken fillet, bacon, onions)</i>",
                 "450 г / 450 g",
-                "7.00",
+                "8.50",
                 ProductCategory.MEZE,
                 6,
                 "Мезета / Meze",
@@ -692,7 +692,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Капитанско мезе <i>(пилешко бонфиле, свинско бонфиле, подправки)</i> / Captain's meze <i>(chicken tenderloin, pork tenderloin, spices)</i>",
                 "300 г / 300 g",
-                "7.50",
+                "8.50",
                 ProductCategory.MEZE,
                 6,
                 "Мезета / Meze",
