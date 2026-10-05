@@ -1096,7 +1096,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 6
         );
         saveIfMissing(
-                "Минерална вода / Mineral water",
+                "Минерална вода (1.5 л) / Mineral water (1.5 l)",
                 "1.5 л / 1.5 l",
                 "2.20",
                 ProductCategory.DRINK,
