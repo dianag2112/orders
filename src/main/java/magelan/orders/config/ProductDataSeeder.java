@@ -1096,6 +1096,17 @@ public class ProductDataSeeder implements CommandLineRunner {
                 6
         );
         saveIfMissing(
+                "Минерална вода / Mineral water",
+                "1.5 л / 1.5 l",
+                "2.20",
+                ProductCategory.DRINK,
+                9,
+                "Напитки / Drinks",
+                2,
+                "Безалкохолни напитки / Soft drinks",
+                7
+        );
+        saveIfMissing(
                 "Айрян / Ayran <i>(salted yogurt drink)</i>",
                 "200 мл / 200 ml",
                 "1.20",
@@ -1104,7 +1115,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Напитки / Drinks",
                 2,
                 "Безалкохолни напитки / Soft drinks",
-                7
+                8
         );
 
         saveIfMissing(
@@ -1116,7 +1127,7 @@ public class ProductDataSeeder implements CommandLineRunner {
                 "Напитки / Drinks",
                 2,
                 "Безалкохолни напитки / Soft drinks",
-                8
+                9
         );
 
         saveIfMissing(
