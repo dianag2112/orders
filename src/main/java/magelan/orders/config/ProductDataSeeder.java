@@ -171,7 +171,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Краставици / Cucumbers",
                 "300 г / 300 g",
-                "3.20",
+                "3.80",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -182,7 +182,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Домати / Tomatoes",
                 "300 г / 300 g",
-                "3.20",
+                "3.80",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -193,7 +193,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Домати със сирене / Tomatoes and white cheese",
                 "350 г / 350 g",
-                "4.20",
+                "5.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -204,7 +204,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Мешана / Meshana <i>(cucumbers and tomatoes)</i>",
                 "300 г / 300 g",
-                "3.40",
+                "3.80",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -215,7 +215,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Шопска / Shopska <i>(tomatoes, cucumbers, peppers, onions and white cheese)</i>",
                 "350 г / 350 g",
-                "4.20",
+                "5.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -226,7 +226,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Овчарска / Ovcharska <i>(tomatoes, cucumbers, peppers, onions, ham, mushrooms and white cheese)</i>",
                 "450 г / 450 g",
-                "4.80",
+                "6.80",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -237,7 +237,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Зеле и моркови / Cabbage and carrots",
                 "300 г / 300 g",
-                "3.10",
+                "3.80",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -248,7 +248,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Маслини с лук / Olives and onions",
                 "150 г / 150 g",
-                "3.40",
+                "3.60",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -259,7 +259,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Бобена салата / Bean salad",
                 "250 г / 250 g",
-                "3.10",
+                "3.60",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -270,7 +270,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Печени чушки / Roasted peeled peppers",
                 "200 г / 200 g",
-                "3.40",
+                "3.60",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -281,7 +281,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Кисели краставици / Pickles",
                 "150 г / 150 g",
-                "3.10",
+                "3.60",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -292,7 +292,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Зелена салата / Green salad",
                 "300 г / 300 g",
-                "4.20",
+                "5.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -303,7 +303,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Салата моркови / Carrot salad",
                 "300 г / 300 g",
-                "3.40",
+                "4.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -314,7 +314,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Снежанка / Snezhanka <i>(yogurt and cucumber dip)</i>",
                 "250 г / 250 g",
-                "4.20",
+                "5.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -325,7 +325,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Мексиканска салата <i>(боб, чушки, царевица, лук, чили сос)</i> / Mexican salad <i>(beans, peppers, corn, onions, chilli)</i>",
                 "300 г / 300 g",
-                "4.20",
+                "5.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -336,7 +336,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Салата \"Ружа\" <i>(домати, краставици, зеле, лук, чушки, моркови)</i> / \"Ruzha\" <i>(tomatoes, cucumbers, cabbage, onions, peppers, carrots)</i>",
                 "300 г / 300 g",
-                "4.20",
+                "5.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -347,7 +347,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Туршия / Pickled vegetables",
                 "300 г / 300 g",
-                "4.20",
+                "4.80",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -358,7 +358,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Салатата на шефа <i>(луканка, филе, кашкавал, гъби, лук, домати, краставици, зеле)</i> / Chef's salad <i>(sudzhuk, ham, yellow cheese, mushrooms, onions, tomatoes, cucumbers, cabbage)</i>",
                 "550 г / 550 g",
-                "6.90",
+                "7.90",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -369,7 +369,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Гръцка салата <i>(домати, краставици, марули, лук, сирене, „Перла“)</i> / Greek salad <i>(tomatoes, cucumbers, lettuce, onions, white cheese, marinated small fish)</i>",
                 "350 г / 350 g",
-                "5.10",
+                "6.90",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -380,7 +380,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Салата „Риба тон“ <i>(марули, домати, царевица, лук, грах, риба тон, лимон)</i> / Tuna salad <i>(lettuce, tomatoes, corn, onions, peas, tuna, lemon)</i>",
                 "500 г / 500 g",
-                "6.50",
+                "7.90",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -391,7 +391,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Салата „Магелан“ <i>(марули, лук, грах, царевица, миди, рулца от раци, „Перла“, лимон)</i> / \"Magelan\" salad <i>(lettuce, onions, peas, corn, mussels, surimi sticks, small marinated fish, lemon)</i>",
                 "450 г / 450 g",
-                "6.90",
+                "8.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -402,7 +402,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Перла / Small marinated fish",
                 "100 г / 100 g",
-                "3.20",
+                "3.60",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
@@ -413,7 +413,7 @@ public class ProductDataSeeder implements CommandLineRunner {
         saveIfMissing(
                 "Миди / Mussels",
                 "150 г / 150 g",
-                "4.20",
+                "5.20",
                 ProductCategory.SALAD,
                 4,
                 "Салати / Salads",
